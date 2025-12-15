@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+# RewriteEngine On
+# RewriteCond %{HTTP_HOST} crm\.team365\.io [NC]
+# RewriteCond %{SERVER_PORT} 80
+# RewriteRule ^(.*)$ https://crm.team365.io/index.php/$1 [R,L]
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L] 
+</IfModule>
+RewriteCond %{HTTP_HOST} ^crm\.team365\.io$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.crm\.team365\.io$
+RewriteRule ^/?$ "https\:\/\/crm\.team365\.io\/login" [R=301,L]
+

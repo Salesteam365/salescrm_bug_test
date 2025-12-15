@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap');
+
+body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+}
+
+
+/*-----------------------login nad sign up page------------------*/
+.login-form, .Signup-form {
+      background: #00000078;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /*background-image: linear-gradient(315deg,  #09c6f9 0%, #045de9 74%);*/
+
+}
+.login-form .inner-form .left-side, .Signup-form .inner-form .left-side {
+   
+}
+.login-form .inner-form .left-side img, .Signup-form .inner-form .left-side img {
+    width: 35%;
+    margin-bottom: 10px;
+    border: 1px solid #fff;
+    padding: 15px;
+}
+.login-form .inner-form .left-side p, .Signup-form .inner-form .left-side p {
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: .5px;
+    margin-bottom: 0;
+}
+.login-form .inner-form .right-side, .Signup-form .inner-form .right-side{
+    background: #fff;
+    height: auto;
+    padding: 30px;
+    border-radius: 3px;
+}
+.login-form .inner-form .right-side label, .Signup-form .inner-form .right-side label {
+    font-size: 12px;
+}
+.login-form .inner-form .right-side input.form-control, .Signup-form .inner-form .right-side input.form-control {
+    /* border: 0; */
+    margin: 0;
+    /* border-bottom: 1px solid #ccc; */
+    padding: 5px;
+    border-radius: 0;
+    font-size: 14px;
+    height: auto;
+}
+.login-form .inner-form .right-side input.form-control:focus, .Signup-form .inner-form .right-side input.form-control:focus {
+    box-shadow: none;
+    outline: 0;
+}
+.login-form .inner-form .right-side h2, .Signup-form .inner-form .right-side h2 {
+    margin-bottom: 35px;
+    letter-spacing: 1.1px;
+    font-weight: 500;
+    font-size: 24px;
+    color: #333;
+    line-height: 34px;
+}
+.login-form .inner-form .right-side input.btn, .Signup-form .inner-form .right-side input.btn {
+    /*background: #478bc5;*/
+    color: #fff;
+    padding: 5px 40px;
+    margin: 0 auto;
+    display: block;
+    border-radius: 0;
+    font-size: 18px;
+    background: linear-gradient(to right, #32a5ff 0%, #478bc5 100%);
+}
+.login-form .inner-form .right-side p, .Signup-form .inner-form .right-side p {
+    font-size: 14px;
+    margin-bottom: 0;
+    margin-top: 20px;
+}
+.login-form .inner-form .right-side  a, .Signup-form .inner-form .right-side  a {
+    font-size: 13px;
+    color: #0070d2;
+    text-decoration: none;
+}
+.Signup-form .inner-form .right-side span {
+    font-size: 12px;
+    margin-left: 0;
+    margin-bottom: 0;
+    display: inline-block;
+}
+
+.Signup-form .inner-form .right-side .input-group-text {
+    background: #478cc6;
+    color: #fff;
+    border: 0;
+    font-size: 12px;
+    line-height: 22px;
+}

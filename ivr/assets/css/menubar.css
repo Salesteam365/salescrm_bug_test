@@ -1,0 +1,64 @@
+.main-header .navbar-nav .nav-link .fas.fa-bars {
+    color: #3e3e3e;
+    font-size: 24px;
+}
+.main-header .navbar-nav .dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+.main-header .navbar-nav .dropdown>.dropdown-toggle:active {
+  /*Without this, clicking will make it sticky*/
+    pointer-events: none;
+}
+.main-header .navbar-nav .dropdown-menu {
+    position: absolute;
+    top: 35px;
+    border-radius: 0;
+    padding: 10px 0;
+}
+.main-header .navbar-nav .dropdown-menu a {
+    padding: 10px;
+    transition: all ease .5s;
+}
+.main-header .navbar-nav .dropdown-menu .dropdown-divider {
+    margin: 0;
+}
+.main-header .navbar-nav .dropdown-menu p {
+    margin: 0;
+    padding: 10px;
+}
+.main-header .navbar-nav .dropdown-menu a:hover {
+    background: #636363bf;
+    color: #fff;
+    padding-left: 15px;
+    transition: all ease .5s;    
+}
+.main-header .navbar-nav .dropdown-menu a i {
+    color: #252b3b;
+    margin-right: 5px;
+}
+.main-header .navbar-nav .dropdown-menu a:hover i {
+    color: #f3f3f3;
+}
+.form .form-control {
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 8px;
+    padding: 0;
+    background : none;
+}
+.form .form-control:focus{
+    box-shadow: none;
+    outline: 0;
+}
+.content-header .first-one .form-control {
+    border-radius: 0;
+    width: 70%;
+    display: block;
+    padding: 0 15px;
+}
+.refresh_button.float-right button {
+    border-radius: 0;
+    background: linear-gradient(to right, #083163, #032b59);
+}
