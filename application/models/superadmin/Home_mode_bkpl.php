@@ -8,6 +8,22 @@ class Home_model extends CI_Model
   var $sort_by = array(null,'company_name','admin_email','company_website','admin_mobile');
   var $search_by = array('admin_name','company_name','admin_email','company_website','admin_mobile','user_type');
   var $order = array('id' => 'desc');
+  /**
+  * Build the DataTables query used by this model: applies optional posted date range (searchDate, searchToDate), a global search across configured searchable columns ($this->search_by), forces records with type = 'admin', and applies ordering from POST or default order.
+  * @example
+  * // Example: set up a global search and date range, build the query and fetch results
+  * $_POST['search']['value'] = 'john';
+  * $_POST['order'][0]['column'] = 1;
+  * $_POST['order'][0]['dir'] = 'asc';
+  * $_POST['searchDate'] = '2025-01-01';
+  * $_POST['searchToDate'] = '2025-12-31';
+  * // inside the model:
+  * $this->_get_datatables_query();
+  * $query = $this->db->get();
+  * echo $query->num_rows(); // e.g. "12"
+  * @param void None - This method accepts no parameters.
+  * @returns void Builds and modifies the active CodeIgniter query ($this->db) but does not return a value.
+  */
   private function _get_datatables_query()
   {
     
@@ -135,6 +151,14 @@ class Home_model extends CI_Model
   //////////////////////////////////////////////////////////////// Dashboard Queries Starts  //////////////////////////////////////////////////////
   
   //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+  * Retrieve the total number of registered admin users for the current session if the user is a superadmin.
+  * @example
+  * $result = $this->Home_mode_bkpl->get_all_ragisterAdmin();
+  * print_r($result); // Array ( [total_admin] => '5' )
+  * @param void No parameters.
+  * @returns array|null Associative array with key 'total_admin' holding the count of admin users as a string/int (e.g. ['total_admin' => '5']), or null if the current session user is not a superadmin or no rows are returned.
+  */
   public function get_all_ragisterAdmin()
   {
     
@@ -157,6 +181,13 @@ class Home_model extends CI_Model
    
   }
   //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+   * Get count of active admin users for the currently logged-in superadmin.
+   * @example
+   * $result = $this->Home_mode_bkpl->get_all_activeAdmin();
+   * print_r($result); // Sample output: Array ( [total_admin] => 5 )
+   * @returns array|null Returns associative array with key 'total_admin' when the session user is 'superadmin' and active admins exist; otherwise null.
+   */
   public function get_all_activeAdmin()
   {
     
@@ -180,6 +211,14 @@ class Home_model extends CI_Model
     
   }
    //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+  * Retrieve the count of inactive admin users when the current session type is "superadmin".
+  * @example
+  * $result = $this->Home_mode_bkpl->get_all_inactiveAdmin();
+  * echo $result['total_admin']; // render sample output value: 5
+  * @param void $none - No parameters.
+  * @returns array|null Associative array with key 'total_admin' (count of inactive admin users) or NULL if the session is not a superadmin or no records are found.
+  */
   public function get_all_inactiveAdmin()
   {
     
@@ -202,6 +241,14 @@ class Home_model extends CI_Model
     
   }
    //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+  * Get the count of admin users registered in the current month (for superadmin users).
+  * @example
+  * $result = $this->Home_mode_bkpl->get_all_currmonReg();
+  * echo $result['total_admin']; // e.g. 5
+  * @param void $none - No parameters.
+  * @returns array|null Returns an associative array with key 'total_admin' (e.g. ['total_admin' => 5]) or null if no result or not a superadmin.
+  */
   public function get_all_currmonReg()
   {
     
