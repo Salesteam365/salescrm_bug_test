@@ -8,6 +8,15 @@ class Home_model extends CI_Model
   var $sort_by = array(null,'company_name','admin_email','company_website','admin_mobile');
   var $search_by = array('admin_name','company_name','admin_email','company_website','admin_mobile','user_type','license_activation_date','invoice_license_active_date','license_expiration_date','invoice_license_exp_date','license_type','invoice_license_type','invoice_account_type','license_duration','invoice_license_duration','invoice_lic_amnt');
   var $order = array('id' => 'desc');
+  /**
+   * Builds and applies DataTables filters to the model's query builder based on POST input and the given product type.
+   * @example
+   * $this->_get_datatables_query('software');
+   * $rows = $this->db->get()->result();
+   * print_r($rows); // sample output: Array ( [0] => stdClass Object ( [id] => 1 [name] => "Example" [product_type] => "software" ... ) )
+   * @param string $product_type - Product type to filter results (e.g. 'software').
+   * @returns void Sets up the query on $this->db (applies date range, account/invoice filters, search and order); does not return a value.
+   */
   private function _get_datatables_query($product_type)
   {
     
@@ -151,6 +160,15 @@ class Home_model extends CI_Model
   //////////////////////////////////////////////////////////////// Dashboard Queries Starts  //////////////////////////////////////////////////////
   
   //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+  * Get the total number of registered admin users when the current session user is a superadmin.
+  * @example
+  * $this->load->model('superadmin/Home_model_bkp');
+  * $result = $this->Home_model_bkp->get_all_ragisterAdmin();
+  * print_r($result); // e.g. array('total_admin' => '5')
+  * @param void $none - No parameters.
+  * @returns array|null Return associative array with key 'total_admin' containing the count of admin users when the current session user type is 'superadmin'; returns null otherwise.
+  */
   public function get_all_ragisterAdmin()
   {
     
@@ -173,6 +191,14 @@ class Home_model extends CI_Model
    
   }
   //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+  * Get the total count of active admin users when the current session user is a superadmin.
+  * @example
+  * $result = $this->Home_model_bkp->get_all_activeAdmin();
+  * echo $result['total_admin']; // e.g. 5
+  * @param void $none - No parameters are required.
+  * @returns array|null Associative array with key 'total_admin' containing the count of active admins, or null if the session type is not 'superadmin' or no rows found.
+  */
   public function get_all_activeAdmin()
   {
     
@@ -196,6 +222,14 @@ class Home_model extends CI_Model
     
   }
    //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+  * Get the number of inactive admin users when the current session is a superadmin.
+  * @example
+  * $result = $this->Home_model_bkp->get_all_inactiveAdmin();
+  * echo $result['total_admin']; // 5
+  * @param void None - This method accepts no parameters.
+  * @returns array|null Associative array with key 'total_admin' containing the count of inactive admin users, or NULL if the current session is not a superadmin or there are no results.
+  */
   public function get_all_inactiveAdmin()
   {
     
@@ -218,6 +252,13 @@ class Home_model extends CI_Model
     
   }
    //////////////////////////////////////////////////////////////// To get count of ragisteradmin starts /////////////////////////////////////////////
+  /**
+   * Get the count of admin users registered in the current month for a superadmin.
+   * @example
+   * $result = $this->Home_model_bkp->get_all_currmonReg();
+   * echo $result['total_admin']; // e.g. 5
+   * @returns array|null Associative array with key 'total_admin' containing the count of admin users for the current month, or null if the current session user is not a superadmin or no records are found.
+   */
   public function get_all_currmonReg()
   {
     
@@ -384,6 +425,16 @@ class Home_model extends CI_Model
     var $sort_bys = array(null,'order_id','payment_id','trans_id','user_name','company_name','company_email','user_mobile','product_name','licence_type','final_price','payment_method','payment_status');
     var $search_bys = array('order_id','payment_id','trans_id','user_name','company_name','company_email','user_mobile','product_name','licence_type','final_price','payment_method','payment_status');
   var $orders = array('id' => 'desc');
+  /**
+  * Prepare the active query builder with search and ordering clauses for DataTables filtered by product type.
+  * @example
+  * // Called inside the model to build the query used by DataTables
+  * $this->_get_datatables_order_query('electronics');
+  * $rows = $this->db->get()->result();
+  * echo json_encode($rows); // [{"id":1,"product_name":"electronics","name":"Smartphone",...}]
+  * @param {string} $product_type - Product type to filter the datatables query (e.g. 'electronics').
+  * @returns {void} No direct return; the method modifies the CI query builder ($this->db) to apply WHERE, LIKE (search) and ORDER BY clauses.
+  */
   private function _get_datatables_order_query($product_type)
   {
     
