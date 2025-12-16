@@ -2,6 +2,20 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Customreports_model extends CI_Model
 {
+   /**
+   * Retrieve rows from a table with optional select, where, group by, order and limit using CodeIgniter's query builder.
+   * @example
+   * $result = $this->Customreports_model->getdata('SUM(amount) as subtotal, org_name', 'invoices', ['status' => 'paid'], 'organization', 'subtotal', 'desc', 10);
+   * print_r($result); // Example output: Array ( [0] => Array ( [subtotal] => "12500.00" [org_name] => "Acme Corp" ) )
+   * @param {string|null} $sel - Columns or expressions to select (e.g. 'SUM(amount) as subtotal, org_name').
+   * @param {string} $tbl - Table name to query (e.g. 'invoices').
+   * @param {array|string|null} $whr - Optional WHERE clause as associative array or SQL string (e.g. ['status' => 'paid']).
+   * @param {string|null} $grp - Optional group key. Accepts 'organization' (mapped to 'org_name'), 'user' (mapped to 'lead_owner' for Lead table or 'owner' otherwise) or an explicit column name.
+   * @param {string|null} $orderby - Optional column to order by (defaults to 'subtotal' when not provided).
+   * @param {string} $order - Sort direction, 'asc' or 'desc' (default 'desc').
+   * @param {int|null} $limit - Optional limit on number of rows to return.
+   * @returns {array} Result set as an array of associative arrays (rows).
+   */
    public function getdata($sel, $tbl, $whr = null, $grp = null,$orderby= null,$order='desc',$limit=null) {
    
         // Reset any previous selections
