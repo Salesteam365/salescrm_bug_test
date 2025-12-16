@@ -2,6 +2,15 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Upgrade_plan_model extends CI_Model
 {
+  /**
+  * Retrieve list of plans from the team365_plan table, optionally filtered by type or id.
+  * @example
+  * $result = $this->Upgrade_plan_model->getPlanList('monthly', 5);
+  * print_r($result); // sample output: Array ( [0] => Array ( [id] => 5, [team365_type] => 'monthly', [name] => 'Pro', [price] => '9.99', [delete_status] => 1 ) )
+  * @param string $tp - Plan type filter (e.g., 'monthly'). Leave empty to fetch all types.
+  * @param int|string $id - Plan ID filter (e.g., 5). Leave empty to fetch all IDs.
+  * @returns array Array of plan records as associative arrays.
+  */
   public function getPlanList($tp='',$id='')
   {
     $this->db->from('team365_plan');
