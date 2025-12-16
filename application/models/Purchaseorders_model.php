@@ -13,6 +13,16 @@ class Purchaseorders_model extends CI_Model
     var $sort_by = [null, 'supplier_comp_name', 'customer_company_name', 'supplier_name', 'subject', 'purchaseorder_id', 'owner', 'approved_by', 'datetime', null];
     var $search_by = ['supplier_comp_name', 'customer_company_name', 'supplier_name', 'subject', 'purchaseorder_id', 'owner', 'approved_by', 'datetime','subscr_type'];
     var $order = ['id' => 'desc'];
+    /**
+    * Build CodeIgniter Active Record query used by server-side DataTables based on session and POST filters.
+    * @example
+    * $CI =& get_instance();
+    * $CI->load->model('Purchaseorders_model');
+    * $result = $CI->Purchaseorders_model->_get_datatables_query('monthly');
+    * var_dump($result); // NULL (method configures the active record query on $this->db and does not return a value)
+    * @param {string|null} $subscr - Optional subscription filter; when provided the query will add "subscr_type != ''".
+    * @returns {void} Configures the CI DB query builder (no direct return value).
+    */
     private function _get_datatables_query($subscr=null)
     {
         
@@ -98,6 +108,17 @@ class Purchaseorders_model extends CI_Model
     }
     ////////////////////////////////////////////// fetch data for po graph (monthwise) starts ////////////////////////////////////////////////////
 
+     /**
+     * Get purchase order totals grouped by year and month for the current session/company.
+     * Admin users receive aggregated totals for the company; standard users receive aggregated totals filtered by their session email.
+     * @example
+     * $result = $this->Purchaseorders_model->getpo_graph();
+     * // Sample output (JSON):
+     * // [{"year":"2025","month":"12","subtotal":"15000.00"}, {"year":"2025","month":"11","subtotal":"8000.50"}]
+     * echo json_encode($result);
+     * @param void $none - No parameters required.
+     * @returns array Array of result objects on success; each item contains 'year' (int), 'month' (int) and 'subtotal' (string/float). On DB error the function echoes the error message and does not return the result.
+     */
      public function getpo_graph(){
         $sess_eml = $this->session->userdata('email');
 		$session_comp_email = $this->session->userdata('company_email');
@@ -141,6 +162,15 @@ class Purchaseorders_model extends CI_Model
 ////////////////////////////////////////////// fetch data for po graph (monthwise) ends ////////////////////////////////////////////////////
 
 
+    /**
+    * Retrieve paginated datatables results for purchase orders, optionally filtered by a subscription id.
+    * @example
+    * $sample_subscr = 5; // or null to use default filtering
+    * $result = $this->Purchaseorders_model->get_datatables($sample_subscr);
+    * print_r($result); // sample output: Array ( [0] => stdClass Object ( [id] => 1 [order_no] => "PO-001" ... ) )
+    * @param {int|null} $subscr - Subscription id used to filter the datatables query, or null to apply the default query.
+    * @returns {array} Array of result objects (each element is a stdClass representing a row).
+    */
     public function get_datatables($subscr = null)
     {   if($subscr != null){
            $this->_get_datatables_query($subscr);
@@ -170,6 +200,17 @@ class Purchaseorders_model extends CI_Model
         $this->db->where('session_company', $session_company);
         return $this->db->count_all_results();
     }
+    /**
+    * Retrieve up to five salesorder rows that match a partial saleorder_id and session/company constraints.
+    * @example
+    * $result = $this->Purchaseorders_model->get_so_id('SO123', 'user@example.com', 'Acme Inc', 'company@example.com');
+    * print_r($result); // Sample output: Array ( [0] => stdClass Object ( [saleorder_id] => "SO123-001" [sess_eml] => "user@example.com" [session_company] => "Acme Inc" [session_comp_email] => "company@example.com" [currentdate] => "2025-01-01 12:00:00" ) )
+    * @param {string} {$saleorder_id} - Sale order identifier used for a LIKE search (partial matches permitted).
+    * @param {string} {$sess_eml} - Session email; will be overridden by the logged-in user's email if user type is 'standard'.
+    * @param {string} {$session_company} - Session company identifier to filter results.
+    * @param {string} {$session_comp_email} - Session company email to filter results.
+    * @returns {array} Return an array of stdClass objects (result set) from the salesorder table, ordered by currentdate DESC and limited to 5 rows.
+    */
     public function get_so_id($saleorder_id, $sess_eml, $session_company, $session_comp_email)
     {
         $this->db->like('saleorder_id', $saleorder_id, 'both');
@@ -183,6 +224,14 @@ class Purchaseorders_model extends CI_Model
         $this->db->limit(5);
         return $this->db->get('salesorder')->result();
     }
+    /**
+    * Get sales order rows for a given saleorder_id, optionally restricted by the current session user (standard users limited to their email).
+    * @example
+    * $result = $this->Purchaseorders_model->getSOValue(['saleorder_id' => 123]);
+    * echo json_encode($result); // [{"saleorder_id":"123","customer":"ACME Corp","total":"100.00"}]
+    * @param array $saleorder_id - Associative array containing 'saleorder_id' (e.g. ['saleorder_id' => 123]).
+    * @returns array Returns an array of salesorder rows (each row is an associative array).
+    */
     public function getSOValue($saleorder_id)
     {
         $response = [];
@@ -199,6 +248,17 @@ class Purchaseorders_model extends CI_Model
         return $response;
     }
 
+    /**
+     * Retrieve product information for a given sale order and product name.
+     * Filters results by the current session company/email, ensures the purchase order ID is present,
+     * and only returns active (delete_status = 1) records from the product_wise_profit table joined with purchaseorder.
+     * @example
+     * $result = $this->Purchaseorders_model->getProductInfo(123, 'Widget A');
+     * print_r($result); // sample output: Array ( [0] => Array ( [id] => 7, [pro_name] => 'Widget A' ) )
+     * @param int $saleorderId - Sale order ID to filter the records (e.g. 123).
+     * @param string $ProName - Product name to filter the records (e.g. 'Widget A').
+     * @returns array Return an array of associative arrays representing matching product_wise_profit rows; returns an empty array if no matches.
+     */
     public function getProductInfo($saleorderId, $ProName)
     {
         $sess_eml = $this->session->userdata('email');
@@ -221,6 +281,17 @@ class Purchaseorders_model extends CI_Model
         return $response;
     }
 
+    /**
+     * Fetch a list of vendor organizations whose names match the given search term, limited to the current session company and company email.
+     * @example
+     * $vendors = $this->Purchaseorders_model->get_vendor_name('Acme', 'user@example.com', 'Acme Inc', 'contact@acme.com');
+     * print_r($vendors); // Example output: Array ( [0] => stdClass Object ( [org_name] => Acme Supplies [customer_type] => Vendor [session_company] => Acme Inc ... ) )
+     * @param string $name - Partial or full organization name to search for (used with SQL LIKE on both sides).
+     * @param string $sess_eml - Session email of the current user (present for compatibility; currently not applied in the query).
+     * @param string $session_company - Session company identifier/name used to restrict results.
+     * @param string $session_comp_email - Session company email used to restrict results.
+     * @returns array Array of stdClass objects representing matching organization rows (empty array if none).
+     */
     public function get_vendor_name($name, $sess_eml, $session_company, $session_comp_email)
     {
         $this->db->like('org_name', $name, 'both');
@@ -236,6 +307,14 @@ class Purchaseorders_model extends CI_Model
         $this->db->limit(8);
         return $this->db->get('organization')->result();
     }
+    /**
+    * Retrieve vendor organization details matching the given supplier name for the current session company.
+    * @example
+    * $result = $this->Purchaseorders_model->get_vendor_details('Acme Supplies');
+    * var_dump($result); // sample output: array(0 => array('org_name' => 'Acme Supplies', 'customer_type' => 'Vendor', 'session_company' => 'ExampleCo', 'session_comp_email' => 'info@exampleco.com', ...));
+    * @param {string} $supplier_name - Supplier organization name to filter by.
+    * @returns {array} Array of organization records that match the supplier name, belong to the current session company, are not deleted, and have customer_type 'Vendor' or 'Both'.
+    */
     public function get_vendor_details($supplier_name)
     {
         $sess_eml = $this->session->userdata('email');
@@ -268,6 +347,15 @@ class Purchaseorders_model extends CI_Model
         return $response;
     }
 
+    /**
+    * Retrieve product_name and pro_dummy_id for products associated with a specific sale order and the current session company.
+    * @example
+    * $result = $this->Purchaseorders_model->check_product(123);
+    * echo '<pre>' . print_r($result, true) . '</pre>'; // render sample output:
+    * // Array ( [0] => Array ( [product_name] => Widget A [pro_dummy_id] => DUM123 ) )
+    * @param {{int}} {{soid}} - Sale order ID used to filter products.
+    * @returns {{array}} Array of associative arrays each containing 'product_name' and 'pro_dummy_id'.
+    */
     public function check_product($soid)
     {
         $session_comp_email = $this->session->userdata('company_email');
@@ -378,6 +466,15 @@ class Purchaseorders_model extends CI_Model
             return false;
         }
     }
+    /**
+    * Update records in the purchase orders table with given data and where conditions.
+    * @example
+    * $result = $this->Purchaseorders_model->update(['id' => 123], ['status' => 'approved']);
+    * echo $result; // true (if admin and update succeeded) or 1 (number of affected rows)
+    * @param {array} $where - Associative array of WHERE conditions (e.g. ['id' => 123]).
+    * @param {array} $data - Associative array of column => value pairs to update (e.g. ['status' => 'approved']).
+    * @returns {int|bool} Return true when the current session user is admin and the update succeeded, otherwise returns the number of affected rows as an integer.
+    */
     public function update($where, $data)
     {
         if ($this->session->userdata('type') == 'admin') {
@@ -390,6 +487,15 @@ class Purchaseorders_model extends CI_Model
         }
         return $this->db->affected_rows();
     }
+    /**
+    * Update records in the subscription_po table using the provided WHERE clause and data.
+    * @example
+    * $result = $this->Purchaseorders_model->updatesubpo(['id' => 123], ['status' => 'active']);
+    * echo $result; // 1
+    * @param {array} $where - Associative array or condition used as the WHERE clause (e.g. ['id' => 123]).
+    * @param {array} $data - Associative array of column => value pairs to update (e.g. ['status' => 'active']).
+    * @returns {bool|int} True when the current session user is an admin and the update succeeded; otherwise the number of affected rows as an integer.
+    */
     public function updatesubpo($where, $data)
     {
         if ($this->session->userdata('type') == 'admin') {
@@ -1501,6 +1607,33 @@ class Purchaseorders_model extends CI_Model
 
         return $output;
     }
+    /**
+     * Retrieve purchase orders that are due for renewal within the next 31 days for the current session/company/user.
+     * For 'admin' users the query returns all matching company records; for 'standard' users it is limited to records owned by the logged-in user.
+     * @example
+     * $result = $this->Purchaseorders_model->get_renewal_po();
+     * if ($result !== false) {
+     *     // Sample output: array of associative arrays
+     *     // [
+     *     //   [
+     *     //     'id' => 123,
+     *     //     'org_name' => 'Acme Inc',
+     *     //     'subject' => 'Annual Support',
+     *     //     'renewal_date' => '2026-01-15',
+     *     //     'purchaseorder_id' => 'PO-2026-001',
+     *     //     'so_owner' => 'Jane Doe',            // present for admin results
+     *     //     'customer_company_name' => 'Acme Inc'
+     *     //   ],
+     *     //   ...
+     *     // ]
+     *     print_r($result);
+     * } else {
+     *     // No renewal purchase orders found
+     *     var_dump($result); // bool(false)
+     * }
+     * @param {void} none - No parameters. Uses session data (type, company_name, company_email, name) to filter results.
+     * @returns {array|false} Array of associative arrays for matching purchase orders when found; false if no records found.
+     */
     public function get_renewal_po()
     {
         $sess_eml = $this->session->userdata('email');
@@ -1550,6 +1683,18 @@ class Purchaseorders_model extends CI_Model
         $this->db->update('purchaseorder');
     }
 
+    /**
+     * Retrieve product-wise profit details for a given sale order and product.
+     * @example
+     * $result = $this->Purchaseorders_model->soProfitDetails(123, 'Widget A');
+     * // Sample output:
+     * // array(
+     * //   0 => array('id' => '5', 'so_after_discount' => '95.00', 'so_pro_total' => '120.00')
+     * // )
+     * @param {int} $saleorder_id - Sale order ID to filter profit records.
+     * @param {string} $productName - Product name to filter profit records.
+     * @returns {array|false} Array of associative rows with keys (id, so_after_discount, so_pro_total) or false if no records found.
+     */
     public function soProfitDetails($saleorder_id, $productName)
     {
         $sess_eml = $this->session->userdata('email');
@@ -1581,6 +1726,14 @@ class Purchaseorders_model extends CI_Model
     }
 
     // PLease write code above this
+    /**
+    * Retrieve contact records for a supplier organization by its company name.
+    * @example
+    * $result = $this->Purchaseorders_model->dbGetSupplierName('Acme Supplies');
+    * if ($result !== false && $result->num_rows() > 0) { echo $result->row()->name; } // e.g. "Jane Smith"
+    * @param string|null $supplier_comp_name - Supplier company (organization) name to query.
+    * @returns CI_DB_result|null|false CI_DB_result when matching contacts are found, null if no matches, or false if the supplied name is null.
+    */
     function dbGetSupplierName($supplier_comp_name)
     {
         if ($supplier_comp_name != null) {
@@ -1599,6 +1752,14 @@ class Purchaseorders_model extends CI_Model
             return false;
         }
     }
+    /**
+    * Retrieve supplier contact details (mobile and email) by supplier contact id.
+    * @example
+    * $result = $this->Purchaseorders_model->dbGetSupplierDetails(42);
+    * print_r($result); // e.g. Array ( [0] => stdClass Object ( [mobile] => "1234567890" [email] => "supplier@example.com" ) )
+    * @param {int|string|null} $supplier_name - Supplier contact id (contact.id). Pass null to receive false.
+    * @returns {array|false} Array of result objects (each with ->mobile and ->email) on success, or false if $supplier_name is null.
+    */
     function dbGetSupplierDetails($supplier_name)
     {
         if ($supplier_name != null) {
