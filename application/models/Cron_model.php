@@ -29,6 +29,16 @@ class Cron_model extends CI_Model
       return $query->result_array();
   }	
 	
+ /**
+ * Retrieve sales orders that are marked for renewal within the next 31 days for a given company/session.
+ * @example
+ * $result = $this->Cron_model->get_renewal_so('billing@acme.com', 'ACME Ltd', 'user@acme.com');
+ * print_r($result); // sample output: Array ( [0] => Array ( 'id' => '12', 'org_name' => 'ACME Ltd', 'contact_name' => 'John Doe', 'subject' => 'Service Renewal', 'renewal_date' => '2025-01-15', 'saleorder_id' => 'SO123', 'owner' => 'owner@acme.com' ) )
+ * @param {string} $session_comp_email - Company contact email used to filter sales orders.
+ * @param {string} $session_company - Company identifier used to filter sales orders.
+ * @param {string} $sess_eml - Optional session email to further restrict results (default: '').
+ * @returns {array} Array of associative arrays representing sales orders matching the renewal criteria.
+ */
  public function get_renewal_so($session_comp_email,$session_company,$sess_eml=''){
    
       $start_date = date('Y-m-d');
@@ -59,6 +69,17 @@ class Cron_model extends CI_Model
   }
   
   
+  /**
+  * Check if a workflow exists for the given company, company email, module and workflow name and return its database row.
+  * @example
+  * $result = $this->Cron_model->check_workflows('admin@acme.com', 'AcmeCorp', 'invoices', 'Invoice Approval');
+  * print_r($result); // Example output: Array ( [id] => 12 [workflow_name] => Invoice Approval [module] => invoices [session_company] => AcmeCorp [session_comp_email] => admin@acme.com ... )
+  * @param string $session_comp_email - Company email from session used to filter the workflow.
+  * @param string $session_company - Company name from session used to filter the workflow.
+  * @param string $moduleName - Module name to filter the workflow (e.g. 'invoices', 'sales').
+  * @param string $workFlowName - Name of the workflow to check (e.g. 'Invoice Approval').
+  * @returns array|false Return associative array of the workflow row if found, otherwise false.
+  */
   public function check_workflows($session_comp_email,$session_company,$moduleName,$workFlowName){
 	//$session_company 	= $this->session->userdata('company_name');
 	//$session_comp_email = $this->session->userdata('company_email');
