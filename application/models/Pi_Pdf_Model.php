@@ -4,6 +4,16 @@ class Pi_Pdf_Model extends CI_Model
 {
   var $table = 'quote';
 
+  /**
+   * Generate an HTML quotation (proforma invoice) for a performa_invoice record.
+   * @example
+   * $html = $this->Pi_Pdf_Model->view(123, 'Acme Pvt Ltd', 'billing@acme.com');
+   * echo $html; // Outputs an HTML document string starting with "<!DOCTYPE html>..." suitable for rendering or PDF conversion
+   * @param int|string $piid - ID of the performa_invoice record to render (e.g. 123).
+   * @param string $company - Optional: override session company name; if empty the session value is used (e.g. 'Acme Pvt Ltd').
+   * @param string $comEml - Optional: override session company email; if empty the session value is used (e.g. 'billing@acme.com').
+   * @returns string HTML string of the generated quotation (complete HTML document).
+   */
   public function view($piid,$company='',$comEml='')
   {
 	  
