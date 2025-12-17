@@ -4,6 +4,16 @@ require('../fpdf.php');
 class PDF extends FPDF
 {
 // Page header
+/**
+* Renders the PDF header: places the logo image at the top-left, sets a bold Arial 15 font, centers a titled cell and adds a line break.
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage(); // Header() will be invoked automatically and will render the logo and title
+* // Or call directly (if needed):
+* $pdf->Header();
+* @param {void} none - No arguments are required.
+* @returns {void} Outputs header content directly to the PDF; does not return a value.
+*/
 function Header()
 {
 	// Logo
