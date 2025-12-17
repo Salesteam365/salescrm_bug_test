@@ -303,6 +303,13 @@
         return hasOwnProperty.call(a, b);
     }
 
+    /**
+     * Create and return a fresh default parsing flags object used internally by Moment.js.
+     * @example
+     * defaultParsingFlags()
+     * // -> { empty: false, unusedTokens: [], unusedInput: [], overflow: -2, charsLeftOver: 0, nullInput: false, invalidMonth: null, invalidFormat: false, userInvalidated: false, iso: false }
+     * @returns {{Object}} A new object containing default parsing flags.
+     */
     function defaultParsingFlags() {
         // We need to deep clone this object, and es5 standard is not very
         // helpful.
@@ -356,6 +363,15 @@
         };
     }
 
+    /**
+    * Calculate fractional month difference between two Moment objects.
+    * @example
+    * monthDiff(moment('2010-01-15'), moment('2010-03-15'))
+    * -2
+    * @param {moment} a - First Moment instance (base/anchor).
+    * @param {moment} b - Second Moment instance to compare against a.
+    * @returns {number} Signed fractional month difference (negative when b is after a).
+    **/
     function monthDiff(a, b) {
         // difference in months
         var wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month()),
@@ -387,6 +403,16 @@
     formatTokenFunctions.DDDD = padToken(formatTokenFunctions.DDD, 3);
 
 
+    /**
+    * Adjusts an hour value according to locale-specific meridiem rules and returns the corrected 0–23 hour.
+    * @example
+    * meridiemFixWrap({ meridiemHour: null, isPM: m => /pm/i.test(m) }, 2, 'PM')
+    * 14
+    * @param {Object} locale - Locale object which may provide meridiemHour(hour, meridiem) or isPM(meridiem) functions.
+    * @param {number} hour - Hour value (typically 1–12 for 12-hour clocks) to be adjusted.
+    * @param {string|null|undefined} meridiem - Meridiem indicator (e.g., 'AM'/'PM') or null/undefined if not provided.
+    * @returns {number} Return corrected hour in 0–23 range.
+    **/
     function meridiemFixWrap(locale, hour, meridiem) {
         var isPm;
 
@@ -420,6 +446,15 @@
     }
 
     // Moment prototype object
+    /**
+    * Create and initialize a Moment instance from a configuration object.
+    * @example
+    * Moment({ _d: new Date() }, false)
+    * Moment object
+    * @param {{Object}} {{config}} - Configuration object used to initialize the Moment instance.
+    * @param {{boolean}} {{skipOverflow}} - If false, overflow checks are skipped; otherwise checkOverflow is invoked.
+    * @returns {{Moment}} Newly created Moment instance.
+    **/
     function Moment(config, skipOverflow) {
         if (skipOverflow !== false) {
             checkOverflow(config);
@@ -436,6 +471,14 @@
     }
 
     // Duration Constructor
+    /**
+    * Create a Duration object from a duration-like input and initialize internal millisecond, day, and month representations.
+    * @example
+    * Duration({ years: 1, months: 2, days: 3, hours: 4, minutes: 5, seconds: 6, milliseconds: 7 })
+    * // returns a Duration instance with initialized _milliseconds, _days, _months and locale data
+    * @param {Object} duration - Object with duration fields (year(s), quarter(s), month(s), week(s), day(s), hour(s), minute(s), second(s), millisecond(s)).
+    * @returns {Duration} Initialized Duration instance with internal representation for later arithmetic and localization.
+    */
     function Duration(duration) {
         var normalizedInput = normalizeObjectUnits(duration),
             years = normalizedInput.year || 0,
@@ -476,6 +519,15 @@
     ************************************/
 
 
+    /**
+    * Shallowly copies own enumerable properties (including toString and valueOf when present) from object b into object a and returns a.
+    * @example
+    * extend({a:1}, {b:2})
+    * {a:1, b:2}
+    * @param {{Object}} {{a}} - Target object to receive properties.
+    * @param {{Object}} {{b}} - Source object whose own properties will be copied onto a.
+    * @returns {{Object}} The modified target object a with properties copied from b.
+    **/
     function extend(a, b) {
         for (var i in b) {
             if (hasOwnProp(b, i)) {
@@ -494,6 +546,15 @@
         return a;
     }
 
+    /**
+    * Copy internal Moment.js configuration properties from one object to another.
+    * @example
+    * copyConfig(dest, src)
+    * // -> dest (object with properties copied from src)
+    * @param {Object} to - Destination object to receive configuration properties.
+    * @param {Object} from - Source object to copy configuration properties from.
+    * @returns {Object} Destination object with copied configuration.
+    **/
     function copyConfig(to, from) {
         var i, prop, val;
 
@@ -561,6 +622,15 @@
         return (sign ? (forceSign ? '+' : '') : '-') + output;
     }
 
+    /**
+    * Calculate the positive difference between two moment instances as whole months and remaining milliseconds.
+    * @example
+    * positiveMomentsDifference(baseMoment, otherMoment)
+    * {milliseconds: 1234567, months: 2}
+    * @param {Moment} base - The earlier moment to compare from.
+    * @param {Moment} other - The later moment to compare to.
+    * @returns {{milliseconds: number, months: number}} Return object containing whole months difference and remaining milliseconds.
+    **/
     function positiveMomentsDifference(base, other) {
         var res = {milliseconds: 0, months: 0};
 
@@ -575,6 +645,15 @@
         return res;
     }
 
+    /**
+    * Calculate the signed difference between two moments expressed as months and milliseconds.
+    * @example
+    * momentsDifference(baseMoment, otherMoment)
+    * { months: 2, milliseconds: 123456 }
+    * @param {Moment} base - Base moment instance to compare against.
+    * @param {Moment|String|Date|Object} other - Other moment (or value convertible to the base) to compare; it will be normalized to the base's context.
+    * @returns {{months:number,milliseconds:number}} Object with numeric months and milliseconds properties representing the signed difference (positive if other is after base, negative if before).
+    **/
     function momentsDifference(base, other) {
         var res;
         other = makeAs(other, base);
@@ -590,6 +669,11 @@
     }
 
     // TODO: remove 'name' arg after deprecation is removed
+    /**
+    * Create a function that adds or subtracts a duration on a moment instance based on the given direction.
+    * @example
+    * createAdder(1, 'add')
+    * function (val, period) { /* adder function that mutates and returns the moment instance */
     function createAdder(direction, name) {
         return function (val, period) {
             var dur, tmp;
@@ -606,6 +690,17 @@
         };
     }
 
+    /**
+    * Add or subtract a duration from a Moment object, modifying the moment in place.
+    * @example
+    * addOrSubtractDurationFromMoment(momentObj, durationObj, 1, true)
+    * undefined
+    * @param {{Object}} {{mom}} - The moment instance whose underlying Date will be adjusted.
+    * @param {{Object}} {{duration}} - Duration object containing _milliseconds, _days, and _months to apply.
+    * @param {{Number}} {{isAdding}} - Multiplier indicating addition (1) or subtraction (-1).
+    * @param {{Boolean}} {{updateOffset}} - Whether to update the moment's timezone offset after change (defaults to true).
+    * @returns {{void}} No return value; the moment is modified in place.
+    **/
     function addOrSubtractDurationFromMoment(mom, duration, isAdding, updateOffset) {
         var milliseconds = duration._milliseconds,
             days = duration._days,
@@ -637,6 +732,16 @@
     }
 
     // compare two arrays, return the number of differences
+    /**
+    * Compares two arrays element-wise counting differences, optionally converting values to integers before comparison.
+    * @example
+    * compareArrays([1, 2, 3], ['1', '2', '4'], false)
+    * 1
+    * @param {Array} array1 - First array to compare.
+    * @param {Array} array2 - Second array to compare.
+    * @param {boolean} dontConvert - If true, compare values strictly without converting to integers.
+    * @returns {number} Number of differing elements plus the difference in array lengths.
+    **/
     function compareArrays(array1, array2, dontConvert) {
         var len = Math.min(array1.length, array2.length),
             lengthDiff = Math.abs(array1.length - array2.length),
@@ -659,6 +764,14 @@
         return units;
     }
 
+    /**
+    * Normalize the keys of an object to canonical unit names and return a new object with those normalized keys.
+    * @example
+    * normalizeObjectUnits({ Days: 3, Mo: 2 })
+    * // -> { day: 3, month: 2 }
+    * @param {Object} inputObject - Object whose keys are unit strings to normalize and whose values are preserved.
+    * @returns {Object} A new object mapping normalized unit names to the original values; keys that cannot be normalized are omitted.
+    */
     function normalizeObjectUnits(inputObject) {
         var normalizedInput = {},
             normalizedProp,
@@ -676,6 +789,14 @@
         return normalizedInput;
     }
 
+    /**
+    * Create and attach a list-returning accessor on the moment object for week or month fields.
+    * @example
+    * makeList('weekdays')
+    * // moment.weekdays() -> ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    * @param {string} field - Field name that begins with 'week' or 'month' (e.g. 'weekdays', 'monthsShort').
+    * @returns {void} No return value; defines moment[field] which returns either an array of names or a single name by index.
+    **/
     function makeList(field) {
         var count, setter;
 
@@ -718,6 +839,14 @@
         };
     }
 
+    /**
+    * Convert a value to an integer by coercing to number and truncating toward zero.
+    * @example
+    * toInt('3.7')
+    * 3
+    * @param {any} argumentForCoercion - Value to coerce to an integer (e.g., number, numeric string).
+    * @returns {number} Integer truncated toward zero (returns 0 for NaN, Infinity, or non-coercible values).
+    **/
     function toInt(argumentForCoercion) {
         var coercedNumber = +argumentForCoercion,
             value = 0;
@@ -749,6 +878,14 @@
         return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
     }
 
+    /**
+    * Determine whether the date/time components of a moment-like object overflow valid ranges and set the overflow flag.
+    * @example
+    * checkOverflow(m)
+    * undefined
+    * @param {Object} m - Moment-like object containing _a (components array) and _pf (parsing flags) to inspect and update.
+    * @returns {undefined} Does not return a value; sets m._pf.overflow to an overflow code (or -1) in-place.
+    **/
     function checkOverflow(m) {
         var overflow;
         if (m._a && m._pf.overflow === -2) {
@@ -772,6 +909,14 @@
         }
     }
 
+    /**
+    * Determine whether the provided moment-like object represents a valid date/time based on its internal Date and parse flags.
+    * @example
+    * isValid(m)
+    * true
+    * @param {{Object}} {{m}} - Moment-like object containing _d (Date) and _pf (parsing flags) used for validation.
+    * @returns {{Boolean}} True if the moment is valid, otherwise false.
+    **/
     function isValid(m) {
         if (m._isValid == null) {
             m._isValid = !isNaN(m._d.getTime()) &&
@@ -799,6 +944,14 @@
     // pick the locale from the array
     // try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
     // substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
+    /**
+    * Choose the best available locale from an ordered array of locale identifiers.
+    * @example
+    * chooseLocale(['en-US', 'en'])
+    * Locale object for 'en' (or null if none found)
+    * @param {{Array.<string>}} {{names}} - Array of locale identifier strings in order of preference.
+    * @returns {{Object|null}} Return the matched locale object if available, otherwise null.
+    **/
     function chooseLocale(names) {
         var i = 0, j, next, locale, split;
 
@@ -823,6 +976,14 @@
         return null;
     }
 
+    /**
+    * Load or return a Moment.js locale by name; lazy-loads the locale module if available and preserves the current global locale.
+    * @example
+    * loadLocale('en')
+    * Locale object or undefined
+    * @param {{String}} {{name}} - Locale identifier (e.g., 'en', 'fr').
+    * @returns {{Object|undefined}} The locale object if loaded or already present, otherwise undefined.
+    **/
     function loadLocale(name) {
         var oldLocale = null;
         if (!locales[name] && hasModule) {
@@ -838,6 +999,15 @@
 
     // Return a moment from input, that is local/utc/utcOffset equivalent to
     // model.
+    /**
+    * Create a moment based on the given input that matches the UTC/local mode (and offset) of the provided model.
+    * @example
+    * makeAs(new Date(), moment())
+    * momentObject
+    * @param {{Moment|Date|String|number}} {{input}} - Input used to create the resulting moment; may be a Moment, Date, ISO string, or timestamp.
+    * @param {{Moment}} {{model}} - Model moment whose UTC/local state and offset should be applied to the resulting moment.
+    * @returns {{Moment}} The resulting Moment instance with the same UTC/local mode (and offset) as the model.
+    */
     function makeAs(input, model) {
         var res, diff;
         if (model._isUTC) {
@@ -1077,6 +1247,14 @@
         return input.replace(/\\/g, '');
     }
 
+    /**
+    * Create a formatter function from a format string that returns a formatted date string for a given moment-like object.
+    * @example
+    * makeFormatFunction("YYYY-MM-DD")(someMoment)
+    * "2010-01-01"
+    * @param {{string}} {{format}} - Format string containing tokens that will be converted into formatter pieces.
+    * @returns {{function}} Return a function that accepts a moment-like object and returns the formatted string.
+    **/
     function makeFormatFunction(format) {
         var array = format.match(formattingTokens), i, length;
 
@@ -1098,6 +1276,15 @@
     }
 
     // format date using native date object
+    /**
+    * Format a Moment.js object according to a format string, expanding locale-specific tokens and using cached format functions.
+    * @example
+    * formatMoment(moment(), 'YYYY-MM-DD')
+    * '2014-06-01'
+    * @param {{Moment}} {{m}} - Moment.js object to format.
+    * @param {{string}} {{format}} - Format string (may include locale-specific tokens to be expanded).
+    * @returns {{string}} Formatted date/time string or the locale's invalid date string if the moment is invalid.
+    **/
     function formatMoment(m, format) {
         if (!m.isValid()) {
             return m.localeData().invalidDate();
@@ -1112,6 +1299,15 @@
         return formatFunctions[format](m);
     }
 
+    /**
+    * Expands localized long date format tokens in a format string using the provided locale.
+    * @example
+    * expandFormat('L LT', locale)
+    * 'MM/DD/YYYY h:mm A'
+    * @param {{String}} {{format}} - Format string potentially containing locale-specific long date tokens.
+    * @param {{Object}} {{locale}} - Locale object exposing a longDateFormat(token) method used to replace tokens.
+    * @returns {{String}} Expanded format string with long date format tokens resolved.
+    **/
     function expandFormat(format, locale) {
         var i = 5;
 
@@ -1136,6 +1332,15 @@
 
 
     // get the regex to find the next token
+    /**
+    * Return a RegExp or parse function for a given date/time format token based on strictness and locale.
+    * @example
+    * getParseRegexForToken('YYYY', { _strict: true, _locale: localeObject })
+    * parseTokenFourDigits
+    * @param {{String}} {{token}} - The format token to get a parser for (e.g., 'YYYY', 'MM', 'DD', 'Z').
+    * @param {{Object}} {{config}} - Configuration object containing parsing options (expects _strict boolean and _locale with parsing helpers).
+    * @returns {{RegExp|Function}} Return a RegExp or a parsing function appropriate for the provided token.
+    **/
     function getParseRegexForToken(token, config) {
         var a, strict = config._strict;
         switch (token) {
@@ -1236,6 +1441,16 @@
     }
 
     // function to convert string input to date
+    /**
+    * Parse a single format token and apply the parsed value to the provided config object's date/time parts.
+    * @example
+    * addTimeToArrayFromToken('MM', '04', config)
+    * undefined
+    * @param {{string}} {{token}} - Format token indicating which date/time part to parse (e.g., 'M', 'YYYY', 'HH', 'Z').
+    * @param {{string|number}} {{input}} - The input string or number to parse for the given token.
+    * @param {{Object}} {{config}} - Configuration object that will be mutated in place (expects properties like _a, _locale, _pf, _w, _d, _tzm, _useUTC).
+    * @returns {{undefined}} Does not return a value; mutates the provided config object.
+    **/
     function addTimeToArrayFromToken(token, input, config) {
         var a, datePartArray = config._a;
 
@@ -1378,6 +1593,14 @@
         }
     }
 
+    /**
+    * Calculate the day-of-year from week-based date information and store it on the config object.
+    * @example
+    * dayOfYearFromWeekInfo({ _w: { W: 2, E: 3 }, _a: [], _locale: { _week: { dow: 1, doy: 4 } } })
+    * undefined
+    * @param {{Object}} {{config}} - Configuration object containing parsing input: _w (week indicators), _a (date array), and _locale (locale week settings).
+    * @returns {{undefined}} Does not return a value; updates config._a[YEAR] and config._dayOfYear.
+    **/
     function dayOfYearFromWeekInfo(config) {
         var w, weekYear, week, weekday, dow, doy, temp;
 
@@ -1424,6 +1647,14 @@
     // the array should mirror the parameters below
     // note: all values past the year are optional and will default to the lowest possible value.
     // [year, month, day , hour, minute, second, millisecond]
+    /**
+    * Populate the given moment-like configuration object with a Date based on its parsed components, applying defaults, week/day-of-year logic, timezone adjustments and overflow flags.
+    * @example
+    * dateFromConfig({ _a: [], _useUTC: true, _tzm: 60 })
+    * undefined
+    * @param {{Object}} {{config}} - Configuration object that contains parsed date parts (mutated in-place to set _d and related flags).
+    * @returns {{void}} No return value; the function mutates the config (e.g., sets config._d, config._pf._overflowDayOfYear, config._nextDay).
+    **/
     function dateFromConfig(config) {
         var i, date, input = [], currentDate, yearToUse;
 
@@ -1486,6 +1717,14 @@
         }
     }
 
+    /**
+    * Populate a Moment-style config object by normalizing an input object into an internal date components array and then create the Date from that config.
+    * @example
+    * dateFromObject({ _i: { year: 2020, month: 0, day: 1, hour: 12 }, _d: null })
+    * undefined
+    * @param {{Object}} {{config}} - Moment config object to be populated; expects an _i input object and may contain an existing _d Date.
+    * @returns {{void}} Modifies the provided config in-place (sets config._a and invokes dateFromConfig); does not return a value.
+    **/
     function dateFromObject(config) {
         var normalizedInput;
 
@@ -1507,6 +1746,14 @@
         dateFromConfig(config);
     }
 
+    /**
+    * Return current date components as [year, month, day], using UTC if config._useUTC is true.
+    * @example
+    * currentDateArray({ _useUTC: true })
+    * [2025, 11, 17]
+    * @param {{Object}} {{config}} - Configuration object. If config._useUTC is true the UTC date is used.
+    * @returns {{Array<number>}} Array containing [year, month, day] (month is zero-indexed).
+    **/
     function currentDateArray(config) {
         var now = new Date();
         if (config._useUTC) {
@@ -1521,6 +1768,14 @@
     }
 
     // date from string and format string
+    /**
+    * Parse an input string according to a format and populate the provided config with parsed date components.
+    * @example
+    * makeDateFromStringAndFormat(config)
+    * undefined
+    * @param {{Object}} {{config}} - Configuration object to populate; expected properties include _i (input string), _f (format), _locale, _pf (parsing flags), _a (date array), _meridiem, and _strict.
+    * @returns {{undefined}} No return value; the config object is mutated with parsed date information and parsing metadata.
+    **/
     function makeDateFromStringAndFormat(config) {
         if (config._f === moment.ISO_8601) {
             parseISO(config);
@@ -1593,6 +1848,14 @@
     }
 
     // date from string and array of format strings
+    /**
+    * Try parsing a date string using multiple format strings and update the config with the best parsed result.
+    * @example
+    * makeDateFromStringAndArray(config)
+    * undefined (config object is mutated; config._d set to parsed Date or Invalid Date)
+    * @param {{Object}} {{config}} - Configuration object containing input and formats (e.g., _i, _f array, optional _useUTC) to be mutated with parsing results.
+    * @returns {{void}} Does not return a value; mutates the supplied config with the best parsing outcome or marks format as invalid.
+    **/
     function makeDateFromStringAndArray(config) {
         var tempConfig,
             bestMoment,
@@ -1639,6 +1902,14 @@
     }
 
     // date from iso format
+    /**
+    * Parse an ISO 8601 string from config._i, detect a matching ISO date/time format, set config._f and parsing flags, and then build a date from the derived format.
+    * @example
+    * parseISO({ _i: '2013-02-04T12:30:00Z' })
+    * undefined
+    * @param {{Object}} {{config}} - Configuration object containing the input string in _i; this object will be mutated (e.g., _f, _pf.iso, _isValid).
+    * @returns {{void}} Mutates the provided config object and does not return a value.
+    **/
     function parseISO(config) {
         var i, l,
             string = config._i,
@@ -1685,6 +1956,14 @@
         return res;
     }
 
+    /**
+     * Create and assign a JavaScript Date (or date components) on the provided config based on config._i input.
+     * @example
+     * makeDateFromInput({ _i: '2010-01-01' })
+     * undefined
+     * @param {Object} config - Configuration object with the input value at config._i; the function mutates the object (sets config._d, config._a, etc.).
+     * @returns {undefined} Mutates the supplied config and does not return a value.
+     */
     function makeDateFromInput(config) {
         var input = config._i, matched;
         if (input === undefined) {
@@ -1730,6 +2009,15 @@
         return date;
     }
 
+    /**
+    * Parse an input into a weekday index using the provided locale's parsing rules.
+    * @example
+    * parseWeekday('2', locale)
+    * 2
+    * @param {{string|number}} {{input}} - The weekday input as a weekday name, numeric string, or number.
+    * @param {{Object}} {{locale}} - Locale object that provides a weekdaysParse(string) method to resolve names.
+    * @returns {{number|null}} Return the weekday index as a number, or null if parsing fails.
+    **/
     function parseWeekday(input, locale) {
         if (typeof input === 'string') {
             if (!isNaN(input)) {
@@ -1755,6 +2043,16 @@
         return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
     }
 
+    /**
+    * Convert a duration, positive or negative, into a localized relative time string.
+    * @example
+    * relativeTime(-60000, false, 'en')
+    * "a minute ago"
+    * @param {{number|string|Object}} {{posNegDuration}} - A duration (number, string, or moment duration) that may be positive (future) or negative (past).
+    * @param {{boolean}} {{withoutSuffix}} - If true, return the relative time without the suffix ('ago'/'in').
+    * @param {{string}} {{locale}} - Locale identifier used to localize the output (e.g. 'en').
+    * @returns {{string}} Localized relative time string (e.g. "a minute ago" or "in a minute").
+    **/
     function relativeTime(posNegDuration, withoutSuffix, locale) {
         var duration = moment.duration(posNegDuration).abs(),
             seconds = round(duration.as('s')),
@@ -1794,6 +2092,16 @@
     //                      the first week is the week that contains the first
     //                      of this day of the week
     //                      (eg. ISO weeks use thursday (4))
+    /**
+    * Compute the week-of-year and corresponding year for a given moment according to configurable week start rules.
+    * @example
+    * weekOfYear(moment(), 0, 1)
+    * { week: 52, year: 2016 }
+    * @param {{Object}} {{mom}} - Moment-like object or date to calculate the week for.
+    * @param {{number}} {{firstDayOfWeek}} - Index of the first day of the week (0 = Sunday, 1 = Monday, ...).
+    * @param {{number}} {{firstDayOfWeekOfYear}} - Index of the first day of week that defines the start of the year.
+    * @returns {{Object}} Object containing numeric 'week' and 'year' properties.
+    **/
     function weekOfYear(mom, firstDayOfWeek, firstDayOfWeekOfYear) {
         var end = firstDayOfWeekOfYear - firstDayOfWeek,
             daysToDayOfWeek = firstDayOfWeekOfYear - mom.day(),
@@ -1816,6 +2124,18 @@
     }
 
     //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
+    /**
+    * Calculate the calendar year and day-of-year corresponding to a given week-based year, week, and weekday.
+    * @example
+    * dayOfYearFromWeeks(2016, 1, 1, 4, 1)
+    * { year: 2016, dayOfYear: 1 }
+    * @param {{number}} {{year}} - Calendar year to base the calculation on.
+    * @param {{number}} {{week}} - Week number in the week-based year.
+    * @param {{number}} {{weekday}} - Weekday number (1-7), where 1 is the first day of the week.
+    * @param {{number}} {{firstDayOfWeekOfYear}} - Day of week (1-7) that defines which week is considered the first week of the year.
+    * @param {{number}} {{firstDayOfWeek}} - First day of the week (1-7) used for week calculations.
+    * @returns {{Object}} Object with properties year and dayOfYear representing the computed date.
+    **/
     function dayOfYearFromWeeks(year, week, weekday, firstDayOfWeekOfYear, firstDayOfWeek) {
         var d = makeUTCDate(year, 0, 1).getUTCDay(), daysToAdd, dayOfYear;
 
@@ -1909,6 +2229,15 @@
     //
     // moments should either be an array of moment objects or an array, whose
     // first element is an array of moment objects.
+    /**
+    * Selects and returns the Moment from an array that satisfies the provided comparison method (e.g. 'isBefore' or 'isAfter').
+    * @example
+    * pickBy('isBefore', [moment('2010-01-01'), moment('2011-01-01')])
+    * moment("2010-01-01T00:00:00.000")
+    * @param {{string}} {{fn}} - Comparison method name to call on each Moment (e.g. 'isBefore' or 'isAfter').
+    * @param {{Array}} {{moments}} - Array of Moment instances to compare, or a single-element array containing an array of Moments.
+    * @returns {{Moment}} Return the selected Moment instance (or the current moment if the input array is empty).
+    **/
     function pickBy(fn, moments) {
         var res, i;
         if (moments.length === 1 && isArray(moments[0])) {
@@ -2681,6 +3010,15 @@
 
     });
 
+    /**
+    * Set the month on a Moment instance, parsing localized month names if a string and clamping the day to the target month's length.
+    * @example
+    * rawMonthSetter(mom, 1)
+    * mom
+    * @param {{Moment}} {{mom}} - Moment instance to modify.
+    * @param {{number|string}} {{value}} - Month index (0-11) or a localized month name string to parse.
+    * @returns {{Moment}} Updated Moment instance (same object) or original if parsing fails.
+    **/
     function rawMonthSetter(mom, value) {
         var dayOfMonth;
 
