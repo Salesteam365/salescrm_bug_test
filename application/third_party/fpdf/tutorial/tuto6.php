@@ -19,6 +19,19 @@ function PDF($orientation='P', $unit='mm', $size='A4')
 	$this->HREF = '';
 }
 
+/**
+* Parse a limited subset of HTML and write the resulting formatted text into the PDF at the current position.
+* Supports simple tags such as <b>, <i>, <u>, <a href="..."> and plain text; links become clickable and text is written using the current font settings.
+* @example
+* $pdf = new PDF(); // subclass of FPDF that contains WriteHTML
+* $pdf->AddPage();
+* $pdf->SetFont('Arial', '', 12);
+* $html = '<b>Welcome</b> to <a href="https://example.com">Example</a>';
+* $pdf->WriteHTML($html);
+* // This writes "Welcome" in bold and a clickable "Example" link into the PDF.
+* @param {{string}} {{$html}} - HTML string to parse and write. Example: '<b>Bold</b> and <a href="http://example.com">link</a>'
+* @returns {{void}} Does not return a value; output is written directly to the PDF.
+*/
 function WriteHTML($html)
 {
 	// HTML parser
@@ -76,6 +89,16 @@ function CloseTag($tag)
 		$this->HREF = '';
 }
 
+/**
+* Toggle a text style counter (bold/italic/underline) on this PDF object and update the current font style accordingly.
+* @example
+* $pdf->SetStyle('B', true);  // Enable bold (increments bold counter)
+* $pdf->SetStyle('I', false); // Disable italic (decrements italic counter)
+* // Subsequent text output will use the combined active styles (e.g. "B", "BI", "U", etc.)
+* @param {string} $tag - Style tag to modify: 'B' for bold, 'I' for italic, or 'U' for underline.
+* @param {bool} $enable - True to enable/increment the style, false to disable/decrement the style.
+* @returns {void} No value is returned; the method updates the object's font state.
+*/
 function SetStyle($tag, $enable)
 {
 	// Modify style and select corresponding font
