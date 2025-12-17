@@ -15,6 +15,20 @@ function LoadData($file)
 }
 
 // Simple table
+/**
+* Draws a simple table (header row then data rows) into the current FPDF document using fixed-width cells.
+* @example
+* $header = ['Country', 'Capital', 'Area', 'Population'];
+* $data = [
+*     ['Austria', 'Vienna', '83,859 km²', '8.9M'],
+*     ['Germany', 'Berlin', '357,022 km²', '83M']
+* ];
+* $result = $pdf->BasicTable($header, $data);
+* echo $result; // no direct output: table is rendered into the PDF document stream
+* @param {{array}} {{$header}} - Numeric array of column header labels (e.g. ['Col1','Col2','Col3']).
+* @param {{array}} {{$data}} - Two-dimensional numeric array of rows, each row being an array of cell values.
+* @returns {{void}} No return value; outputs table cells directly to the active FPDF instance.
+*/
 function BasicTable($header, $data)
 {
 	// Header
@@ -31,6 +45,21 @@ function BasicTable($header, $data)
 }
 
 // Better table
+/**
+* Render a four-column table into the current PDF using fixed column widths and number formatting.
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage();
+* $header = array('Country','Capital','Population','Area (km²)');
+* $data = array(
+*     array('Netherlands','Amsterdam',17000000,41543),
+*     array('Belgium','Brussels',11500000,30528)
+* );
+* $pdf->ImprovedTable($header, $data); // outputs a table into the PDF
+* @param {array} $header - Array of 4 header labels (strings) for each column.
+* @param {array} $data - Array of rows; each row is an array of 4 values: [string, string, number, number].
+* @returns {void} Outputs the table directly to the PDF; no value is returned.
+*/
 function ImprovedTable($header, $data)
 {
 	// Column widths
@@ -53,6 +82,22 @@ function ImprovedTable($header, $data)
 }
 
 // Colored table
+/**
+* Output a styled table to the current PDF page using the given header labels and row data.
+* @example
+* $header = array('Country', 'Capital', 'Area (km2)', 'Population');
+* $data = array(
+*     array('Austria', 'Vienna', 83879, 8205),
+*     array('Belgium', 'Brussels', 30528, 11556),
+*     array('Canada', 'Ottawa', 9984670, 375900)
+* );
+* // Assuming $pdf is an instance of the FPDF subclass containing FancyTable and a page already added:
+* $result = $pdf->FancyTable($header, $data);
+* echo $result; // No direct return value; table is rendered into the PDF document.
+* @param {array} $header - Array of header titles (strings) for each column (expects 4 headers).
+* @param {array} $data - Array of rows, each row is an array with 4 values: [string, string, numeric, numeric].
+* @returns {void} No return value; the function renders the table into the active PDF page.
+*/
 function FancyTable($header, $data)
 {
 	// Colors, line width and bold font
