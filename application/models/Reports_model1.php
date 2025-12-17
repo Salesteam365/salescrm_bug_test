@@ -12,6 +12,16 @@ class Reports_model extends CI_Model
   //////////// Dashboard Queries Starts  //////////////
   
   //////// To get count of Organization starts //////////////
+  /**
+   * Get total count of organizations visible to the current session user (Customer/Vendor/Both).
+   * @example
+   * $CI =& get_instance();
+   * $CI->load->model('Reports_model1');
+   * $result = $CI->Reports_model1->get_all_org();
+   * print_r($result); // sample output: Array ( [total_org] => 42 )
+   * @param void $none - No arguments.
+   * @returns array|null Associative array with key 'total_org' containing the integer count, or NULL if no rows found.
+   */
   public function get_all_org()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -50,6 +60,16 @@ class Reports_model extends CI_Model
 
   //////////////////////////////////////////////////////////////// To get count of Leads starts /////////////////////////////////////////////////
   
+  /**
+  * Get the total number of leads for the current session/company and user.
+  * @example
+  * $this->load->model('Reports_model1');
+  * $result = $this->Reports_model1->get_all_leads();
+  * // Sample output:
+  * // Array ( [total_leads] => 42 )
+  * print_r($result);
+  * @returns array|null Return associative array with key 'total_leads' (int) containing the count of leads, or null if no records found.
+  */
   public function get_all_leads()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -82,6 +102,14 @@ class Reports_model extends CI_Model
   //////////////////////////////////////////////////////////////// To get count of Leads ends /////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////// To get count of Opportunities starts ///////////////////////////////////////////
+  /**
+  * Get the total number of opportunities for the current session/company taking into account the user type (admin or standard).
+  * @example
+  * $result = $this->Reports_model1->get_all_opportunities();
+  * echo $result['total_opp']; // render some sample output value, e.g. 42
+  * @param void $none - No arguments.
+  * @returns array|null Return associative array with key 'total_opp' (int) when a row is found, or null if no rows. 
+  */
   public function get_all_opportunities()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -114,6 +142,14 @@ class Reports_model extends CI_Model
   ////////////////////////////////////////////////////////////// To get count of Opportunities ends //////////////////////////////////////////////
 
   ////////////////////////////////////////////////////////////// To get count of Quoatation starts ///////////////////////////////////////////////
+  /**
+  * Get the total count of active quotations (not "Closed Won"/"Closed Lost" and not deleted) for the current session/company.
+  * @example
+  * $result = $this->Reports_model1->get_all_quotation();
+  * echo $result['total_quotes']; // renders sample output: 42
+  * @param {void} None - This method does not accept any parameters.
+  * @returns {array|null} Returns an associative array with key 'total_quotes' (int) containing the count of matching quotations, or null if no rows found.
+  */
   public function get_all_quotation()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -147,6 +183,32 @@ class Reports_model extends CI_Model
   ////////////////////////////////////////////////////////////// To get count of Opportunities starts /////////////////////////////////////////////
   
   
+   /**
+   * Retrieve the top 3 users by realized profit for the current month.
+   * This method builds a query joining std_user_target, standard_users, salesorder and purchaseorder,
+   * filters by session company/email, approved sales orders, non-deleted records and targets set for the current month,
+   * groups results by owner and returns the highest profit users ordered descending.
+   * @example
+   * $results = $this->Reports_model1->highestTargetGetter();
+   * print_r($results);
+   * // Sample output:
+   * // Array (
+   * //   [0] => stdClass Object (
+   * //     [standard_name] => "Alice Johnson"
+   * //     [sales_quota] => "10000"
+   * //     [profit_quota] => "2000"
+   * //     [for_month] => "2025-12-01"
+   * //     [status] => "1"
+   * //     [sub_totals] => "15000.00"
+   * //     [after_discount] => "14500.00"
+   * //     [profituser] => "3500.00"
+   * //   )
+   * //   [1] => stdClass Object ( ... )
+   * //   [2] => stdClass Object ( ... )
+   * // )
+   * @param void $none - No parameters required; uses session data and current month.
+   * @returns array Array of result objects (stdClass) containing fields: standard_name, sales_quota, profit_quota, for_month, status, sub_totals, after_discount, profituser.
+   */
    public function highestTargetGetter()
   {
     $sess_eml = $this->session->userdata('email');
@@ -183,6 +245,30 @@ class Reports_model extends CI_Model
   }
   
   
+  /**
+  * Retrieve the top 3 admin users for the current month ordered by profit, including their target and aggregated sales/purchase totals.
+  * @example
+  * // From a controller:
+  * $this->load->model('Reports_model1');
+  * $result = $this->Reports_model1->highestTargetGetterAdmin();
+  * // Sample returned array (simplified):
+  * // [
+  * //   (object)[
+  * //     'admin_name' => 'Alice Johnson',
+  * //     'sales_quota' => '50000',
+  * //     'profit_quota' => '10000',
+  * //     'for_month' => '2025-12-01',
+  * //     'status' => '1',
+  * //     'sub_totals' => '45000.00',
+  * //     'after_discount' => '43000.00',
+  * //     'profituser' => '12000.00'
+  * //   ],
+  * //   (object)[ ... ],
+  * //   (object)[ ... ]
+  * // ]
+  * @param void None - This method accepts no arguments.
+  * @returns array Array of result objects (maximum 3) with fields: admin_name, sales_quota, profit_quota, for_month, status, sub_totals, after_discount, profituser.
+  */
   public function highestTargetGetterAdmin()
   {
     $sess_eml = $this->session->userdata('email');
@@ -218,6 +304,26 @@ class Reports_model extends CI_Model
    
   }
   
+  /**
+   * Retrieve the current session user's monthly target and aggregated sales/profit totals for the current company.
+   * @example
+   * // Load model and call method:
+   * $this->load->model('Reports_model1');
+   * $result = $this->Reports_model1->TargetGetterUser();
+   * // Sample output (array with a single stdClass result for the month):
+   * // [0] => stdClass {
+   * //   standard_name: "jane.doe@example.com",
+   * //   sales_quota: "10000",
+   * //   profit_quota: "2000",
+   * //   for_month: "2025-12-01",
+   * //   status: "1",
+   * //   sub_totals: "9500.00",
+   * //   after_discount: "9000.00",
+   * //   profit_by_user: "1500.00"
+   * // }
+   * @param void None - This method does not accept any parameters.
+   * @returns array|object[] Returns an array of result objects containing the user's standard fields and aggregated sums for the current month.
+   */
   public function TargetGetterUser(){
 
     $sess_eml = $this->session->userdata('email');
@@ -256,6 +362,19 @@ class Reports_model extends CI_Model
   
   
   ##old function before using service todays###
+  /**
+  * Get profit graph data grouped by owner with summed sales and purchase order values, filtered by session/company and optional POST search criteria.
+  * @example
+  * $this->load->model('Reports_model1');
+  * $result = $this->Reports_model1->get_profit_graph_1();
+  * if ($result) {
+  *     print_r($result); // Example output: Array ( [0] => stdClass Object ( [after_discount_po] => "1500.00" [after_discount] => "2000.00" [total_orc] => "2500.00" [id] => "12" [purchaseorder_id] => "PO-001" [PO_subtotal] => "1800.00" [PO_saleorder_id] => "SO-001" ... ) )
+  * } else {
+  *     echo false; // no records found
+  * }
+  * @param void $none - No direct parameters; function uses session data and optional POST fields ('searchUser', 'searchDate').
+  * @returns array|false Returns an array of result objects when records are found, or false when no records match.
+  */
   public function get_profit_graph_1()
   {
 		$sess_eml = $this->session->userdata('email');
@@ -315,6 +434,28 @@ class Reports_model extends CI_Model
 		}
   }
   
+   /**
+    * Retrieve aggregated profit and totals grouped by sales owner with optional filtering by session, posted user and date criteria.
+    * @example
+    * // Load model and call the method (CodeIgniter)
+    * $this->load->model('Reports_model1');
+    * $result = $this->Reports_model1->get_profit_graph();
+    * print_r($result);
+    * // Example output:
+    * // Array
+    * // (
+    * //     [0] => stdClass Object
+    * //         (
+    * //             [owner] => "john.doe@example.com"
+    * //             [after_discount] => "1000.00"
+    * //             [profit_by_user] => "250.00"
+    * //             [initial_total] => "1250.00"
+    * //             [total_orc] => "0.00"
+    * //         )
+    * // )
+    * @param void $none - No direct parameters. Filters are read from session data and POST inputs (searchUser, searchDate, profitYear, profitMoth).
+    * @returns object[]|false Returns an array of result objects (aggregated rows per owner) on success, or false if no rows found.
+    */
    public function get_profit_graph()
    {
     $sess_eml = $this->session->userdata('email');
@@ -395,6 +536,27 @@ class Reports_model extends CI_Model
   }
   
   
+  /**
+   * Retrieve distinct year or month values from the salesorder table.
+   * @example
+   * $result = $this->Reports_model1->get_DateYear('month', 2023);
+   * print_r($result);
+   * // Example output:
+   * // Array
+   * // (
+   * //     [0] => stdClass Object
+   * //         (
+   * //             [month] => 1
+   * //         )
+   * //     [1] => stdClass Object
+   * //         (
+   * //             [month] => 2
+   * //         )
+   * // )
+   * @param string $value - Use 'year' to select distinct years; any other value selects months.
+   * @param int|string $dataVl - Optional year filter (e.g., 2023) applied when retrieving months.
+   * @returns array Array of stdClass objects, each containing a single property 'month' (numeric year or month).
+   */
   public function get_DateYear($value='',$dataVl='')
 {
 	if($value=='year'){
@@ -420,6 +582,23 @@ class Reports_model extends CI_Model
   /////////////////////// To get profit graph ends(Admin) //////////////////////////////
 
   ////////////////////////// To get profit graph Starts(User) ///////////////////////////
+  /**
+  * Get aggregated sales and purchase totals grouped by sales owner for the current session company, limited to Approved sales from the start of the current month.
+  * @example
+  * $result = $this->Reports_model1->get_all_sales_by_user();
+  * // Example returned value (array of objects) or FALSE when no rows:
+  * // [
+  * //   (object) [
+  * //     'owner' => 'Alice Johnson',
+  * //     'salesorder_id' => 'SO123',
+  * //     'total_orc' => '1500.00',
+  * //     'after_discount_po' => '1400.00', // sum of PO.after_discount_po
+  * //     'after_discount' => '1450.00'     // sum of SO.after_discount
+  * //   ],
+  * //   (object) [ ... ]
+  * // ]
+  * @returns {object[]|false} Array of result objects grouped by owner on success; FALSE if no records found.
+  */
   public function get_all_sales_by_user()
   {
     $y = strtotime('-1day');
@@ -448,6 +627,19 @@ class Reports_model extends CI_Model
   //////////////////////////////////////////////////////////////// To get profit graph ends(User) //////////////////////////////////
 
   //////////////////////////////////////////////////////////////// Sort profit graph starts /////////////////////////////////////////
+  /**
+  * Retrieve aggregated sales records from the database starting from a given date (or for "last month") filtered by session and user type.
+  * @example
+  * // For admin: grouped by sess_eml, returns an array of associative arrays with summed totals
+  * $result = $this->Reports_model1->get_all_sales_by_date('2025-11-01','admin');
+  * print_r($result); // e.g. [ ['sess_eml' => 'user@example.com', 'after_discount' => '1234.50', 'total_orc' => '1500.00', ...], ... ]
+  * // For standard user: grouped by owner, returns result objects or FALSE if none
+  * $result = $this->Reports_model1->get_all_sales_by_date('last month','standard');
+  * var_dump($result); // e.g. array(object(...)) or bool(false)
+  * @param {string} $date - Start date (YYYY-MM-DD) or the literal string 'last month' to query the previous month.
+  * @param {string} $type - User type filter: 'admin' to group by sess_eml, 'standard' to group by owner.
+  * @returns {array|object|false} Aggregated result set: for admin an array of associative arrays, for standard an array of objects, or FALSE when no records found.
+  */
   public function get_all_sales_by_date($date,$type)
   {
     /////////////////////////////////////////////// Sorting for Admin //////////////////////////////////////////////////////////////
@@ -532,6 +724,16 @@ class Reports_model extends CI_Model
     
   }
   //////////////////////////////////////////////// After Discount value By SO Owner //////////////////////////////////////////////
+  /**
+  * Get the summed "after_discount_po" value for a given sales order owner filtered by the current session company/email and limited to the current month.
+  * @example
+  * $result = $this->Reports_model1->get_after_discount_po(5);
+  * // sample output as an associative array:
+  * // Array ( 'after_discount_po' => '12345.67', 'so_owner' => '5', ... )
+  * echo $result['after_discount_po']; // renders 12345.67
+  * @param {int|string} $so_owner - Sales order owner identifier used to filter purchase orders.
+  * @returns {array|null} Return an associative array (row) containing the summed "after_discount_po" and related PO fields when matching records exist; returns null when no records are found.
+  */
   public function get_after_discount_po($so_owner)
   {
     $y = strtotime('-1day');
@@ -564,6 +766,14 @@ class Reports_model extends CI_Model
   //////////////////////////////////////////////////////////////// Sort profit graph ends //////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////// To get Estimate sales Satrts ////////////////////////////////////////
+  /**
+  * Retrieve closed-won quote totals (sum of sub_totalq) grouped by owner for the past month window.
+  * @example
+  * $result = $this->Reports_model1->get_all_estimate('admin');
+  * print_r($result); // Example output: Array ( [0] => stdClass Object ( [owner] => 'Alice' [sub_totalq] => '1250.75' ) )
+  * @param string $type - "admin" to aggregate for all owners in the company, "standard" to aggregate only for the current logged-in user.
+  * @returns array Array of stdClass result objects, each containing at least "owner" and the summed "sub_totalq".
+  */
   public function get_all_estimate($type)
   {
     $y = strtotime('-1day');
@@ -610,6 +820,15 @@ class Reports_model extends CI_Model
   //////////////////////////////////////////////////////////////// To get Estimate sales Ends ///////////////////////////////////////
 
   //////////////////////////////////////////////////////////////// Sort Estimate Garph Sarts ////////////////////////////////////////
+  /**
+  * Retrieve summed estimates grouped by owner for a given date or the last month, filtered by user type and session company.
+  * @example
+  * $result = $this->Reports_model1->get_all_estimate_by_date('last month', 'admin');
+  * echo json_encode($result); // [{"owner":"Alice","sub_totalq":"12345.67"},{"owner":"Bob","sub_totalq":"9876.54"}]
+  * @param {string} $date - Date string used as start (e.g. '2025-11-01') or special value 'last month' to query the previous calendar month.
+  * @param {string} $type - User type filter: 'admin' (company-wide) or 'standard' (company + user-specific).
+  * @returns {array} Return array of result objects (each object contains at least 'owner' and summed 'sub_totalq').
+  */
   public function get_all_estimate_by_date($date,$type)
   {
     $sess_eml = $this->session->userdata('email');
@@ -659,6 +878,14 @@ class Reports_model extends CI_Model
 
 
   ///////////////// Get Top Opportunities Starts ///////////////////
+  /**
+  * Get the top opportunities by user/company limited to recent records (used to build leaderboards).
+  * @example
+  * $result = $this->Reports_model1->get_top_opp_by_user('standard');
+  * print_r($result); // sample output: Array ( [0] => stdClass Object ( [sub_total] => 12500.50 [owner] => "alice@example.com" [currentdate] => "2025-12-01" ) )
+  * @param {string} $type - 'standard' to return current user's opportunities, 'admin' to return summed opportunities grouped by owner.
+  * @returns {array|false} Return array of result objects (rows) on success, or false if no records found.
+  */
   public function get_top_opp_by_user($type)
   {
     $y = strtotime('-1day');
@@ -705,6 +932,17 @@ class Reports_model extends CI_Model
   /////////////////////////////////////////////////////////////// Get Top Opportunities Ends ///////////////////////////////////
 
   ////////////////////////////////////////////////////////////// Sort Opportunity Starts ////////////////////////////////////////
+  /**
+  * Retrieve top opportunities filtered by date and user type, returning the top 10 results ordered by sub_total.
+  * @example
+  * $result = $this->Reports_model1->get_top_opp_by_date('admin', '2025-01-01', '2025-01-01', '2025-12-31');
+  * print_r($result); // Example output: array of result objects or false if none found
+  * @param {string} $type - Type of query to run, either 'standard' (current user) or 'admin' (grouped by owner).
+  * @param {string} $date - Optional single start date filter in 'YYYY-MM-DD' format (applies as currentdate >= $date).
+  * @param {string} $from_date - Optional range start date in 'YYYY-MM-DD' format.
+  * @param {string} $to_date - Optional range end date in 'YYYY-MM-DD' format.
+  * @returns {array|false} Return array of result objects (up to 10) ordered by sub_total desc, or false if no records found.
+  */
   public function get_top_opp_by_date($type, $date='', $from_date='', $to_date='')
   {
     $session_company = $this->session->userdata('company_name');
@@ -760,6 +998,14 @@ class Reports_model extends CI_Model
   //////////////////////////////////////////////////////////////// Sort Opportunity Ends //////////////////////////////////////////////
 
   ///////////////////////////////////////////////////// Get Top Quotation Starts //////////////////////////////////////////////////////
+  /**
+  * Get top quotations by user for the current company from the beginning of the current month (returns top 10 owners ordered by subtotal).
+  * @example
+  * $result = $this->Reports_model1->get_top_quotation_by_user('admin');
+  * var_dump($result); // e.g. array(0 => (object) ['owner' => 'Acme Ltd', 'sub_totalq' => '12500'], 1 => (object) ['owner' => 'John Doe', 'sub_totalq' => '9800']);
+  * @param {string} $type - Report type: 'standard' to filter by the logged-in user, 'admin' to aggregate across all owners.
+  * @returns {array|false} Array of stdClass result objects when records are found, or false if no records exist.
+  */
   public function get_top_quotation_by_user($type)
   {
     $y = strtotime('-1day');
@@ -799,6 +1045,22 @@ class Reports_model extends CI_Model
       }
     
   }
+  /**
+  * Retrieve top quotes by date for the current session company (limited to 10, ordered by sub_totalq desc).
+  * @example
+  * // For a standard user - returns up to 10 quotes for the current user on or after 2025-01-01
+  * $result = $this->Reports_model1->get_top_quote_by_date('standard', '2025-01-01');
+  * // sample returned value (array of objects) e.g.:
+  * // [
+  * //   (object)['owner' => 'john.doe@example.com', 'sub_totalq' => '1200.00', 'currentdate' => '2025-01-02'],
+  * //   (object)['owner' => 'john.doe@example.com', 'sub_totalq' => '900.00', 'currentdate' => '2025-01-05']
+  * // ]
+  * @param {string} $type - 'standard' to filter by current session user or 'admin' to get max sub_totalq per owner.
+  * @param {string} $date - Optional single date (YYYY-MM-DD) to include records on or after this date.
+  * @param {string} $from_date - Optional start date (YYYY-MM-DD) for a date range filter.
+  * @param {string} $to_date - Optional end date (YYYY-MM-DD) for a date range filter.
+  * @returns {array|false} Array of result objects (max 10) when records found, or false when no records match.
+  */
   public function get_top_quote_by_date($type,$date='',$from_date='',$to_date='')
   {
     $session_company = $this->session->userdata('company_name');
@@ -853,6 +1115,14 @@ class Reports_model extends CI_Model
   /////////////////////// Salesorder Graph Starts ///////////////
   
   
+  /**
+  * Get aggregated sales orders for the current session company filtered by user type and date range.
+  * @example
+  * $result = $this->Reports_model1->get_all_so_by_user('standard');
+  * print_r($result); // sample output: [0 => stdClass { status: "Approved", owner: "user@example.com", sub_totals: "1500.00", after_discount: "1400.00" }, ...] or bool(false)
+  * @param {{string}} {{$type}} - Type of aggregation: 'standard' to limit to the logged-in user, 'admin' to aggregate by owner.
+  * @returns {{array|false}} Returns an array of result objects (stdClass) when records are found, or false if no records exist.
+  */
   public function get_all_so_by_user($type)
   {
     $y = strtotime('-1day');
@@ -923,6 +1193,17 @@ class Reports_model extends CI_Model
   //////// //// Salesorder Graph Ends //////// ///////////////
 
   //////////// //////////// Sort Salesorder Graph Starts ///// ///////////
+  /**
+  * Get summed sales orders grouped and filtered by date and user type.
+  * @example
+  * $result = $this->Reports_model1->get_all_so_by_date('admin', '2025-01-01');
+  * var_dump($result); // Example output: array( (object) ['status'=>'Approved','owner'=>'Alice','sub_totals'=>'1234.56'], ... ) or bool(false)
+  * @param {string} $type - 'admin' to filter Approved and group by owner, 'standard' to group by status.
+  * @param {string} $date - (optional) single date filter; fetch records on or after this date. Format: 'YYYY-MM-DD'. Example: '2025-01-01'.
+  * @param {string} $from_date - (optional) range start date. Format: 'YYYY-MM-DD'. Example: '2025-01-01'.
+  * @param {string} $to_date - (optional) range end date. Format: 'YYYY-MM-DD'. Example: '2025-01-31'.
+  * @returns {array|false} Returns an array of result objects with summed sub_totals grouped by the chosen key, or false if no records found.
+  */
   public function get_all_so_by_date($type,$date='',$from_date='',$to_date='')
   {
     $session_company = $this->session->userdata('company_name');
@@ -975,6 +1256,15 @@ class Reports_model extends CI_Model
   }
   //////////////////////////////////////////////////////////////// Sort Salesorder Graph Ends ///////////////////////////////////////////////
   ////////////////////////////////////////////////////////////// PurchaseOrder Graph Starts ////////////////////////////////////////////////
+  /**
+  * Get the top purchase orders for the current period, either for the logged-in user or aggregated by owner (admin).
+  * @example
+  * $result = $this->Reports_model1->get_top_po_by_user('standard');
+  * // sample output (array of objects):
+  * // array(1) { [0]=> object(stdClass)#1 (3) { ["currentdate"]=> string(10) "2025-12-16" ["sub_total"]=> string(7) "1500.00" ["subject"]=> string(6) "PO-123" } }
+  * @param {string} $type - Report type: 'standard' to return top POs for the logged-in user; 'admin' to return top POs aggregated by owner.
+  * @returns {array|false} Returns an array of result objects (fields include currentdate, sub_total and subject for 'standard', or currentdate, sub_total (SUM) and owner for 'admin') or false if no records found.
+  */
   public function get_top_po_by_user($type)
   {
     $y = strtotime('-1day');
@@ -1016,6 +1306,17 @@ class Reports_model extends CI_Model
   }
   /////////////////////////////////////////////////////////////PurchaseOrder Graph Ends ////////////////////////////////////////////////////
   ///////////////////////////////////////////////// Top PO ////////////////////////////////////////////////////////////////////////////////
+  /**
+  * Get the top 10 purchase orders by sub_total (descending), optionally filtered by a single date or a date range. For 'standard' type the results are user-specific, for 'admin' type results are grouped by owner.
+  * @example
+  * $result = $this->Reports_model1->get_top_po_by_date('standard', '2025-01-01', '2025-01-01', '2025-01-31');
+  * print_r($result); // Sample output: [ (object) ['currentdate'=>'2025-01-15','sub_total'=>'1250.00','subject'=>'PO-123'], (object) ['currentdate'=>'2025-01-10','sub_total'=>'950.00','subject'=>'PO-122'] ]
+  * @param {string} $type - Type of query: 'standard' (user-specific) or 'admin' (group by owner).
+  * @param {string} $date - Optional single date filter (applies as currentdate >= $date). Format: 'YYYY-MM-DD'.
+  * @param {string} $from_date - Optional start date for range filter (format 'YYYY-MM-DD').
+  * @param {string} $to_date - Optional end date for range filter (format 'YYYY-MM-DD').
+  * @returns {array|false} Return array of result objects when records are found, or false if no records. 
+  */
   public function get_top_po_by_date($type,$date='',$from_date='',$to_date='')
   {
     $session_company = $this->session->userdata('company_name');
@@ -1065,6 +1366,16 @@ class Reports_model extends CI_Model
 
   ///////////////////////////////////////////////// Top PO ///////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////// Assigned Lead Data Starts ///////////////////////////////////////////////
+  /**
+  * Retrieve up to 8 leads assigned to other users within the same session company and company email.
+  * @example
+  * $result = $this->assigned_lead_status('acme@company.com', 'john.doe@company.com', 'Acme Corp');
+  * print_r($result); // sample output: array( [0] => array('id' => 123, 'assigned_to' => 'jane.doe@company.com', 'assigned_to_name' => 'Jane Doe', ...) ) or bool(false)
+  * @param string $session_comp_email - Company email associated with the current session.
+  * @param string $sess_eml - Current user's email; leads assigned to this email are excluded.
+  * @param string $session_company - Current session company identifier or name.
+  * @returns array|false Return an array of lead records (max 8) matching the filters, or FALSE if no records found.
+  */
   public function assigned_lead_status($session_comp_email,$sess_eml,$session_company)
   {
     $this->db->select('*');
@@ -1094,6 +1405,25 @@ class Reports_model extends CI_Model
   var $search_by_dash = array('SO.owner');
   var $order_dash = array('SO.id' => 'desc');
   
+ /**
+  * Prepare the CodeIgniter query builder used to populate the dashboard "profit" DataTable.
+  * Builds a grouped SELECT (by SO.owner) with aggregated totals, applies session/company constraints,
+  * filters to the current fiscal year, optional user search (from $_POST['search']['value']), and ordering
+  * (from $_POST['order']). This method configures $this->db but does not execute the query or return data.
+  * @example
+  * // Called internally inside Reports_model1 (private). Example usage for debugging:
+  * $this->_get_dashboard_profit_datatables_query();
+  * // Then inspect the compiled SQL (debugging example):
+  * echo $this->db->get_compiled_select('salesorder as SO');
+  * // Example of a possible compiled SQL (simplified):
+  * // SELECT SO.owner, SUM(SO.sub_totals) AS So_total, SUM(SO.total_estimate_purchase_price) AS So_total_estimate_price, SUM(SO.profit_by_user) AS profitUser
+  * // FROM `salesorder` as SO
+  * // WHERE SO.session_comp_email = 'company@example.com' AND SO.session_company = 'ACME' AND SO.delete_status = 1
+  * //   AND SO.currentdate >= '2025-04-01' AND SO.currentdate <= '2026-03-31'
+  * // GROUP BY SO.owner
+  * @param void $none - No direct parameters; the method reads session data and $_POST for filtering and ordering.
+  * @returns void Configures the active record query on $this->db; does not return a result set.
+  */
  private function _get_dashboard_profit_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -1167,6 +1497,14 @@ class Reports_model extends CI_Model
     return $query->num_rows();
   }
   
+   /**
+   * Count grouped sales orders for the dashboard within the current fiscal year for the active session company.
+   * @example
+   * $count = $this->Reports_model1->count_all_dashboard_profit();
+   * echo $count; // e.g. 5
+   * @param void $none - No parameters are accepted by this method.
+   * @returns int Total number of salesorder groups (grouped by owner) that match the fiscal-year date range and session company/email filters.
+   */
    public function count_all_dashboard_profit()
   {
     $sess_eml = $this->session->userdata('email');
@@ -1193,6 +1531,15 @@ class Reports_model extends CI_Model
   //////////////////////////////////////////////////////////////// Dashboard Profit Table ends ////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////// Dashboard Queries Ends  ////////////////////////////////////////////////
+  /**
+  * Update the report date for a specific sales order.
+  * @example
+  * $result = $this->Reports_model1->salesorder_reportdate('2025-12-17', 123);
+  * echo $result; // true on successful update, false on failure
+  * @param {string} $reportdate - New report date (e.g., 'YYYY-MM-DD') to set for the sales order.
+  * @param {int} $saleorder_id - ID of the sales order to update.
+  * @returns {bool} True if the salesorder record was updated successfully, false otherwise.
+  */
   public function salesorder_reportdate($reportdate,$saleorder_id)
   {
     $data = array(
@@ -1213,6 +1560,14 @@ class Reports_model extends CI_Model
         #    PO PROFIT GRAPH 23.01.21    #
         ##################################
 
+/**
+* Get purchase profit grouped by owner for the current company and applied filters.
+* @example
+* $result = $this->Reports_model1->get_purchase_profit_graph();
+* print_r($result); // sample output: Array ( [0] => stdClass Object ( [owner] => 'john.doe@example.com' [profit_by_user_po] => '1234.56' ) )
+* @param {void} none - No arguments.
+* @returns {array} Array of stdClass objects where each object contains 'owner' (string) and 'profit_by_user_po' (float) representing aggregated profit per owner.
+*/
 public function get_purchase_profit_graph(){
     
     $sess_eml = $this->session->userdata('email');
@@ -1276,6 +1631,28 @@ public function get_purchase_profit_graph(){
     
 }
 
+  /**
+  * Get sales orders grouped by owner with summed sub_totals, filtered by date and search parameters.
+  * @example
+  * $params = array(
+  *   'search' => array(
+  *     'keywords'  => 'Alice',                 // owner name to search
+  *     'sortBy'    => '2025-01-01',           // currentdate >= this value
+  *     'sortFrom'  => '2025-01-01',           // currentdate > this value
+  *     'sortTo'    => '2025-12-31'            // currentdate < this value
+  *   ),
+  *   'start' => 0,
+  *   'limit' => 10
+  * );
+  * // Example: get month-to-date grouped sales orders for company in session
+  * $result = $this->Reports_model1->get_so_for_record('Month', $params);
+  * print_r($result); // e.g. Array ( [0] => Array ( [id] => 5 [status] => Approved [owner] => Alice [sub_totals] => 12345.67 ) )
+  * @param {string} $date - Period specifier; if set to "Month" the query filters to month-to-date.
+  * @param {array} $params - Optional associative array of query modifiers. Recognized keys:
+  *                          'search' => array with 'keywords', 'sortBy', 'sortFrom', 'sortTo';
+  *                          'start' => int (offset for limit), 'limit' => int (max rows).
+  * @returns {array|null} Return array of grouped sales order rows with summed sub_totals when records exist, or null if none found.
+  */
   public function get_so_for_record($date, $params = array())
   {
     $y = strtotime('-1day');
@@ -1453,6 +1830,22 @@ public function get_purchase_profit_graph(){
   //     return $query->result_array();
   //   }
   // }
+  /**
+   * Retrieve lead counts grouped by status for the current company (admin only).
+   *
+   * @example
+   * // Called from a controller or another model after session is initialized for an admin user
+   * $result = $this->Reports_model1->get_leads_status();
+   * // Possible sample $result:
+   * // [
+   * //   ['total_count' => '25', 'lead_status' => 'New'],
+   * //   ['total_count' => '10', 'lead_status' => 'Contacted'],
+   * // ]
+   * // Or when there are no matching rows:
+   * // false
+   *
+   * @return array|false Array of associative arrays with keys 'total_count' and 'lead_status', or false if no rows found.
+   */
   public function get_leads_status()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -1487,6 +1880,19 @@ public function get_purchase_profit_graph(){
     }
     
   }
+  /**
+   * Get counts of opportunities grouped by their stage for the current company (admin only).
+   * @example
+   * $this->load->model('Reports_model1');
+   * $result = $this->Reports_model1->get_opp_stage();
+   * // Sample output:
+   * // [
+   * //   ['total_count' => '5', 'stage' => 'Proposal'],
+   * //   ['total_count' => '3', 'stage' => 'Negotiation']
+   * // ]
+   * @param void $none - This method uses session data and accepts no arguments.
+   * @returns array|false|null Returns an array of associative arrays with keys 'total_count' and 'stage' grouped by stage when records exist, false if no matching records are found, or null if the current user is not an admin (no result returned).
+   */
   public function get_opp_stage()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -1519,6 +1925,21 @@ public function get_purchase_profit_graph(){
     }
     
   }
+  /**
+  * Get quote counts grouped by quote_stage for the current company (admin only).
+  * @example
+  * // From a controller or anywhere the model is loaded:
+  * $this->load->model('Reports_model1');
+  * $result = $this->Reports_model1->get_quote_stage();
+  * // Example successful return:
+  * // [
+  * //   ['total_count' => 12, 'quote_stage' => 'Prospecting'],
+  * //   ['total_count' => 5,  'quote_stage' => 'Negotiation'],
+  * // ]
+  * var_export($result);
+  * @param void $none - No parameters.
+  * @returns array|false|null Returns an array of associative arrays (keys: 'total_count' => int, 'quote_stage' => string) when rows exist, false if the query returned no rows, or null if the current session user is not an admin.
+  */
   public function get_quote_stage()
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -1550,6 +1971,19 @@ public function get_purchase_profit_graph(){
     }
     
   }
+  /**
+   * Get leads report grouped by user for the current company and date range (from start of current month to today).
+   * @example
+   * $result = $this->Reports_model1->get_report_leads_by_user('standard');
+   * // sample output (array of objects):
+   * // [
+   * //   (object) ['id' => 10, 'lead_owner' => 'john.doe@example.com', 'total_leads' => '5'],
+   * //   (object) ['id' => 12, 'lead_owner' => 'jane.smith@example.com', 'total_leads' => '3'],
+   * // ]
+   * print_r($result);
+   * @param string $type - Type of report scope: 'standard' (restrict to current session user) or 'admin' (company-wide).
+   * @returns array|false Return an array of result objects (each contains id, lead_owner and total_leads) on success, or false if no records found.
+   */
   public function get_report_leads_by_user($type)
   {
     $y = strtotime('-1day');
@@ -1595,6 +2029,25 @@ public function get_purchase_profit_graph(){
   var $lead_sort_by = array(null,'lead_owner');
   var $lead_search_by = array('lead_owner');
   var $lead_order = array('id' => 'desc');
+  /**
+   * Prepare the active record query to fetch lead counts grouped by lead owner.
+   * This helper configures $this->db (select, from, where, group_by, order_by, like)
+   * based on current session (admin or standard), optional POST 'sortdate',
+   * search value (DataTables), and ordering parameters. It does not execute the query.
+   *
+   * @example
+   * // Example: for a standard user session:
+   * // $_SESSION['type'] = 'standard';
+   * // $_SESSION['email'] = 'user@example.com';
+   * // $_SESSION['company_email'] = 'comp@example.com';
+   * // $_SESSION['company_name'] = 'Acme Inc';
+   * $this->_get_lead_for_record_query();
+   * // Execute and fetch:
+   * // $query = $this->db->get();
+   * // $result = $query->result_array(); // e.g. [['lead_owner' => 'Alice', 'total_leads' => 5], ...]
+   *
+   * @returns {void} Sets up the query on $this->db; no value is returned.
+   */
   private function _get_lead_for_record_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -1675,6 +2128,17 @@ public function get_purchase_profit_graph(){
     }
   }
   
+  /**
+  * Retrieve leads grouped by lead owner and count total leads, optionally filtered by a single date or a date range and scoped by user type and session company.
+  * @example
+  * $result = $this->Reports_model1->get_all_leads_by_date('standard','2025-01-15','2025-01-01','2025-01-31');
+  * print_r($result); // Example output: Array ( [0] => stdClass Object ( [id] => 1 [lead_owner] => Alice [total_leads] => 5 ) )
+  * @param {{string}} {{type}} - User type scope: 'standard' (limits to current user + session company) or 'admin' (limits to session company only).
+  * @param {{string}} {{date}} - Optional single date filter (YYYY-MM-DD). When provided, applies WHERE currentdate >= $date.
+  * @param {{string}} {{from_date}} - Optional start date for range filter (YYYY-MM-DD). Used together with $to_date to apply a date range.
+  * @param {{string}} {{to_date}} - Optional end date for range filter (YYYY-MM-DD). Used together with $from_date to apply a date range.
+  * @returns {{array|false}} Returns an array of result objects grouped by lead_owner with fields (id, lead_owner, total_leads) or false if no records found.
+  */
   public function get_all_leads_by_date($type,$date='',$from_date='',$to_date='')
   {
     $session_company = $this->session->userdata('company_name');
@@ -1734,6 +2198,14 @@ public function get_purchase_profit_graph(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all leads for the current session/company (respects 'standard' user restriction).
+  * @example
+  * $result = $this->Reports_model1->count_all_leads();
+  * echo $result; // e.g. 42
+  * @param void $none - This method accepts no parameters.
+  * @returns int Total number of lead records matching the current session/company and user type.
+  */
   public function count_all_leads()
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -1752,6 +2224,15 @@ public function get_purchase_profit_graph(){
   var $opp_sort_by = array(null,'owner');
   var $opp_search_by = array('owner');
   var $opp_order = array('id' => 'desc');
+  /**
+  * Build and configure a CodeIgniter query that aggregates opportunity sub_totals by owner for recent records, excluding closed stages.
+  * @example
+  * $this->Reports_model1->_get_opp_for_record_query();
+  * $query = $this->db->get(); // execute the configured query
+  * print_r($query->result()); // e.g. Array ( [0] => stdClass Object ( [id] => 1 [owner] => "John Doe" [sub_total] => "12345.67" ) )
+  * @param {void} none - No arguments.
+  * @returns {void} Configures the active CI query builder; does not return a value.
+  */
   private function _get_opp_for_record_query()
   {
     $y = strtotime('-1day');
@@ -1826,6 +2307,17 @@ public function get_purchase_profit_graph(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all opportunity records for the current session's company and company email.
+  * Applies an additional filter by the session user's email when the session user type is 'standard'.
+  * @example
+  * // from a controller
+  * $this->load->model('Reports_model1');
+  * $result = $this->Reports_model1->count_all_opp();
+  * echo $result; // e.g. 42
+  * @param void $none - This method accepts no parameters.
+  * @returns int Total number of matching opportunity records.
+  */
   public function count_all_opp()
   {
 	$session_company = $this->session->userdata('company_name');
@@ -1845,6 +2337,15 @@ public function get_purchase_profit_graph(){
   var $quote_sort_by = array(null,'owner','sub_totalq','total_quote');
   var $quote_search_by = array('owner','sub_totalq');
   var $quote_order = array('id' => 'desc');
+  /**
+  * Build and prepare the database query to fetch aggregated quote records filtered by current session company/email, date range, delete status, search and ordering parameters for datatable usage.
+  * @example
+  * // Called internally from the model to prepare the query builder:
+  * $this->_get_quote_for_record_query();
+  * // No direct return; prepares $this->db query selecting id, owner, COUNT("owner") as total_quote and MAX(sub_totalq)
+  * @param {void} none - No arguments required.
+  * @returns {void} Prepares the query on $this->db; does not return a value.
+  */
   private function _get_quote_for_record_query()
   {
     $y = strtotime('-1day');
@@ -1913,6 +2414,14 @@ public function get_purchase_profit_graph(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all quotes for the current session's company (and for the current user when session type is 'standard').
+  * @example
+  * $result = $this->Reports_model1->count_all_quote();
+  * echo $result; // 42
+  * @param void - No parameters.
+  * @returns int Total number of quotes filtered by session company and company_email; restricted to the session email when user type is 'standard'.
+  */
   public function count_all_quote()
   {
 	$session_company = $this->session->userdata('company_name');
@@ -1932,6 +2441,25 @@ public function get_purchase_profit_graph(){
   var $sales_sort_by = array(null,'owner','sub_totals');
   var $sales_search_by = array('owner','sub_totals');
   var $sales_order = array('id' => 'desc');
+  /**
+   * Prepare the query builder to retrieve approved sales orders aggregated by owner.
+   * This method configures $this->db (CodeIgniter query builder) to:
+   * - select id, status, owner and SUM(sub_totals)
+   * - filter by current session company name/email
+   * - include only Approved and non-deleted records
+   * - filter by date (POST 'sortdate' if provided, otherwise a default range)
+   * - apply search filtering using $this->sales_search_by and $_POST['search']['value']
+   * - apply ordering from $_POST['order'] or $this->sales_order
+   * @example
+   * // Called inside Reports_model1 (no arguments). After calling, execute the query:
+   * $this->_get_sales_for_record_query();
+   * $query = $this->db->get(); // execute prepared query
+   * $rows = $query->result(); // sample result: array of objects
+   * // sample single row output:
+   * // (object) ['id' => 42, 'status' => 'Approved', 'owner' => 'Jane Doe', 'sub_totals' => '1250.50']
+   * @param void None - Uses session and POST data internally; no parameters required.
+   * @returns void Prepares/sets the active query on $this->db; does not return a value.
+   */
   private function _get_sales_for_record_query()
   {
     $y = strtotime('-1day');
@@ -2001,6 +2529,15 @@ public function get_purchase_profit_graph(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all sales matching the current session's company and, if the session user is of type "standard", limited to that user's email.
+  * @example
+  * $this->load->model('Reports_model1');
+  * $result = $this->Reports_model1->count_all_sales();
+  * echo $result; // e.g. 42
+  * @param void $none - No parameters.
+  * @returns int Number of sales records matching the session filters.
+  */
   public function count_all_sales()
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -2019,6 +2556,23 @@ public function get_purchase_profit_graph(){
   var $so_sort_by = array('owner','currentdate','saleorder_id','org_name','due_date','after_discount',null);
   var $so_search_by = array('owner','currentdate','saleorder_id','org_name','due_date','after_discount');
   var $so_order = array('id' => 'desc');
+  /**
+   * Build the CodeIgniter query used by DataTables for Sales Orders (salesorder table).
+   * This private method applies session-based filters (admin vs standard), optional POST filters
+   * (searchUser, searchDate), a default date range (from the first day of the current month),
+   * global search across configured columns ($this->so_search_by) and ordering from DataTables
+   * ($_POST['order']) or the model's default order ($this->so_order). The method configures
+   * $this->db but does not execute the query (no direct return).
+   * @example
+   * $this->load->model('Reports_model1');
+   * // inside the model or controller context that has $this->db available:
+   * $this->Reports_model1->_get_datatables_query_so();
+   * $query = $this->db->get('salesorder');
+   * $results = $query->result();
+   * echo count($results); // e.g. 12
+   * @param void - No parameters.
+   * @returns void Builds and configures the CI query for DataTables (no direct return).
+   */
   private function _get_datatables_query_so()
   {
     $sess_eml = $this->session->userdata('email');
@@ -2129,6 +2683,13 @@ public function get_purchase_profit_graph(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all sales orders (SO) for the current company session.
+  * @example
+  * $count = $this->Reports_model1->count_all_so();
+  * echo $count; // e.g. 42
+  * @returns {int} Total number of salesorder records matching the session filters.
+  */
   public function count_all_so()
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -2147,6 +2708,16 @@ public function get_purchase_profit_graph(){
   var $po_sort_by = array(null,'owner','sub_total');
   var $po_search_by = array('owner','sub_total');
   var $po_order = array('id' => 'desc');
+  /**
+  * Prepare and apply a purchase order aggregation query to $this->db (grouped by owner, filtered by session company/email, date range and search/order parameters).
+  * @example
+  * // Call the method to build the query on the active CI database object, then execute the query to fetch results:
+  * $this->reports_model1->_get_po_for_record_query();
+  * $result = $this->db->get()->result();
+  * echo json_encode($result); // sample output: [{"owner":"Acme Corp","sub_total":"12345.67"}]
+  * @param void none - This method accepts no parameters; it reads session and POST data internally.
+  * @returns void Applies SELECT, WHERE, GROUP BY and ORDER BY clauses to $this->db; does not return a value.
+  */
   private function _get_po_for_record_query()
   {
     $y = strtotime('-1day');
@@ -2217,6 +2788,13 @@ public function get_purchase_profit_graph(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all purchase orders for the current session/company.
+  * @example
+  * $count = $this->Reports_model1->count_all_po();
+  * echo $count; // e.g., 42
+  * @returns {int} Total number of purchase orders matching the current session/company.
+  */
   public function count_all_po()
   {
 	  
@@ -2245,6 +2823,16 @@ public function get_purchase_profit_graph(){
   var $pro_search_by = array('owner','saleorder_id','subject','org_name','after_discount','total_estimate_purchase_price','total_orc');
   var $pro_order = array('id' => 'desc');
   
+  /**
+  * Prepare a CodeIgniter query for product datatables applying session and POST filters and ordering; if $profit === 'profit' the query selects the SUM(profit_by_user) instead of row columns.
+  * @example
+  * // Prepare query to get summed profit for current filters
+  * $this->Reports_model1->_get_product_datatables_query('profit');
+  * $result = $this->db->get()->row_array(); // execute the prepared query
+  * echo $result['profit_by_user']; // e.g. "1250.50"
+  * @param string $profit - Optional. Set to 'profit' to select SUM(profit_by_user). Default is '' to select individual columns (owner, saleorder_id, subject, etc.).
+  * @returns void Prepares and modifies the $this->db query builder state; does not return a value.
+  */
   public function _get_product_datatables_query($profit='')
   {
     $sess_eml           = $this->session->userdata('email');
@@ -2353,6 +2941,29 @@ public function get_purchase_profit_graph(){
   var $pro_sort_by_old = array('SO.owner','SO.saleorder_id','SO.subject','SO.sub_totals','PO.sub_total','SO.total_orc',null);
   var $pro_search_by_old = array('SO.owner','SO.saleorder_id','SO.subject','SO.sub_totals','PO.sub_total','SO.total_orc');
   var $pro_order_old = array('SO.id' => 'desc');
+  /**
+  * Build the CodeIgniter query for product-related datatables based on session type, POST filters and model search/sort configuration.
+  * @example
+  * // Call from within the same model to prepare the query builder with filters applied
+  * $this->_get_pro_datatables_query_old();
+  * $query = $this->db->get(); // execute the prepared query
+  * $results = $query->result();
+  * print_r($results); // sample output:
+  * // Array
+  * // (
+  * //     [0] => stdClass Object
+  * //         (
+  * //             [owner] => "john.doe@example.com"
+  * //             [saleorder_id] => "SO-123"
+  * //             [purchaseorder_id] => "PO-456"
+  * //             [subject] => "Website Redesign"
+  * //             [after_discount] => "950.00"
+  * //             [after_discount_po] => "900.00"
+  * //         )
+  * // )
+  * @param void None - This method accepts no arguments; it relies on session data, POST input and model properties.
+  * @returns void Configures the active CI DB query builder (no direct return). 
+  */
   private function _get_pro_datatables_query_old()
   {
     $sess_eml = $this->session->userdata('email');
@@ -2487,6 +3098,14 @@ public function get_purchase_profit_graph(){
   }
   
   
+  /**
+  * Count all sales orders for the current session/company, and if the logged-in user is of type 'standard' limit the count to that user's email.
+  * @example
+  * $result = $this->Reports_model1->count_all_pro();
+  * echo $result; // e.g. 42
+  * @param void $none - This method accepts no parameters; it uses session data internally.
+  * @returns int Total number of matching rows in the 'salesorder' table.
+  */
   public function count_all_pro()
   {
 	$sess_eml = $this->session->userdata('email');
@@ -2515,6 +3134,18 @@ public function get_purchase_profit_graph(){
   var $pro_ws_order = array('PO.id' => 'desc');
   
 
+/**
+* Build and apply a CodeIgniter DB query for product-wise purchase order datatables (applies filters, search and ordering to $this->db).
+* @example
+* // Called from model or controller (method is private; typically invoked internally)
+* $this->Reports_model1->_get_pro_datatables_query_product_wise();
+* // After calling, execute the query and fetch results:
+* $query = $this->db->get(); // CI_DB_result
+* $rows = $query->result(); // sample output: array of stdClass objects representing purchase orders
+* // Example sample output for one row:
+* // stdClass Object ( [owner] => "Alice" [saleorder_id] => "SO123" [purchaseorder_id] => "PO456" [profit_by_user_po] => "150.00" [subject] => "Product A" )
+* @param {void} $none - No parameters required; function reads input and session data internally.
+* @returns {void} Applies query clauses (select, where, like, group, order) to $this->db; does not return a value.*/
 private function _get_pro_datatables_query_product_wise(){
    
     $sess_eml = $this->session->userdata('email');
@@ -2616,6 +3247,14 @@ private function _get_pro_datatables_query_product_wise(){
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all purchase order records for the current user/company session.
+  * @example
+  * $count = $this->Reports_model1->count_all_pro_product_wise();
+  * echo $count; // e.g. 42
+  * @param {void} none - No function arguments; uses session data (email, company_name, company_email, user type) internally.
+  * @returns {int} Total number of matching purchaseorder records.
+  */
   public function count_all_pro_product_wise()
   {
 	$sess_eml = $this->session->userdata('email');
@@ -2634,6 +3273,15 @@ private function _get_pro_datatables_query_product_wise(){
   }
   
   
+  /**
+   * Retrieve aggregated product-wise profit sums for a specific sales order filtered by the current session company.
+   * @example
+   * $result = $this->Reports_model1->get_Actual_profit_datatables_product_wise(123, 456);
+   * print_r($result); // sample output: array(array('po_total_price' => '1500.00', 'so_pro_total' => '1200.00', 'so_id' => '123'))
+   * @param int $soid - Sales order ID used to filter the product-wise profit totals.
+   * @param int $poid - Purchase order ID (currently unused in the query, provided for API consistency).
+   * @returns array Return an array of aggregated sums (po_total_price, so_pro_total, so_id) matching the filters.
+   */
   public function get_Actual_profit_datatables_product_wise($soid,$poid){
 	  
 	$sess_eml = $this->session->userdata('email');
@@ -2658,6 +3306,16 @@ private function _get_pro_datatables_query_product_wise(){
   
   
   
+/**
+* Build the CodeIgniter query used by product-wise profit DataTables, applying session/company filters, date range, user filters and search conditions.
+* @example
+* // Called from within the model (no arguments required)
+* $this->_get_pro_datatables_query_product_wise_count();
+* $query = $this->db->get(); // execute the built query
+* echo $query->num_rows(); // render some sample output value, e.g. 42
+* @param void none - No parameters.
+* @returns void Returns nothing; the method prepares the active record query on $this->db.
+*/
 private function _get_pro_datatables_query_product_wise_count()
   {
     $sess_eml = $this->session->userdata('email');
@@ -2750,6 +3408,16 @@ private function _get_pro_datatables_query_product_wise_count()
  var $pro_renewal_search_by = array('owner','org_name','product_name','saleorder_id','renewal_date','currentdate','sub_totals');
  var $pro_renewal_order     = array('id' => 'desc');
   
+  /**
+  * Prepare a filtered salesorder renewal query. Builds CodeIgniter query builder conditions for renewal sales orders (filters by session company/email, user type or posted searchUser, date ranges, searchable columns and ordering). When $sum is non-empty the method selects SUM(sub_totals); otherwise it selects detailed columns for each renewal record.
+  * @example
+  * // Prepare a summed total of sub_totals for renewals (for current session/company and current month)
+  * $this->Reports_model1->_renewal_data_so('sum');
+  * // Execute the prepared query and fetch the summed value:
+  * $row = $this->db->get('salesorder')->row();
+  * echo $row->sub_totals; // sample output: 12345.67
+  * @param {string} $sum - Optional flag (default ''). If non-empty, the query will select SUM(sub_totals) instead of detailed columns.
+  * @returns {void} Configures the active CI query builder; does not return a value. */
   private function _renewal_data_so($sum='')
   {
     $sess_eml 			= $this->session->userdata('email');
@@ -2830,6 +3498,20 @@ private function _get_pro_datatables_query_product_wise_count()
     
   } 
   
+  /**
+   * Retrieve distinct organizations (grouped by org_name) from the salesorder table for the current session user.
+   * @example
+   * $result = $this->Reports_model1->getOrg();
+   * // Example output when records exist:
+   * // Array (
+   * //   [0] => Array ( 'org_name' => 'Acme Corp', 'sess_eml' => 'user@example.com', 'other_field' => 'value' ),
+   * //   [1] => Array ( 'org_name' => 'Beta LLC', 'sess_eml' => 'user@example.com', 'other_field' => 'value' )
+   * // )
+   * // Example when no records:
+   * // bool(false)
+   * @param void $none - No parameters.
+   * @returns array|false Return array of associative arrays (grouped by org_name) on success, or false if no matching records are found.
+   */
   public function getOrg()
   {
     $session_company = $this->session->userdata('company_name');
@@ -2876,6 +3558,13 @@ private function _get_pro_datatables_query_product_wise_count()
     return $query->num_rows();
   }  
   
+  /**
+  * Count renewal sales orders for the current session's company and user scope.
+  * @example
+  * $result = $this->Reports_model1->count_renewal_data_so();
+  * echo $result; // e.g. 5
+  * @returns {int} Total number of renewal sales orders matching the current session filters.
+  */
   public function count_renewal_data_so()
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -2904,6 +3593,19 @@ private function _get_pro_datatables_query_product_wise_count()
  }
   ///////////////////////////////////////////////////////////////////////////get top 10 customers starts ///////////////////////////////////////////////////
 
+  /**
+  * Retrieve top customers by subtotal and profit (grouped by organization) limiting to top 8.
+  * @example
+  * $result = $this->Reports_model1->gettoptencus(['status' => 'completed'], 2024, 6, '2024-01-01', '2024-12-31', null);
+  * print_r($result); // sample output: Array of stdClass objects with properties owner, org_name, total_subtotal, totalprofit
+  * @param {array|string|null} $where - Optional where clause (array or SQL string) to filter records.
+  * @param {int|null} $profityear - Optional year to filter by YEAR(currentdate).
+  * @param {int|null} $profitmonth - Optional month to filter by MONTH(currentdate) (used with profityear).
+  * @param {string|null} $dateRangeStart - Optional start date (YYYY-MM-DD) for a date range filter.
+  * @param {string|null} $dateRangeEnd - Optional end date (YYYY-MM-DD) for a date range filter.
+  * @param {int|null} $financial - Optional financial year start (e.g., 2023 representing Apr 2023 - Mar 2024) used when date range is not provided.
+  * @returns {array} Returns an array of result objects (stdClass) grouped by org_name with fields owner, org_name, total_subtotal and totalprofit.
+  */
   public function gettoptencus($where = null, $profityear = null, $profitmonth = null, $dateRangeStart = null, $dateRangeEnd = null, $financial = null) {
     $this->db->select('owner,org_name, SUM(sub_totals) as total_subtotal, SUM(profit_by_user) as totalprofit');
     $this->db->from('salesorder');
@@ -2936,6 +3638,19 @@ private function _get_pro_datatables_query_product_wise_count()
 }
 
 
+/**
+* Retrieve the top five quotes ordered by sub_totalq (descending) with optional filtering by where clause, profit year/month, date range, or financial year.
+* @example
+* $result = $this->Reports_model1->toptenquote(['status' => 'approved'], 2024, 5);
+* echo print_r($result->result_array(), true); // Example output: array of up to 5 quote rows ordered by sub_totalq desc
+* @param array|string|null $where - Additional WHERE condition (associative array or SQL string) to apply to the query.
+* @param int|null $profityear - Year to filter quotes by YEAR(currentdate) (e.g., 2024).
+* @param int|null $profitmonth - Month to filter quotes by MONTH(currentdate) (1-12).
+* @param string|null $dateRangeStart - Start date for range filter in 'YYYY-MM-DD' format.
+* @param string|null $dateRangeEnd - End date for range filter in 'YYYY-MM-DD' format.
+* @param int|null $financial - Financial year start (integer year). When provided, filters from April of this year through March of the next (e.g., 2023 for Apr 2023 - Mar 2024).
+* @returns CI_DB_result Query result object containing up to 5 matching quote rows ordered by sub_totalq descending.
+*/
 public function toptenquote($where = null, $profityear = null, $profitmonth = null, $dateRangeStart = null, $dateRangeEnd = null, $financial = null) {
   $this->db->select('*');
   $this->db->from('quote');
