@@ -9,6 +9,21 @@ class Performainvoice_model extends CI_Model
   var $search_by 	= array('invoice_no','billedto_orgname','page_name','final_total','pi_status','invoice_date');
   var $order 		= array('id' => 'desc');
   
+   /**
+   * Prepare and apply DataTables server-side filters, search and ordering to the model's active Query Builder for performance invoices (applies session/company scoping, optional user/date filters, search across configured columns, and ordering).
+   * @example
+   * // Example usage inside the model or controller (no arguments)
+   * // Assume relevant session/post values are set:
+   * // $_SESSION['email'] = 'alice@example.com';
+   * // $_SESSION['company_email'] = 'acme@example.com';
+   * // $_POST['search']['value'] = 'Invoice123';
+   * // $_POST['order'][0]['column'] = 1; $_POST['order'][0]['dir'] = 'desc';
+   * $this->performainvoice_model->_get_datatables_query();
+   * $query = $this->db->get(); // execute the prepared query
+   * $rows = $query->result();
+   * echo count($rows); // e.g. 5
+   * @returns void Applies filtering, searching and ordering clauses to $this->db; does not return a value.
+   */
    private function _get_datatables_query()
    {
 		$sess_eml           = $this->session->userdata('email');
@@ -122,6 +137,14 @@ class Performainvoice_model extends CI_Model
     return $query->row_array();
   }
   
+  /**
+  * Get GST entries for the current session's company.
+  * @example
+  * $result = $this->Performainvoice_model->get_gst();
+  * print_r($result); // Example output: Array ( [0] => Array ( ['id'] => '1', ['tax_name'] => 'GST', ['tax_percent'] => '18', ['session_comp_email'] => 'company@example.com', ['session_company'] => 'Example Company', ['delete_status'] => '1' ) )
+  * @param {void} $no_params - No parameters required.
+  * @returns {array} Array of associative arrays representing GST rows (empty array if none).
+  */
   public function get_gst(){
     $sess_eml = $this->session->userdata('email');
     $session_comp_email = $this->session->userdata('company_email');
@@ -137,6 +160,15 @@ class Performainvoice_model extends CI_Model
   }
   
   
+  /**
+  * Retrieve vendor or organization contact data by organization name and page context.
+  * @example
+  * $result = $this->Performainvoice_model->getVendorOrgData('Acme Corp', 'purchaseorder');
+  * print_r($result); // Sample output for purchaseorder: Array ( [id] => 12 [name] => Acme Corp [email] => vendor@example.com [mobile] => 1234567890 )
+  * @param {string} $orgName - Organization or vendor name to search for.
+  * @param {string} $pgname - Page/context name; use 'purchaseorder' to fetch from the vendor table, otherwise fetches customer organization fields.
+  * @returns {array|null} Return associative array of the first matching row (contact fields) or null if not found.
+  */
   public function getVendorOrgData($orgName,$pgname)
   {
 	  if($pgname=="purchaseorder"){
@@ -174,6 +206,15 @@ class Performainvoice_model extends CI_Model
 		return $query->row_array();
   }
   
+  /**
+  * Retrieve a single record row from a page-specific table (quote, salesorder or purchaseorder) filtered by current session company context.
+  * @example
+  * $result = $this->Performainvoice_model->get_data_detail('quotation', 123);
+  * print_r($result); // e.g. Array ( ['quote_id'] => 123, ['customer_name'] => 'Acme Ltd', ... )
+  * @param {string} $page - The page type: 'quotation', 'salesorder' or 'purchaseorder'.
+  * @param {int|string} $pageid - The ID of the record to retrieve.
+  * @returns {array|null} Associative array of the found row data, or null/empty if no matching record is found.
+  */
   public function get_data_detail($page,$pageid)
   {
 	  $sess_eml           = $this->session->userdata('email');
@@ -247,6 +288,21 @@ class Performainvoice_model extends CI_Model
 	return $this->db->get()->result();
   }
   
+  /**
+  * Retrieve organization records visible to the current session/company.
+  * @example
+  * $result = $this->Performainvoice_model->get_organization();
+  * // Example usage:
+  * // var_export($result);
+  * // Sample output:
+  * // array(
+  * //   0 => (object) ['id' => '1', 'company_name' => 'Acme Corp', 'customer_type' => 'Customer', 'sess_eml' => 'user@example.com'],
+  * // )
+  * // Access a field:
+  * echo $result[0]->company_name; // Acme Corp
+  * @param void none - This function does not accept any parameters.
+  * @returns object[] Array of organization objects matching the current session/company and filtered to customer types ('Customer' or 'Both') with delete_status = "1".
+  */
   public function get_organization()
   {
     $sess_eml           = $this->session->userdata('email');
@@ -266,6 +322,16 @@ class Performainvoice_model extends CI_Model
 	return $this->db->get()->result();
   }
   
+  /**
+  * Retrieve a performa_invoice record by its ID, constrained to the provided or current session company and company email.
+  * @example
+  * $result = $this->Performainvoice_model->get_pi_byId(123, 'Acme Ltd', 'billing@acme.com');
+  * print_r($result); // e.g. Array ( [id] => 123 [invoice_no] => PI-2025-001 [session_company] => Acme Ltd [session_comp_email] => billing@acme.com ... )
+  * @param {int} $piid - Performa invoice ID to fetch.
+  * @param {string} $company - Optional company name; if empty the session 'company_name' will be used.
+  * @param {string} $comEml - Optional company email; if empty the session 'company_email' will be used.
+  * @returns {array|null} Return associative array of the performa_invoice row if found, otherwise null.
+  */
   public function get_pi_byId($piid,$company='',$comEml='')
   {
 	  if($company==''){
@@ -299,6 +365,14 @@ class Performainvoice_model extends CI_Model
   }
   
   
+  /**
+  * Check whether a performa invoice with the specified invoice number exists for the current session company.
+  * @example
+  * $result = $this->Performainvoice_model->check_invice_no('INV-2025-001');
+  * var_export($result); // bool(true) if invoice exists, bool(false) otherwise
+  * @param {string} $invoice_no - Invoice number to check (e.g. 'INV-2025-001').
+  * @returns {bool} True if an invoice with the provided number exists for the current session company and email, otherwise false.
+  */
   public function check_invice_no($invoice_no)
   {
     $session_company = $this->session->userdata('company_name');
