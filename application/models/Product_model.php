@@ -12,6 +12,26 @@ class Product_model extends CI_Model
                   "ONLY_FULL_GROUP_BY", "")');
      }
 	
+ /**
+ * Retrieve up to 5 products whose names contain the given search term for the current session company.
+ * @example
+ * // Assume session values: company_name = 'Acme Inc', company_email = 'contact@acme.com'
+ * $result = $this->Product_model->get_pro_name('Widget');
+ * print_r($result);
+ * // e.g. Array
+ * // (
+ * //   [0] => stdClass Object
+ * //     (
+ * //       [product_id] => 12
+ * //       [product_name] => Widget A
+ * //       [session_company] => Acme Inc
+ * //       [session_comp_email] => contact@acme.com
+ * //       ...
+ * //     )
+ * // )
+ * @param {string} $product_name - Partial product name to search for (matches anywhere in product_name).
+ * @returns {array} Array of stdClass result objects of matching products (max 5), ordered by product_name ASC.
+ */
 	public function get_pro_name($product_name)
 	{
 		$sess_eml 			= $this->session->userdata('email');
@@ -27,6 +47,14 @@ class Product_model extends CI_Model
 		$this->db->limit(5);
 		return $this->db->get($this->table)->result();
     }
+  /**
+  * Retrieve product records for the current session's company filtered by product name.
+  * @example
+  * $result = $this->Product_model->getProValue(['product_name' => 'Widget A']);
+  * echo print_r($result, true); // render sample output: Array ( [0] => Array ( [id] => 12 [product_name] => Widget A [price] => 19.99 [session_company] => Acme Inc. [session_comp_email] => billing@acme.com ) )
+  * @param {array} $product_name - Associative array containing key 'product_name' to filter products.
+  * @returns {array} Returns an array of matching product rows (empty array if none found).
+  */
   public function getProValue($product_name)
   {
     $response = array();
@@ -54,6 +82,26 @@ class Product_model extends CI_Model
   var $search_by = array('product_name','sku','hsn_code','product_category','product_unit_price','product_quantity','stock_alert');
   var $order = array('id' => 'desc');
   
+  /**
+  * Build and apply the CodeIgniter query used for server-side DataTables (applies session scoping, optional date filters including "This Week", searchable columns, ordering and soft-delete condition).
+  * @example
+  * // Example: standard user, searching for "widget" and ordering by column 1 ascending
+  * $this->session->set_userdata([
+  *   'email' => 'user@example.com',
+  *   'company_email' => 'comp@example.com',
+  *   'company_name' => 'ACME Corp',
+  *   'type' => 'standard'
+  * ]);
+  * $_POST['search']['value'] = 'widget';
+  * $_POST['order'][0]['column'] = 1;
+  * $_POST['order'][0]['dir'] = 'asc';
+  * // call within the model (private): $this->_get_datatables_query();
+  * $this->_get_datatables_query();
+  * $query = $this->db->get();
+  * echo $query->num_rows(); // e.g. 12
+  * @param void $none - This function accepts no parameters.
+  * @returns void Applies filtering, searching and ordering to $this->db; does not return a value.
+  */
   private function _get_datatables_query()
   {
     $sess_eml 			= $this->session->userdata('email');
@@ -154,6 +202,14 @@ class Product_model extends CI_Model
   
   
 
+ /**
+ * Insert a product record into the database and return the insert ID or a failure code.
+ * @example
+ * $result = $this->Product_model->insertData(['name' => 'Sample Product', 'price' => 9.99, 'sku' => 'SKU123']);
+ * echo $result; // e.g. 15 (insert ID) or 202 (failure)
+ * @param {array} $dataArr - Associative array of product fields to insert (e.g. ['name'=>'Sample','price'=>9.99]).
+ * @returns {int} Inserted record ID on success, or 202 if the insert failed.
+ */
 	public function insertData($dataArr)
 	{
 		
@@ -168,6 +224,15 @@ class Product_model extends CI_Model
 
     }
 	
+ /**
+ * Update the product table's product_id column for a specific product record.
+ * @example
+ * $result = $this->Product_model->product_id(123, 5);
+ * echo $result; // true (if update succeeded) or false (if update failed)
+ * @param int $pro_id - New product_id value to set.
+ * @param int $id - ID of the product row to update.
+ * @returns bool Return true on successful update, false on failure.
+ */
 	public function product_id($pro_id,$id)
     {
 		$data = array('product_id' => $pro_id);
@@ -193,6 +258,15 @@ class Product_model extends CI_Model
 		}
 	}
 
+ /**
+ * Retrieve product records by ID constrained to the current session's company and company email.
+ * If the logged-in user's type is 'standard', results are further restricted to that user's email.
+ * @example
+ * $result = $this->Product_model->getById(123);
+ * print_r($result); // Example output: Array ( [0] => stdClass Object ( [id] => 123 [name] => "Sample Product" [session_company] => "Acme Inc" [session_comp_email] => "info@acme.com" ) )
+ * @param {int} $id - The ID of the product to fetch (e.g., 123).
+ * @returns {array} Array of stdClass result objects matching the provided ID and current session constraints.
+ */
 	public function getById($id){
 		
 		$sess_eml = $this->session->userdata('email');
@@ -235,6 +309,16 @@ public function delete($id)
   }
   
   
+  /**
+  * Check for an existing product with the same name, price and SKU for the current session/company.
+  * @example
+  * $result = $this->Product_model->check_duplicate_product('Sample Product', 9.99, 'SKU123');
+  * print_r($result); // Array ( [product_name] => "Sample Product" [sku] => "SKU123" [product_unit_price] => "9.99" )
+  * @param {string} $proName - Product name to check for duplicates.
+  * @param {float|string} $price - Product unit price to check (float or numeric string).
+  * @param {string} $sku - Product SKU to check for duplicates.
+  * @returns {array|false} Return product row as associative array if duplicate exists, otherwise false.
+  */
   public function check_duplicate_product($proName,$price,$sku)
   {
     $this->db->select('product_name,sku,product_unit_price');
@@ -260,6 +344,15 @@ public function delete($id)
     }
   }
 
+  /**
+   * Update a product record identified by ID with the provided data array.
+   * @example
+   * $result = $this->Product_model->mass_save(123, ['name' => 'New Product', 'price' => 9.99]);
+   * echo $result ? 'success' : 'failure'; // outputs 'success' on update, 'failure' otherwise
+   * @param int|string $mass_id - The product ID to update.
+   * @param array $dataArry - Associative array of column => value pairs to update.
+   * @returns bool True if the database update succeeded, false otherwise.
+   */
   public function mass_save($mass_id, $dataArry)
   {
   //  print_r($mass_id);die;
