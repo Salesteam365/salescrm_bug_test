@@ -6,6 +6,28 @@ var $table = 'email_automation';
   var $sort_by = array('client_name','client_email','subject','read_status','currentdate',null);
   var $search_by = array('client_name','client_email','subject');
   var $order = array('id' => 'desc');
+  /**
+  * Build and apply the datatables query to $this->db based on session, POST search and ordering parameters.
+  * @example
+  * // Example setup (inside a controller/model context)
+  * $this->session->set_userdata([
+  *   'email' => 'admin@example.com',
+  *   'company_email' => 'company@example.com',
+  *   'company_name' => 'ExampleCo',
+  *   'type' => 'admin'
+  * ]);
+  * $_POST['search']['value'] = 'john'; // global search term
+  * $_POST['order'] = [['column' => 1, 'dir' => 'asc']]; // order by second column ascending
+  * $_POST['searchDate'] = 'This Week'; // or '2025-01-01'
+  * $this->_get_datatables_query();
+  * $query = $this->db->get(); // execute the built query
+  * $result = $query->result();
+  * print_r($result); // sample output: array of result objects matching filters
+  * @param string|null $searchDate - POST param 'searchDate' (date string or 'This Week') used to filter currentdate.
+  * @param string|null $searchValue - POST global search value at $_POST['search']['value'] used to like-search across $this->search_by columns.
+  * @param array|null $order - POST ordering array at $_POST['order'] used to order results (column index and dir).
+  * @returns void Applies filters and ordering to $this->db query builder; does not return a value.
+  */
   private function _get_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -136,6 +158,14 @@ var $table = 'email_automation';
     $query = $this->db->get();
     return $query->row_array();
   }
+  /**
+  * Get multiple email values from the organization table filtered by customer type and current session company.
+  * @example
+  * $result = $this->Email_Marketing_model->multiple_emailValue('Client');
+  * print_r($result); // sample output: Array ( [0] => Array ( [email] => user@example.com ) [1] => Array ( [email] => foo@bar.com ) )
+  * @param {string} $type - Customer type to filter by. If 'Other' will fetch records where customer_type is empty; if omitted or empty string fetches all emails for the current session company.
+  * @returns {array} Return array of associative arrays containing 'email' keys for matching organizations.
+  */
   public function multiple_emailValue($type='')
   {
       $session_company      = $this->session->userdata('company_name');
