@@ -9,6 +9,16 @@ class Creditnote_model extends CI_Model
   var $search_by 	= array('invoice_no','org_name','sub_total','pi_status','invoice_date');
   var $order 		= array('id' => 'desc');
   
+   /**
+   * Build and apply DataTables query filters (session/company scope, optional user filter, date range/search, global column search and ordering) to the CI query builder.
+   * @example
+   * $this->creditnote_model->_get_datatables_query();
+   * // Then retrieve results built by the query:
+   * $rows = $this->db->get()->result();
+   * var_export($rows); // e.g. array( (object) ['id' => 123, 'invoice_date' => '2025-01-15', 'sess_eml' => 'user@example.com', ...] )
+   * @param void $none - This method accepts no parameters; it uses session data and $this->input->post() values for filtering.
+   * @returns void Applies query constraints to $this->db and does not return a value.
+   */
    private function _get_datatables_query()
    {
 		$sess_eml           = $this->session->userdata('email');
@@ -124,6 +134,15 @@ class Creditnote_model extends CI_Model
   }
  
 
+  /**
+  * Retrieve vendor record from the database by vendor ID.
+  * @example
+  * // From a model or controller where creditnote_model is loaded
+  * $result = $this->creditnote_model->getVendorOrgData(42);
+  * print_r($result); // Array ( [id] => 42 [vendor_name] => "ACME Pvt Ltd" [email] => "sales@acme.com" [mobile] => "1234567890" [address] => "123 Main St" )
+  * @param int $vnd_id - Vendor ID to look up in the 'vendor' table.
+  * @returns array|null Return associative array of the vendor row (column => value) or null/empty if no row found.
+  */
   public function getVendorOrgData($vnd_id)
   {
 	  //if($pgname=="purchaseorder"){
@@ -152,6 +171,14 @@ class Creditnote_model extends CI_Model
     return $query->row_array();
   }
   
+  /**
+  * Retrieve payment history rows for a given invoice filtered by the current session company/email and active status (delete_status = 1).
+  * @example
+  * $result = $this->creditnote_model->get_inv_payment(123);
+  * print_r($result); // Example output: Array ( [0] => Array ( 'id' => 5, 'invoice_id' => 123, 'amount' => '150.00', 'session_comp_email' => 'acct@example.com', 'session_company' => 'Acme Ltd', 'delete_status' => 1 ) )
+  * @param {{int|string}} {{$id}} - Invoice ID to fetch payments for.
+  * @returns {{array}} Return an array of payment history rows matching the invoice and session context.
+  */
   public function get_inv_payment($id)
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -165,6 +192,14 @@ class Creditnote_model extends CI_Model
     return $query->result_array();
   }
   
+  /**
+  * Fetch a single payment history record by ID for the current session company/email where delete_status = 1.
+  * @example
+  * $result = $this->creditnote_model->get_payment_byid(42);
+  * print_r($result); // e.g. Array ( [id] => 42 [amount] => "150.00" [session_comp_email] => "acct@example.com" [session_company] => "ExampleCo" [delete_status] => 1 )
+  * @param {int} $id - Payment record ID to fetch.
+  * @returns {array|null} Associative array of the payment record or null if not found.
+  */
   public function get_payment_byid($id)
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -190,6 +225,14 @@ class Creditnote_model extends CI_Model
     return $query->row_array();
   }
   
+  /**
+  * Get advanced payment, pending payment and sub total for a credit note by ID for the current session company.
+  * @example
+  * $result = $this->creditnote_model->get_payment_adv(123);
+  * print_r($result); // Array ( [advanced_payment] => "100.00" [pending_payment] => "50.00" [sub_total] => "150.00" )
+  * @param {int} $id - Credit note ID to fetch payment values for.
+  * @returns {array} Associative array with keys 'advanced_payment', 'pending_payment' and 'sub_total' (empty array if no record found).
+  */
   public function get_payment_adv($id)
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -234,6 +277,16 @@ class Creditnote_model extends CI_Model
 		return $query->row_array();
   }
   
+  /**
+  * Retrieve a single record row for a given document type and ID filtered by the current session company and (for standard users) the current user.
+  * @example
+  * $this->load->model('creditnote_model');
+  * $result = $this->creditnote_model->get_data_detail('quotation', 123);
+  * print_r($result); // Example output: Array ( [quote_id] => 123 [customer_name] => "Acme Corp" [total] => "1000.00" )
+  * @param {string} $page - Document type to fetch: 'quotation', 'salesorder', or 'purchaseorder'.
+  * @param {int|string} $pageid - ID of the document to fetch.
+  * @returns {array|null} Return associative array of the matched database row, or NULL if no row is found.
+  */
   public function get_data_detail($page,$pageid)
   {
 	  $sess_eml           = $this->session->userdata('email');
@@ -317,6 +370,37 @@ class Creditnote_model extends CI_Model
     $this->db->where('delete_status',"1");
 	return $this->db->get()->result();
   }
+    /**
+     * Retrieve organizations for the current company session filtered by customer type.
+     * This returns organizations that belong to the current session (company email and name),
+     * have customer_type either "Customer" or "Both", and have delete_status set to "1".
+     * @example
+     * $result = $this->creditnote_model->get_organization_bytype();
+     * print_r($result); // Sample output:
+     * // Array
+     * // (
+     * //     [0] => Array
+     * //         (
+     * //             [id] => 12
+     * //             [name] => Acme Corp
+     * //             [customer_type] => Customer
+     * //             [session_comp_email] => billing@acme.example
+     * //             [session_company] => Acme Corporation
+     * //             [delete_status] => 1
+     * //         )
+     * //     [1] => Array
+     * //         (
+     * //             [id] => 23
+     * //             [name] => Beta LLC
+     * //             [customer_type] => Both
+     * //             [session_comp_email] => billing@acme.example
+     * //             [session_company] => Acme Corporation
+     * //             [delete_status] => 1
+     * //         )
+     * // )
+     * @param void $none - This method does not accept any parameters.
+     * @returns array Array of associative arrays representing matching organizations.
+     */
     public function get_organization_bytype()
     {
 		$session_comp_email = $this->session->userdata('company_email');
@@ -332,6 +416,17 @@ class Creditnote_model extends CI_Model
 		return $this->db->get()->result_array();
     }
   
+  /**
+   * Retrieve a credit note (purchase invoice) record by its ID, scoped to a company and company email.
+   * Falls back to session-stored company name and email when those parameters are not provided.
+   * @example
+   * $result = $this->creditnote_model->get_pi_byId(123, 'Acme Ltd', 'billing@acme.com');
+   * echo '<pre>'; print_r($result); echo '</pre>'; // sample output: Array ( [id] => 123 [session_company] => Acme Ltd [session_comp_email] => billing@acme.com [amount] => 150.00 )
+   * @param {int|string} $piid - The ID of the credit note to retrieve.
+   * @param {string} $company - Optional company name to scope the query; if empty the session value is used.
+   * @param {string} $comEml - Optional company email to scope the query; if empty the session value is used.
+   * @returns {array|null} Return associative array of the credit note row, or NULL if not found.
+   */
   public function get_pi_byId($piid,$company='',$comEml='')
   {
 	  if($company==''){
@@ -364,6 +459,16 @@ class Creditnote_model extends CI_Model
 	return $this->db->get()->result();
   }
   
+  /**
+   * Retrieve organization details (org_name, email, primary_contact) for a given organization ID,
+   * constrained to the current session's company/email and only if not deleted.
+   * @example
+   * $this->load->model('creditnote_model');
+   * $result = $this->creditnote_model->orgDetail(12);
+   * print_r($result); // sample output: array('org_name' => 'Acme Ltd', 'email' => 'info@acme.com', 'primary_contact' => 'John Doe')
+   * @param {int} $id - Organization ID to retrieve.
+   * @returns {array|null} Associative array with keys 'org_name', 'email', 'primary_contact' or null if not found.
+   */
   public function orgDetail($id)
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -379,6 +484,14 @@ class Creditnote_model extends CI_Model
   }
   
   
+  /**
+  * Check whether an invoice number exists for the current session's company and company email.
+  * @example
+  * $result = $this->creditnote_model->check_invice_no('INV-1001');
+  * var_dump($result); // bool(true) or bool(false)
+  * @param {string} $invoice_no - Invoice number to check (e.g. 'INV-1001').
+  * @returns {bool} True if the invoice number exists in the creditnote table for the session company/email, false otherwise.
+  */
   public function check_invice_no($invoice_no)
   {
     $session_company = $this->session->userdata('company_name');
@@ -448,6 +561,14 @@ class Creditnote_model extends CI_Model
 		
     }
 	
+ /**
+ * Get total number of credit notes for the current session/company. Respects user type (admin or standard) and applies filters pi_status = 1 and delete_status = 1.
+ * @example
+ * $result = $this->creditnote_model->get_all_creditnote();
+ * print_r($result); // Example output: Array ( [total_creditnote] => 12 )
+ * @param void $none - This method accepts no parameters.
+ * @returns array|null Associative array with key 'total_creditnote' (int) on success, or null if no matching rows.
+ */
 	public function get_all_creditnote()
     {
 		$session_comp_email = $this->session->userdata('company_email');
@@ -479,6 +600,21 @@ class Creditnote_model extends CI_Model
 	
 	
     //invoice graph
+   /**
+    * Retrieve monthly credit note counts for a given year filtered by the current session and POST data.
+    * @example
+    * $this->load->model('creditnote_model');
+    * // Example: no POST date -> uses current year; with POST 'date' => specific year (e.g. 2024)
+    * $result = $this->creditnote_model->get_invoice_graph();
+    * print_r($result); // sample output:
+    * // Array
+    * // (
+    * //     [0] => stdClass Object ( [count] => 5 [month_name] => January )
+    * //     [1] => stdClass Object ( [count] => 2 [month_name] => February )
+    * // )
+    * @param void $none - No direct arguments; function relies on session values and optional POST 'date'.
+    * @returns array Array of stdClass objects where each object has 'count' (int) and 'month_name' (string).
+    */
   	public function get_invoice_graph()
   	{
 	    $session_comp_email = $this->session->userdata('company_email');
@@ -528,6 +664,14 @@ class Creditnote_model extends CI_Model
 		}
   	}
   
+    /**
+    * Return count of credit notes (invoices) for the current month for the company stored in session.
+    * @example
+    * $result = $this->creditnote_model->total_invoiceMonth();
+    * echo $result; // e.g. 7
+    * @param void $none - No parameters required.
+    * @returns int Number of credit notes for the current month for the session company.
+    */
     public function total_invoiceMonth()
     {
 		$session_comp_email = $this->session->userdata('company_email');
