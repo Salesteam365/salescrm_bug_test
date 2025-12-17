@@ -3,6 +3,16 @@ require('../fpdf.php');
 
 class PDF extends FPDF
 {
+/**
+* Renders the page header: a centered, colored title box using the global $title variable.
+* @example
+* $title = 'Monthly Sales Report';
+* $pdf = new PDF(); // PDF extends FPDF and implements Header()
+* $pdf->AddPage(); // Header() is invoked automatically and draws the title box
+* $pdf->Output(); // outputs the PDF with header showing "Monthly Sales Report"
+* @param {string} $title - Global title string used for the header (must be set before AddPage()).
+* @returns {void} No return value; draws directly onto the PDF page.
+*/
 function Header()
 {
 	global $title;
@@ -48,6 +58,16 @@ function ChapterTitle($num, $label)
 	$this->Ln(4);
 }
 
+/**
+* Outputs the contents of a text file into the current PDF page as a chapter body using Times 12, then appends an italicized "(end of excerpt)".
+* @example
+* $pdf = new PDF(); // instance of FPDF subclass
+* $pdf->AddPage();
+* $pdf->ChapterBody('application/third_party/fpdf/tutorial/chapter1.txt'); // sample file path
+* // Result: the file text is written on the PDF page in Times 12 and "(end of excerpt)" is added in italics.
+* @param {string} $file - Path to the text file to read and render into the PDF.
+* @returns {void} No return value; outputs directly to the PDF document.
+*/
 function ChapterBody($file)
 {
 	// Read text file
