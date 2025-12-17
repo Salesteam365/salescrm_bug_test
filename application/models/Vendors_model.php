@@ -6,6 +6,16 @@ class Vendors_model extends CI_Model
   var $sort_by = array(null,'org_name','email','website','mobile','billing_city',null);
   var $search_by = array('org_name','email','website','mobile','customer_type','assigned_to');
   var $order = array('id' => 'desc');
+  /**
+   * Build and apply the DataTables query filters (session-based access, date range, search and ordering) for vendor records.
+   * @example
+   * // Called from model/controller before fetching results:
+   * $this->Vendors_model->_get_datatables_query();
+   * $results = $this->db->get('vendors')->result(); // fetches filtered vendor rows
+   * echo count($results); // render some sample output value; e.g. 5
+   * @param void $none - No parameters; function reads $this->session and $this->input->post() internally.
+   * @returns void Sets up the CodeIgniter Query Builder state and does not return a value.
+   */
   private function _get_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -102,6 +112,14 @@ class Vendors_model extends CI_Model
     $query = $this->db->get('organization');
     return $query->num_rows();
   }
+  /**
+  * Count all organization records for the current company where customer_type is 'Customer' or 'Both'.
+  * @example
+  * $result = $this->Vendors_model->count_all();
+  * echo $result; // e.g. 42
+  * @param void $none - No parameters required.
+  * @returns int Number of matching organization records.
+  */
   public function count_all()
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -177,6 +195,15 @@ class Vendors_model extends CI_Model
     $query = $this->db->get();
     return ($query->num_rows() > 0)?$query->result_array():FALSE;
   }
+  /**
+  * Update the vendor_id column for a specific vendor record by its id.
+  * @example
+  * $result = $this->Vendors_model->vendor_id(123, 45);
+  * var_export($result); // render some sample output: true or false
+  * @param {int} $vendor_id - New vendor_id value to set.
+  * @param {int} $id - ID of the record to update.
+  * @returns {bool} True on successful update, false on failure.
+  */
   public function vendor_id($vendor_id,$id)
   {
     $data = array('vendor_id' => $vendor_id);
@@ -190,6 +217,17 @@ class Vendors_model extends CI_Model
       return false;
     }
   }
+  /**
+  * Update vendor record(s) in the vendors table. Admins can update any record; non-admins can only update records matching their session email (sess_eml).
+  * @example
+  * $where = ['id' => 123];
+  * $data = ['name' => 'Acme Supplies', 'status' => 'active'];
+  * $result = $this->Vendors_model->update($where, $data);
+  * echo $result; // outputs 1 on success (number of affected rows), 0 if no change;
+  * @param array $where - Associative array of WHERE conditions (e.g. ['id' => 123]).
+  * @param array $data - Associative array of column => value pairs to update (e.g. ['name' => 'Acme Supplies']).
+  * @returns int Number of affected rows.
+  */
   public function update($where,$data)
   {
     if($this->session->userdata('type') == 'admin')
