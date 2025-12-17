@@ -13,6 +13,14 @@ class Salesorders_model extends CI_Model
   var $search_by = array('subject','org_name','saleorder_id','owner','status','approved_by','datetime');
   var $order = array('id' => 'desc');
   
+  /**
+  * Builds and applies database filters for DataTables queries related to sales orders.
+  * @example
+  * $result = $this->Salesorders_model->_get_datatables_query('invoice');
+  * echo $result // null because the method configures the CI query builder and does not return a value;
+  * @param {string} $action - Action or status filter to apply (e.g., 'invoice', 'complete', 50, 100, or '' for no action).
+  * @returns {void} Does not return a value; sets up $this->db query builder for subsequent execution.
+  */
   private function _get_datatables_query($action='')
   {
 		$sess_eml = $this->session->userdata('email');
@@ -178,6 +186,18 @@ class Salesorders_model extends CI_Model
   
   ///////////////////////////////////// get  data for so graph (monthwise) starts /////////////////////////////////////////////////////////////////
 
+  /**
+  * Retrieve aggregated sales order data (last 12 months) grouped by year and month for the current session's company.
+  * @example
+  * // From a controller:
+  * $this->load->model('Salesorders_model');
+  * $result = $this->Salesorders_model->getso_graph();
+  * // Sample returned value (array of stdClass objects):
+  * // [
+  * //   (object) ['year' => 2025, 'month' => 12, 'subtotal' => '12345.67', 'profit' => '2345.67'],
+  * //   (object) ['year' => 2025, 'month' => 11, 'subtotal' => '9876.54', 'profit' => '1234.56'],
+  * // ]
+  * @returns {array} An array of stdClass objects each containing year (int), month (int), subtotal (numeric string/float) and profit (numeric string/float). Database errors are echoed directly.*/
   public function getso_graph(){
     $sess_eml = $this->session->userdata('email');
 		$session_comp_email = $this->session->userdata('company_email');
@@ -219,6 +239,14 @@ class Salesorders_model extends CI_Model
 }
 
    ///////////////////////////////////// get  data for so graph (monthwise) ends /////////////////////////////////////////////////////////////////
+/**
+* Retrieve up to 12 grouped yearly/monthly aggregate rows for the current session/company, taking session type into account.
+* @example
+* $result = $this->Salesorders_model->yeargraph('COUNT(id) AS total, YEAR(datetime) AS year, MONTH(datetime) AS month', 'sales_orders');
+* print_r($result); // e.g. CI_DB_result object containing up to 12 grouped rows like: [ ['year'=>2025,'month'=>12,'total'=>42], ... ]
+* @param {{string|array}} {{$sel}} - Columns or expression(s) to select (string or array). Example: 'COUNT(id) AS total, YEAR(datetime) AS year, MONTH(datetime) AS month'.
+* @param {{string}} {{$tbl}} - Table name to query. Example: 'sales_orders'.
+* @returns {{CI_DB_result|null}} Return CI_DB_result on success (query result), or null if a database error occurred (an error message is echoed). */
 public function yeargraph($sel,$tbl){
   $sess_eml = $this->session->userdata('email');
   $session_comp_email = $this->session->userdata('company_email');
@@ -309,6 +337,15 @@ if (!$query) {
   }
   
   
+  /**
+  * Retrieve product_name values from the purchaseorder table for the given sale order ID and current session company.
+  * @example
+  * $soId = 123;
+  * $result = $this->Salesorders_model->CountOrder($soId);
+  * print_r($result); // e.g. Array ( [0] => stdClass Object ( [product_name] => "Widget A" ) )
+  * @param {int|string} $soId - Sale order ID to filter purchase orders.
+  * @returns {array} Array of result objects where each object contains the product_name field.
+  */
   public function CountOrder($soId)
   {
 	$session_comp_email = $this->session->userdata('company_email');
@@ -332,6 +369,14 @@ if (!$query) {
     $this->db->limit(5);
     return $this->db->get('quote')->result();
   }
+  /**
+  * Retrieve quote record(s) for a given quote_id and return the query result as an array.
+  * @example
+  * $result = $this->Salesorders_model->getQuoteValue(['quote_id' => 123]);
+  * print_r($result); // e.g. Array ( [0] => stdClass Object ( [quote_id] => 123 [customer_name] => "ACME Inc." [total] => "150.00" ) )
+  * @param {array} $quote_id - Associative array containing the key 'quote_id' with the quote identifier.
+  * @returns {array} Array of result objects (empty array if quote_id not provided or no record found).
+  */
   public function getQuoteValue($quote_id)
   {
     $response = array();
@@ -371,6 +416,30 @@ if (!$query) {
     
  }
  
+ /**
+ * Retrieve sales orders marked for renewal within the next 31 days for the current session user (admin sees company-wide, standard sees owned records).
+ * @example
+ * $result = $this->Salesorders_model->get_renewal_so();
+ * // Sample usage and possible output:
+ * // If records found:
+ * // print_r($result);
+ * // Array
+ * // (
+ * //     [0] => Array
+ * //         (
+ * //             [id] => 123
+ * //             [org_name] => "Example Org"
+ * //             [subject] => "Annual Support Renewal"
+ * //             [renewal_date] => "2026-01-15"
+ * //             [saleorder_id] => "SO-2026-0001"
+ * //             [owner] => "John Doe"
+ * //             [customer_company_name] => "Example Corp"
+ * //         )
+ * // )
+ * // If no records found:
+ * // var_dump($result); // bool(false)
+ * @returns {array|false} Returns an array of associative arrays for each renewal sales order when matches exist, or false when none found.
+ */
  public function get_renewal_so()
   {
     $sess_eml = $this->session->userdata('email');
@@ -427,6 +496,14 @@ if (!$query) {
   }
   
   
+  /**
+  * Fetch GST tax records for the currently logged-in session company.
+  * @example
+  * $result = $this->Salesorders_model->get_gst();
+  * print_r($result); // Sample output: Array ( [0] => Array ( [id] => 1 [tax_name] => GST [rate] => 18 [session_comp_email] => company@example.com [session_company] => "Acme Corp" [delete_status] => 1 ) )
+  * @param void $none - No arguments required.
+  * @returns array Array of GST records as associative arrays.
+  */
   public function get_gst(){
     $sess_eml = $this->session->userdata('email');
     $session_comp_email = $this->session->userdata('company_email');
@@ -447,6 +524,15 @@ if (!$query) {
     $this->db->insert('salesorder', $data);
     return $this->db->insert_id();
   }
+  /**
+  * Update records in the sales orders table. Admin users can update any matching rows; non-admin users are restricted to rows with sess_eml equal to their session email.
+  * @example
+  * $result = $this->Salesorders_model->update(['id' => 123], ['status' => 'shipped']);
+  * echo $result; // 1
+  * @param {{array|string}} {{$where}} - WHERE clause as an associative array or SQL string to select rows to update.
+  * @param {{array}} {{$data}} - Associative array of column => value pairs to update.
+  * @returns {{int}} Number of rows affected by the update (db->affected_rows()).
+  */
   public function update($where,$data)
   {
     if($this->session->userdata('type') == 'admin')
@@ -479,6 +565,15 @@ if (!$query) {
     $this->db->where('id', $id);
     $this->db->update($this->table);
   }
+  /**
+  * Update the saleorder_id field for a sales order record by its primary id.
+  * @example
+  * $result = $this->Salesorders_model->saleorder_id(12345, 10);
+  * var_export($result); // bool(true) on success or bool(false) on failure
+  * @param {int} $saleorder_id - New sale order identifier to set.
+  * @param {int} $id - ID of the record to update in the sales orders table.
+  * @returns {bool} True if the database update succeeded, false otherwise.
+  */
   public function saleorder_id($saleorder_id,$id)
   {
     $data = array(
@@ -494,6 +589,15 @@ if (!$query) {
       return false;
     }
   }
+  /**
+  * Update the sale order's total_percent field with the provided progress remaining value.
+  * @example
+  * $result = $this->Salesorders_model->total_percent(85, 432);
+  * var_dump($result); // bool(true) on success, bool(false) on failure
+  * @param {int|float} $progress_remain - Progress remaining percentage (e.g. 85 or 85.5).
+  * @param {int} $saleorder_id - Identifier of the sale order to update (e.g. 432).
+  * @returns {bool} True on successful database update, false otherwise.
+  */
   public function total_percent($progress_remain,$saleorder_id)
   {
     $data = array
@@ -511,6 +615,15 @@ if (!$query) {
     }
   }
   
+  /**
+  * Update product line for a sale order by its ID.
+  * @example
+  * $result = $this->Salesorders_model->update_product_line(123, ['status' => 'confirmed', 'quantity' => 10]);
+  * echo $result // render some sample output value; // 1 (true) on success, empty/0 (false) on failure
+  * @param {int} $saleorder_id - Sale order ID to identify the record to update.
+  * @param {array} $dataArr - Associative array of column => value pairs to update.
+  * @returns {bool} True if the update succeeded, false otherwise.
+  */
   public function update_product_line($saleorder_id,$dataArr)
   {
     
@@ -525,6 +638,15 @@ if (!$query) {
     }
   }
   
+  /**
+  * Update the status of a sale order record by its ID.
+  * @example
+  * $result = $this->Salesorders_model->status('shipped', 123);
+  * echo $result; // true if the update succeeded, false otherwise
+  * @param string $status - New status value to set for the sale order (e.g. 'pending', 'shipped', 'cancelled').
+  * @param int $saleorder_id - Identifier of the sale order to update (e.g. 123).
+  * @returns bool Return true on successful update, false on failure.
+  */
   public function status($status,$saleorder_id)
   {
     $data = array
@@ -1382,6 +1504,19 @@ if (!$query) {
    return  $output;
   }
   
+  /**
+  * Get pending purchase orders (sales orders with status 'Pending' and due_date >= today) for the current session company/user.
+  * @example
+  * $this->load->model('Salesorders_model');
+  * $result = $this->Salesorders_model->get_pending_purchaseorder();
+  * // Possible sample output:
+  * // $result = [
+  * //   ['id' => 12, 'order_no' => 'PO-2025-001', 'status' => 'Pending', 'due_date' => '2025-12-20', 'session_company' => 'Acme Ltd', 'session_comp_email' => 'billing@acme.com', ...],
+  * //   ['id' => 15, 'order_no' => 'PO-2025-002', 'status' => 'Pending', 'due_date' => '2025-12-25', 'session_company' => 'Acme Ltd', 'session_comp_email' => 'billing@acme.com', ...],
+  * // ];
+  * @param {void} None - This method uses session data and accepts no arguments.
+  * @returns {array|false} Returns an array of pending purchase orders (associative arrays) if found, or false if no matching records exist.
+  */
   public function get_pending_purchaseorder()
   {
     if($this->session->userdata('type') == 'admin')
@@ -1430,6 +1565,14 @@ if (!$query) {
       return false;
     }
   }
+  /**
+  * Get pending sales orders filtered by date for the current session user (admin or standard).
+  * @example
+  * $result = $this->Salesorders_model->get_pending_salesorder('15 days');
+  * print_r($result); // Example output: Array ( [0] => Array ( ['id'] => 123, ['order_no'] => 'SO-001', ['status'] => 'Pending', ['currentdate'] => '2025-12-10' ) )
+  * @param {string} $filter_date - Date filter: '15 days' for last 15 days, a 'YYYY-MM-DD' date to fetch orders on/after that date, or "null" to disable date filtering.
+  * @returns {array|false} Returns an array of pending sales orders (associative arrays) when found, or false if none exist.
+  */
   public function get_pending_salesorder($filter_date)
   {
     if($this->session->userdata('type') == 'admin')
@@ -1499,6 +1642,16 @@ if (!$query) {
 		return $this->db->last_query();
 	}
   
+  /**
+  * Update a product_wise_profit row for the current session/company using provided data.
+  * @example
+  * $data = array('profit' => 150.75, 'product_id' => 45, 'updated_at' => '2025-12-17 10:00:00');
+  * // from a controller or other model:
+  * $this->Salesorders_model->goForUpdate($data, 123);
+  * // This will attempt to update the record with id = 123 for the logged-in user's session/company.
+  * @param {array} $dtatArr - Associative array of column => value pairs to update (e.g. ['profit' => 150.75]).
+  * @param {int|string} $id - Primary key id of the record to update.
+  * @returns {void} Performs the database update; does not return a value.*/
   public function goForUpdate($dtatArr,$id)
   {
 	    $sess_eml 			= $this->session->userdata('email');
@@ -1516,6 +1669,15 @@ if (!$query) {
   } 
  
 		 
+    /**
+    * Check whether a product entry exists in product_wise_profit for a given sale order and product name for the current session/company.
+    * @example
+    * $result = $this->Salesorders_model->checkForUpdate(123, 'Widget A');
+    * var_export($result); // sample output: array(0 => array('id' => '45')) or false
+    * @param {int|string} $saleorder_id - Sale order ID to search for (e.g. 123).
+    * @param {string} $productName - Product name to search for (e.g. 'Widget A').
+    * @returns {array|false} Returns result array when a matching record exists, otherwise false.
+    */
     public function checkForUpdate($saleorder_id,$productName){
 		    $sess_eml	= $this->session->userdata('email');
         $session_comp_email = $this->session->userdata('company_email');
@@ -1544,6 +1706,14 @@ if (!$query) {
 	}
   
   
+ /**
+ * Counts the number of invoices for a given sale order within the current session's company context.
+ * @example
+ * $result = $this->Salesorders_model->CountInvoice(123);
+ * echo $result; // e.g. 5
+ * @param {int|string} $saleorder_id - Sale order identifier to count invoices for.
+ * @returns {int} Number of matching invoices (rows) for the provided sale order and current session company.
+ */
 	public function CountInvoice($saleorder_id){
 		    $sess_eml = $this->session->userdata('email');
         $session_comp_email = $this->session->userdata('company_email');
@@ -1559,6 +1729,14 @@ if (!$query) {
 	}
   
 
+   /**
+   * Get purchase team members for a given module based on the current session company and email.
+   * @example
+   * $result = $this->Salesorders_model->getuserPurchaseTeam('purchase');
+   * print_r($result); // Array ( [0] => Array ( [user_id] => 5 [user_email] => 'purchasing@example.com' ) )
+   * @param {string} $moduleName - Module name to filter user restrictions (e.g. 'purchase').
+   * @returns {array|false} Returns an array of user rows (user_id, user_email) when found, or false if none.
+   */
    public function getuserPurchaseTeam($moduleName){
         $session_comp_email = $this->session->userdata('company_email');
         $session_company 	= $this->session->userdata('company_name');
