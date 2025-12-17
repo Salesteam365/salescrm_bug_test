@@ -8,6 +8,17 @@ class Aifilters_model extends CI_Model
   var $search_by = array('subject','org_name','saleorder_id','owner','status','approved_by','datetime');
   var $order = array('id' => 'desc');
   
+  /**
+  * Build ActiveRecord query for server-side DataTables applying POST filters (dates, user, customer, sale/PO filters, new/renew flag, global search and ordering) and session-based company/user restrictions.
+  * @example
+  * // Inside a controller or model where CI instance and this model are available:
+  * $this->aifilters_model->_get_datatables_query('export');
+  * // The method modifies $this->db. You can inspect the compiled SQL:
+  * $sql = $this->db->get_compiled_select();
+  * echo $sql; // e.g. "SELECT * FROM sales_orders WHERE session_comp_email = 'company@example.com' AND currentdate >= '2025-01-01' AND currentdate <= '2025-01-31' ..."
+  * @param {string} $action - Optional action name to alter query behavior (e.g., 'export'). Default is an empty string.
+  * @returns {void} Does not return a value; it configures the CI $this->db query builder for subsequent get()/count queries.
+  */
   private function _get_datatables_query($action='')
   {
     // print_r('testinf');die;
@@ -117,6 +128,20 @@ class Aifilters_model extends CI_Model
 
 
 
+   /**
+   * Fetches rows from a specified table with optional select, where, group, order and limit clauses.
+   * @example
+   * $result = $this->Aifilters_model->getdata('id, name', 'Users', ['status' => 'active'], 'user', 'created_at', 'asc', 10);
+   * print_r($result); // Example output: Array ( [0] => Array ( [id] => 1 [name] => 'Alice' ) )
+   * @param {string|null} $sel - Columns to select (e.g. 'id, name') or null to select default/all.
+   * @param {string} $tbl - Table name to query (e.g. 'Users' or 'Lead').
+   * @param {array|string|null} $whr - WHERE clause as associative array (['status' => 'active']) or raw SQL string, or null for no filtering.
+   * @param {string|null} $grp - Group by key; special handling: 'organization' -> 'org_name', 'user' -> 'lead_owner' (for 'Lead' table) or 'owner' for other tables.
+   * @param {string|null} $orderby - Column name to order by (defaults to 'subtotal' when null).
+   * @param {string} $order - Order direction, 'asc' or 'desc' (default 'desc').
+   * @param {int|null} $limit - Maximum number of rows to return or null for no limit.
+   * @returns {array} Return result set as an array of associative rows.
+   */
    public function getdata($sel, $tbl, $whr = null, $grp = null,$orderby= null,$order='desc',$limit=null) 
    {
    
@@ -202,6 +227,14 @@ class Aifilters_model extends CI_Model
         return $saleId;
     }
     
+    /**
+     * Retrieve all salesorder records, optionally filtered by organization ID.
+     * @example
+     * $result = $this->Aifilters_model->get_all_org(5);
+     * echo '<pre>'; print_r($result); echo '</pre>'; // sample output: array of associative arrays for matching salesorder rows
+     * @param {{int|null}} {$orgId} - Optional organization ID to filter salesorder records. Pass null to return all organizations.
+     * @returns {{array}} Array of associative arrays where each item represents a salesorder row.
+     */
     public function get_all_org($orgId = null) {
         // print_r($orgId);die;
         $this->db->select('*');      
@@ -229,6 +262,32 @@ class Aifilters_model extends CI_Model
     // }
 
 
+    /**
+     * Retrieve aggregated salesorder data grouped by organization (org_id).
+     * @example
+     * $result = $this->Aifilters_model->get_filtered_Alldata();
+     * print_r($result);
+     * // Sample output:
+     * // Array
+     * // (
+     * //     [0] => Array
+     * //         (
+     * //             [org_id] => 5
+     * //             [total_initial_total] => 2500.00
+     * //             [total_sub_total] => 2400.00
+     * //             [delete_status] => 1
+     * //             // ... other selected columns ...
+     * //         )
+     * //     [1] => Array
+     * //         (
+     * //             [org_id] => 12
+     * //             [total_initial_total] => 1800.50
+     * //             [total_sub_total] => 1750.50
+     * //             [delete_status] => 1
+     * //         )
+     * // )
+     * @returns {array} Array of rows with aggregated totals (grouped by org_id).
+     */
     public function get_filtered_Alldata()
     {
         // Select the necessary columns
@@ -250,6 +309,18 @@ class Aifilters_model extends CI_Model
     }
 
 
+    /**
+    * Retrieves filtered sales order data aggregated by organization with summed totals.
+    * @example
+    * $result = $this->Aifilters_model->get_filtered_data('jdoe', 12, 34, '2025-01-01', '2025-01-31');
+    * print_r($result); // e.g. Array ( [0] => Array ( [total_initial_total] => 12345.67 [total_sub_total] => 11000.00 [org_id] => 12 ... ) )
+    * @param {int|string|null} $filterUser - Owner identifier or username to filter by (optional).
+    * @param {int|null} $org_id - Organization ID to filter results by (optional).
+    * @param {int|null} $salesId - Specific sales order ID to filter by (optional).
+    * @param {string|null} $startDate - Start date (YYYY-MM-DD) to include records from (optional).
+    * @param {string|null} $endDate - End date (YYYY-MM-DD) to include records up to (optional).
+    * @returns {array} Returns an array of results grouped by org_id with summed initial_total and sub_totals.
+    */
     public function get_filtered_data($filterUser = null, $org_id = null, $salesId = null, $startDate = null, $endDate = null) {
         // Select the necessary columns
         $this->db->select('*');
@@ -316,6 +387,14 @@ public function count_filtered()
     }
 
 
+/**
+* Retrieve product_name entries from purchaseorder for a given sale order ID and current session company.
+* @example
+* $result = $this->Aifilters_model->CountOrder(123);
+* print_r($result); // Array ( [0] => stdClass Object ( [product_name] => "Widget A" ) )
+* @param {int} $soId - Sale order ID to filter purchaseorder records by.
+* @returns {array} Array of result objects containing product_name for the matched sale order.
+*/
 public function CountOrder($soId)
   {
     $session_comp_email = $this->session->userdata('company_email');
@@ -330,6 +409,15 @@ public function CountOrder($soId)
     return $query->result();
   }
 
+  /**
+   * Count invoices for a given sale order constrained to the current session/company.
+   * @example
+   * $this->load->model('Aifilters_model');
+   * $result = $this->Aifilters_model->CountInvoice(123);
+   * echo $result; // e.g. 2
+   * @param {int} $saleorder_id - Sale order ID used to filter invoices (e.g. 123).
+   * @returns {int} Number of matching invoices (integer count).
+   */
   public function CountInvoice($saleorder_id){
         $sess_eml           = $this->session->userdata('email');
         $session_comp_email = $this->session->userdata('company_email');
