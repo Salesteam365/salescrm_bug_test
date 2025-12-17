@@ -8,6 +8,15 @@ var $col = 0;
 // Ordinate of column start
 var $y0;
 
+/****
+* Generate the PDF page header: sets font, colors, line width and prints the global $title centered inside a colored box; saves current Y position to $this->y0.
+* @example
+* $pdf = new PDF(); // class extending FPDF with this Header() method
+* $pdf->title = 'My Document Title';
+* $pdf->AddPage(); // Header() is called automatically on AddPage()
+* $pdf->Output('I','document.pdf'); // Renders a page with a centered title inside a colored box
+* @returns void Does not return a value.
+*/
 function Header()
 {
 	// Page header
@@ -44,6 +53,23 @@ function SetCol($col)
 	$this->SetX($x);
 }
 
+/**
+ * Decide whether to accept an automatic page break. If the current column index is less than 2,
+ * the method advances to the next column and keeps on the same page; otherwise it resets to the
+ * first column and requests a page break.
+ * @example
+ * $pdf = new PDF(); // instance of the class using AcceptPageBreak
+ * // Example when in a left/center column:
+ * $pdf->col = 0;
+ * $pdf->y0 = 10;
+ * $result = $pdf->AcceptPageBreak();
+ * var_export($result); // outputs: false
+ * // Example when in the rightmost column:
+ * $pdf->col = 2;
+ * $result = $pdf->AcceptPageBreak();
+ * var_export($result); // outputs: true
+ * @returns {bool} Return false to stay on the same page and move to the next column; true to perform a page break and return to the first column.
+ */
 function AcceptPageBreak()
 {
 	// Method accepting or not automatic page break
@@ -76,6 +102,17 @@ function ChapterTitle($num, $label)
 	$this->y0 = $this->GetY();
 }
 
+/**
+* Output the contents of a plain text file into the current PDF column, append an italic "(end of excerpt)" note, and reset to the first column.
+* @example
+* $pdf = new PDF();
+* $pdf->AddPage();
+* $pdf->SetCol(1); // print into second column as an example
+* $pdf->ChapterBody('application/third_party/fpdf/tutorial/sample_chapter.txt');
+* // The method writes the file contents into the PDF and does not return a value.
+* @param {string} {file} - Path to the plain text file to read and render into the PDF column (e.g. 'tutorial/sample_chapter.txt').
+* @returns {void} Does not return a value; outputs directly to the PDF.
+*/
 function ChapterBody($file)
 {
 	// Read text file
