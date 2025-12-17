@@ -7,6 +7,16 @@ class Organization_model extends CI_Model
   var $search_by = array('org_name','email','website','mobile','customer_type');
   var $order = array('id' => 'desc');
   
+  /**
+  * Prepare and apply the DataTables server-side filters and ordering to $this->db for retrieving organization records.
+  * @example
+  * // called from within the model/controller (no arguments)
+  * $this->_get_datatables_query();
+  * $query = $this->db->get(); // execute the prepared query
+  * echo $query->num_rows(); // render some sample output value; e.g. 12
+  * @param void $none - No parameters; query is built using session data and $_POST inputs (fromDate, toDate, searchDate, searchUser, cust_types, search/order).
+  * @returns void Builds and sets the active query on $this->db; does not return any value directly.
+  */
   private function _get_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -125,6 +135,16 @@ class Organization_model extends CI_Model
     $query = $this->db->get();
     return $query->num_rows();
   }
+  /**
+  * Count all organization records for the current session's company where customer_type is 'Customer' or 'Both'.
+  * @example
+  * $CI =& get_instance();
+  * $CI->load->model('Organization_model');
+  * $count = $CI->Organization_model->count_all();
+  * echo $count; // e.g. 42
+  * @param {void} none - No arguments required.
+  * @returns {int} Total number of matching organization records.
+  */
   public function count_all()
   {
     $this->db->from($this->table);
@@ -144,6 +164,15 @@ class Organization_model extends CI_Model
     return $this->db->insert_id();
   }
   
+  /**
+   * Update the organization_id field for a specific record in the model's table.
+   * @example
+   * $result = $this->Organization_model->organization_id(123, 45);
+   * echo $result; // outputs 1 on success or empty string on failure
+   * @param {int} $organization_id - New organization ID to set (e.g., 123).
+   * @param {int} $id - Record primary key ID to update (e.g., 45).
+   * @returns {bool} True if the update succeeded, false otherwise.
+   */
   public function organization_id($organization_id,$id)
   {
     $data = array(
@@ -163,6 +192,26 @@ class Organization_model extends CI_Model
   
   
   
+  /**
+  * Retrieve lead records for a given organization filtered by the current session's company and company email.
+  * @example
+  * $result = $this->Organization_model->get_leads('Acme Inc');
+  * print_r($result); // sample output:
+  * // Array (
+  * //   [0] => Array (
+  * //     'id' => '1',
+  * //     'lead_id' => 'L-100',
+  * //     'name' => 'Website redesign',
+  * //     'lead_owner' => 'John Doe',
+  * //     'lead_status' => 'Open',
+  * //     'contact_name' => 'Jane Smith',
+  * //     'sub_total' => '1500.00',
+  * //     'currentdate' => '2025-01-15'
+  * //   )
+  * // )
+  * @param {string} $org_name - Organization name to filter leads.
+  * @returns {array} Array of associative arrays representing lead records (keys: id, lead_id, name, lead_owner, lead_status, contact_name, sub_total, currentdate).
+  */
   public function get_leads($org_name)
   {
     $this->db->select('id,lead_id,name,lead_owner,lead_status,contact_name,sub_total,currentdate');
@@ -175,6 +224,14 @@ class Organization_model extends CI_Model
     $query = $this->db->get();
     return $query->result_array();
   }
+  /**
+  * Retrieve opportunities for a given organization filtered by the current session's company email and company name.
+  * @example
+  * $result = $this->Organization_model->get_opportunity('Acme Corp');
+  * print_r($result); // Example output: Array ( [0] => Array ( [id] => '1', [name] => 'Opportunity A', [opportunity_id] => 'OPP-001', [owner] => 'John Doe', [stage] => 'Qualification', [sub_total] => '1500.00', [currentdate] => '2025-01-15' ) )
+  * @param {string} $org_name - Organization name to filter opportunities.
+  * @returns {array} Array of associative arrays representing matching opportunity rows (id, name, opportunity_id, owner, stage, sub_total, currentdate).
+  */
   public function get_opportunity($org_name)
   {
     $this->db->select('id,name,opportunity_id,owner,stage,sub_total,currentdate');
@@ -226,6 +283,17 @@ class Organization_model extends CI_Model
     $query = $this->db->get();
     return $query->row_array();
   }
+  /**
+  * Update records in the organizations table using the provided where condition and data. Admins can update any record; non-admins are limited to rows matching the current session email.
+  * @example
+  * $where = ['id' => 5];
+  * $data  = ['name' => 'Acme Corporation', 'status' => 'active'];
+  * $result = $this->Organization_model->update($where, $data);
+  * echo $result; // e.g. 1
+  * @param {array|string} $where - Where clause as associative array or SQL string (e.g. ['id' => 5]).
+  * @param {array} $data - Associative array of column => value pairs to update (e.g. ['name' => 'Acme Corporation']).
+  * @returns {int} Number of affected rows.
+  */
   public function update($where,$data)
   {
     if($this->session->userdata('type') == 'admin')
@@ -246,6 +314,14 @@ class Organization_model extends CI_Model
 		$this->db->update($this->table);
   }
   
+  /**
+  * Retrieve the organization name for a given organization ID filtered by the current session's company and company email.
+  * @example
+  * $result = $this->Organization_model->get_org_data(5);
+  * print_r($result); // Sample output: Array ( [0] => stdClass Object ( [org_name] => "Acme Corp" ) )
+  * @param int $id - Organization ID to look up.
+  * @returns array Array of stdClass objects each containing the 'org_name' property for the matched record.
+  */
   public function get_org_data($id)
   {
       
@@ -277,6 +353,17 @@ class Organization_model extends CI_Model
   }
   
   
+  /**
+  * Retrieve organizations whose name partially matches the provided query and belong to the current session company/email, filtered to active customers/vendors.
+  * @example
+  * $result = $this->Organization_model->get_org_name('Acme', 'user@example.com', 'Acme Corp', 'comp@example.com');
+  * print_r($result); // e.g. Array ( [0] => stdClass Object ( [org_name] => Acme Corp [customer_type] => Customer [session_company] => Acme Corp [session_comp_email] => comp@example.com ) )
+  * @param {string} $org_name - Partial or full organization name to search for.
+  * @param {string} $sess_eml - Session email of the current user (not used in query but kept for signature compatibility).
+  * @param {string} $session_company - Company identifier from the current session to restrict results.
+  * @param {string} $session_comp_email - Company email from the current session to restrict results.
+  * @returns {array} Array of result objects representing matching organizations (empty array if none).
+  */
   public function get_org_name($org_name,$sess_eml,$session_company,$session_comp_email)
   {
     $this->db->like('org_name', $org_name , 'both');
@@ -293,6 +380,14 @@ class Organization_model extends CI_Model
     // $this->db->limit(5);
     return $this->db->get($this->table)->result();
   }
+  /**
+  * Get organization rows for a given organization name where customer_type is 'Customer' or 'Both'.
+  * @example
+  * $result = $this->Organization_model->getOrgValue(['org_name' => 'Acme Corp']);
+  * echo json_encode($result); // e.g. [{"id":"1","org_name":"Acme Corp","customer_type":"Customer","created_at":"2023-01-01 00:00:00"}]
+  * @param array $org_name - Associative array with key 'org_name' (string) to search for.
+  * @returns array Return array of database rows (result_array) matching the org_name and customer_type filter, or empty array if not found or input missing.
+  */
   public function getOrgValue($org_name)
   {
     $response = array();
@@ -309,6 +404,14 @@ class Organization_model extends CI_Model
     }
     return $response;
   }
+  /**
+  * Retrieve the organization name (org_name) for a given organization ID, constrained by the current session's company and email and the deletion status.
+  * @example
+  * $result = $this->Organization_model->OrgForCon(5);
+  * echo $result // Acme Corporation
+  * @param {int} $id - Organization record ID to look up.
+  * @returns {string|null} Organization name if found, or null if no matching record exists.
+  */
   public function OrgForCon($id)
   {
     $sess_eml = $this->session->userdata('email');
@@ -333,6 +436,17 @@ class Organization_model extends CI_Model
     $query = $this->db->get();
     return $query->row()->org_name;
   }
+  /**
+  * Retrieve contacts for the current session filtered by organization name.
+  * @example
+  * $result = $this->Organization_model->getByOrg('Acme Corporation');
+  * // $result => [
+  * //   ['id' => 10, 'org_name' => 'Acme Corporation', 'name' => 'John Doe', 'email' => 'john@example.com', ...],
+  * //   ...
+  * // ] or FALSE when no records found
+  * @param {string} $org_name - Organization name to filter contacts by.
+  * @returns {array|false} Array of associative arrays representing contact rows ordered by id desc, or FALSE if none found.
+  */
   public function getByOrg($org_name)
   {
     $sess_eml = $this->session->userdata('email');
@@ -348,6 +462,15 @@ class Organization_model extends CI_Model
     $query = $this->db->get();
     return ($query->num_rows() > 0)?$query->result_array():FALSE;
   }
+  /**
+  * Check whether an organization with the given name (and optional email) exists for the current session company.
+  * @example
+  * $result = $this->Organization_model->check_org('Acme Inc', 'info@acme.example');
+  * echo $result; // 202 if exists, 200 if not
+  * @param {string} $org_name - Organization name to check.
+  * @param {string} $email - (optional) Email address to match; provide empty string to ignore email check.
+  * @returns {int} HTTP-like status code: 202 when a matching record exists, 200 when no record is found.
+  */
   public function check_org($org_name, $email='')
   {
     $session_company = $this->session->userdata('company_name');
@@ -370,6 +493,16 @@ class Organization_model extends CI_Model
   }
   
     
+  /**
+  * Check whether an organization with the same primary contact, name and email already exists (only active records where delete_status = 1 and customer_type is 'Customer' or 'Both').
+  * @example
+  * $result = check_duplicate_org_name(42, 'Acme Corp', 'info@acme.com');
+  * print_r($result); // sample output: Array ( [sess_eml] => 'abc123' [org_name] => 'Acme Corp' [primary_contact] => '42' [email] => 'info@acme.com' )
+  * @param int $primary_contact - Primary contact ID to match.
+  * @param string $organization - Organization name to check for duplicates.
+  * @param string $email - Email address of the organization to match.
+  * @returns array|false Returns the organization row as an associative array if a duplicate exists, or false if none found.
+  */
   function check_duplicate_org_name($primary_contact,$organization,$email)
   {
     $this->db->select('sess_eml,org_name,primary_contact,email');
