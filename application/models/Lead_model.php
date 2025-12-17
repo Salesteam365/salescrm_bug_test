@@ -86,6 +86,20 @@ class Lead_model extends CI_Model
     //         $this->db->order_by(key($order), $order[key($order)]);
     //     }
     // }
+        /**
+        * Builds the active record query used by DataTables, applying session-based access control (admin or standard), POST filters (searchDate, fromDate, toDate, searchUser, searchStaus), column search, grouping, and ordering.
+        * @example
+        * // Example usage (assumes session and POST are populated):
+        * $_POST['search']['value'] = 'Acme';
+        * $_POST['order'][0]['column'] = 1;
+        * $_POST['order'][0]['dir'] = 'desc';
+        * $this->Lead_model->_get_datatables_query(); // builds the query on $this->db
+        * $query = $this->db->get();
+        * $result = $query->result();
+        * print_r($result); // sample output: Array ( [0] => stdClass Object ( [id] => 12 [lead_name] => 'Acme Corp' [lead_status] => 'open' ... ) )
+        * @param void $none - No direct arguments; uses $this->session and $this->input POST data instead.
+        * @returns void Applies filters and ordering to $this->db Query Builder; does not return a value.
+        */
         private function _get_datatables_query()
     {
         $sess_eml = $this->session->userdata('email');
@@ -196,6 +210,17 @@ class Lead_model extends CI_Model
         $this->db->from($this->table);
         return $this->db->count_all_results();
     }
+    /**
+    * Retrieve a paginated list of lead records filtered by session/company, date and search term.
+    * @example
+    * $result = $this->Lead_model->get_all_lead('2025-01-01', 'Acme', 20, 0);
+    * print_r($result); // sample output: Array ( [0] => Array ( 'id' => 123, 'name' => 'Acme Corp', 'lead_status' => 'new', 'currentdate' => '2025-01-02', ... ) )
+    * @param {string} $search_date - Start date filter (e.g. '2025-01-01') or special value 'This Week'.
+    * @param {string} $search - Search term to apply to configured searchable columns (e.g. 'Acme').
+    * @param {int} $per_page - Number of records to return (pagination limit), e.g. 20.
+    * @param {int} $start - Offset to start returning records from (pagination offset), e.g. 0.
+    * @returns {array} Returns an array of associative arrays representing matching lead records.
+    */
     public function get_all_lead($search_date, $search, $per_page, $start)
     {
         //$status,
@@ -248,6 +273,16 @@ class Lead_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    /**
+    * Get total count of leads matching the current session scope, optional date range, search term, and assignment flag.
+    * @example
+    * $result = $this->Lead_model->get_all_count('This Week', 'Acme', '1');
+    * echo $result // 42
+    * @param {string} $search_date - Date filter value: 'YYYY-MM-DD' to use that start date, "This Week" to use last Monday, or empty to default to last Monday.
+    * @param {string} $search - Search term to apply with LIKE across configured searchable columns.
+    * @param {string|int} $assigned - Optional flag (e.g. '1' or 1). If non-empty, restricts to assigned leads (assigned_status = 1).
+    * @returns {int} Total number of rows matching the applied filters.
+    */
     public function get_all_count($search_date, $search, $assigned = '')
     {
         $sess_eml = $this->session->userdata('email');
@@ -293,6 +328,15 @@ class Lead_model extends CI_Model
         $query = $this->db->get();
         return $query->num_rows();
     }
+    /**
+    * Get the summed initial_total for leads with a specific status (optionally only assigned leads) scoped to the current session company/user.
+    * @example
+    * $result = $this->Lead_model->getTotalPrice('New', 'assigned');
+    * echo $result['initial_total']; // render some sample output value, e.g. "1250.00"
+    * @param {string|int} $lead_status - Lead status to filter by (e.g. 'New' or 1).
+    * @param {string} $assigned - Optional. If non-empty, only include leads where assigned_status = 1. Default: ''.
+    * @returns {array} Return associative array containing 'lead_status' and summed 'initial_total' (e.g. ['lead_status' => 'New', 'initial_total' => '1250.00']).
+    */
     public function getTotalPrice($lead_status, $assigned = '')
     {
         $sess_eml = $this->session->userdata('email');
@@ -328,6 +372,15 @@ class Lead_model extends CI_Model
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
+    /**
+    * Update the lead_id value for a specific record in the leads table.
+    * @example
+    * $result = $this->Lead_model->lead_id(12345, 10);
+    * var_dump($result); // bool(true) on success, bool(false) on failure
+    * @param int|string $lead_id - New lead identifier to assign to the record.
+    * @param int $id - Primary key id of the record to update.
+    * @returns bool Return true if the update succeeded, false otherwise.
+    */
     public function lead_id($lead_id, $id)
     {
         $data = [
@@ -400,6 +453,20 @@ class Lead_model extends CI_Model
         $this->db->where('id', $id);
         $this->db->update($this->table);
     }
+    /**
+    * Build the CodeIgniter ActiveRecord query used by DataTables for "assigned" leads (applies session-based filters for admin/standard users, global search across configured columns, and ordering from $_POST).
+    * @example
+    * // Example usage inside the model (no direct return):
+    * // Simulate posted search and order:
+    * $_POST['search']['value'] = 'Acme';
+    * $_POST['order']['0']['column'] = 1;
+    * $_POST['order']['0']['dir'] = 'asc';
+    * $this->_get_datatables_query_assigned();
+    * $query = $this->db->get(); // execute built query
+    * echo $query->num_rows(); // render some sample output value; e.g. 5
+    * @param void $none - No parameters are accepted by this method.
+    * @returns void Builds the internal query on $this->db (no direct return value).
+    */
     private function _get_datatables_query_assigned()
     {
         $sess_eml = $this->session->userdata('email');
