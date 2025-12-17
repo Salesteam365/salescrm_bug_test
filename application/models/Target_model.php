@@ -15,6 +15,15 @@ class Target_model extends CI_Model
 	 
 
 
+ /**
+ * Save a user's target record into the std_user_target table and return an HTTP-like status code.
+ * @example
+ * $data = ['user_id' => 123, 'target' => 50, 'period' => '2025-01'];
+ * $result = $this->Target_model->save_user_target($data);
+ * echo $result; // 200 on success, 202 on failure
+ * @param {array} $dataArr - Associative array of user target data (e.g. ['user_id'=>int, 'target'=>int, 'period'=>string]).
+ * @returns {int} Return 200 when insert succeeds, 202 when insert fails.
+ */
 	public function save_user_target($dataArr)
 	{
         if($this->db->insert('std_user_target', $dataArr))
@@ -75,6 +84,33 @@ public function get_detail($userid){
 	   $this->db->update('std_user_target', $dataArr);
     }
 
+    /**
+    * Retrieve the currently logged-in user's data from the database (returns admin or standard user row).
+    * @example
+    * $this->load->model('Target_model');
+    * $result = $this->Target_model->getuserdataTarget();
+    * print_r($result);
+    * // Example return for admin:
+    * // Array (
+    * //   [0] => Array (
+    * //     'admin_id' => '1',
+    * //     'admin_email' => 'admin@example.com',
+    * //     'company_name' => 'Example Ltd',
+    * //     'company_logo' => 'logo.png'
+    * //   )
+    * // )
+    * // Example return for standard user:
+    * // Array (
+    * //   [0] => Array (
+    * //     'standard_id' => '10',
+    * //     'standard_email' => 'user@example.com',
+    * //     'company_email' => 'admin@example.com',
+    * //     'company_logo' => 'logo.png'
+    * //   )
+    * // )
+    * @param void None - This method does not accept arguments; it reads session data to determine the user.
+    * @returns array|false Returns an array of associative user rows when found, or FALSE if no matching user is found.
+    */
     public function getuserdataTarget()
 	{
 	    $type = $this->session->userdata('type');
@@ -102,6 +138,22 @@ public function get_detail($userid){
      var $sort_by = array('standard_name',null);
      var $search_by = array('standard_name');
      var $order = array('std_user_target.id' => 'desc');
+/**
+ * Prepare and apply a DataTables-compatible query on $this->db: selects std_user_target and standard fields, joins standard_users, filters by session company/email and active status, applies optional year/month filters from POST, global search across configured columns, and ordering from POST or default order.
+ * @example
+ * // Example POST and session values:
+ * // $_POST['search']['value'] = 'john';
+ * // $_POST['order'] = [['column' => 1, 'dir' => 'asc']];
+ * // $this->input->post('searchYrs') => '2024'
+ * // $this->input->post('searchMnth') => '7'
+ * // Session: company_name => 'Acme Ltd', company_email => 'sales@acme.example'
+ * $this->_get_datatables_query();
+ * // After calling:
+ * // $query = $this->db->get();
+ * // $result = $query->result(); // e.g. array of objects with standard_name, standard_email, id, sales_quota, profit_quota, for_month, status
+ * @param void $none - No direct arguments; reads session and POST data internally.
+ * @returns void Prepares and modifies the CI query builder ($this->db); does not return a value.
+ */
 private function _get_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -170,6 +222,19 @@ private function _get_datatables_query()
     var $search_by_ad = array('admin_name');
     var $order_ad = array('std_user_target.id' => 'desc');
 	 
+  /**
+   * Get admin targets for the current session/company filtered by POST inputs (search, year, month) and joined with admin user info.
+   * @example
+   * $this->load->model('Target_model');
+   * // Optional POST inputs (example):
+   * // $_POST['search']['value'] = 'John';
+   * // $_POST['searchYrs'] = 2025;
+   * // $_POST['searchMnth'] = 12;
+   * $result = $this->Target_model->get_target_admin();
+   * print_r($result); // Example output: Array ( [0] => stdClass { admin_name => "John Doe", admin_email => "admin@example.com", id => "1", sales_quota => "10000", profit_quota => "2000", for_month => "2025-12-01", status => "1" } )
+   * @param void $none - No parameters; method uses session and POST data internally.
+   * @returns array Array of stdClass objects containing admin and target fields (admin_name, admin_email, id, sales_quota, profit_quota, for_month, status).
+   */
   public function get_target_admin()
   {
     $sess_eml = $this->session->userdata('email');
@@ -318,6 +383,16 @@ private function _get_datatables_query()
     return $this->db->count_all_results();
   }
 
+/**
+* Get distinct months or years from the std_user_target.for_month column.
+* @example
+* $this->load->model('Target_model');
+* $result = $this->Target_model->get_DateYear('month', 2023);
+* print_r($result); // e.g. Array ( [0] => stdClass Object ( [month] => 1 ) [1] => stdClass Object ( [month] => 2 ) )
+* @param {{string}} {{$value}} - Either 'year' to return distinct years; any other value returns distinct months.
+* @param {{int|string}} {{$dataVl}} - Optional year filter (used when requesting months), e.g. 2023.
+* @returns {{array}} Array of stdClass objects, each containing a single 'month' property (month number or year).
+*/
 public function get_DateYear($value='',$dataVl='')
 {
 	if($value=='year'){
