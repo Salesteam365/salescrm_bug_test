@@ -9,6 +9,16 @@
 
 require('ttfparser.php');
 
+/**
+* Outputs a message to either the CLI or a web browser, optionally prefixing it with a severity label.
+* @example
+* Message("Font file created successfully", "Notice");
+* // CLI output: Notice: Font file created successfully
+* // Browser output: <b>Notice</b>: Font file created successfully<br>
+* @param {string} $txt - The message text to output.
+* @param {string} $severity - Optional severity label (e.g. "Warning", "Notice"). If provided it is prefixed to the message.
+* @returns {void} No return value; the function echoes the message directly.
+*/
 function Message($txt, $severity='')
 {
 	if(PHP_SAPI=='cli')
@@ -41,6 +51,15 @@ function Error($txt)
 	exit;
 }
 
+/**
+* Load a 256-entry encoding map for the specified encoding and return a byte-to-Unicode/glyph-name mapping.
+* @example
+* $map = LoadMap('CP1252');
+* echo $map[0x41]['name']; // outputs 'A'
+* echo $map[0x41]['uv'];   // outputs 65
+* @param {string} $enc - Encoding identifier (filename without extension), e.g. 'CP1252' or 'iso-8859-1'.
+* @returns {array} Return an array of 256 elements where each element is an associative array with keys 'uv' (int Unicode value) and 'name' (string glyph name).
+*/
 function LoadMap($enc)
 {
 	$file = dirname(__FILE__).'/'.strtolower($enc).'.map';
@@ -59,6 +78,18 @@ function LoadMap($enc)
 	return $map;
 }
 
+/**
+* Extracts font metrics and metadata from a TrueType (.ttf) file and optionally embeds the raw font data.
+* @example
+* $map = array_fill(0,256,array('name'=>'.notdef','uv'=>0));
+* $map[65] = array('name'=>'A','uv'=>65); // map ASCII code 65 to glyph UV 65
+* $info = GetInfoFromTrueType('/path/to/font/DejaVuSans.ttf', true, $map);
+* print_r($info); // Example output: Array ( [FontName] => DejaVuSans [Bold] => 0 [ItalicAngle] => 0 [IsFixedPitch] => 0 ... )
+* @param string $file - Path to the TrueType font file (.ttf).
+* @param bool $embed - Whether to embed the font data into the returned info (requires embedding permission in the font).
+* @param array $map - 256-entry character map where each entry is an array with keys 'name' (glyph name) and 'uv' (unicode/glyph index).
+* @returns array Associative array of font information (keys include FontName, Bold, ItalicAngle, IsFixedPitch, Ascender, Descender, UnderlineThickness, UnderlinePosition, FontBBox, CapHeight, MissingWidth, Widths, and optionally Data and OriginalSize when $embed is true).
+*/
 function GetInfoFromTrueType($file, $embed, $map)
 {
 	// Return informations from a TrueType font
@@ -102,6 +133,38 @@ function GetInfoFromTrueType($file, $embed, $map)
 	return $info;
 }
 
+/**
+* Extract font metric information from a Type1 font (AFM) and optionally read binary font data for embedding.
+* @example
+* $map = array_fill(0,256,array('name'=>'.notdef'));
+* $map[65]['name'] = 'A'; // sample mapping for character code 65
+* $result = GetInfoFromType1('/path/to/font.pfb', true, $map);
+* print_r($result);
+* // Example output snippet:
+* // Array(
+* //   'FontName' => 'Helvetica',
+* //   'Weight' => 'Medium',
+* //   'Bold' => false,
+* //   'ItalicAngle' => 0,
+* //   'Ascender' => 718,
+* //   'Descender' => -207,
+* //   'UnderlineThickness' => 50,
+* //   'UnderlinePosition' => -100,
+* //   'IsFixedPitch' => false,
+* //   'FontBBox' => array(-166,-225,1000,931),
+* //   'CapHeight' => 718,
+* //   'StdVW' => 84,
+* //   'MissingWidth' => 250,
+* //   'Widths' => array(0 => 250, 1 => 250, 65 => 667, ...),
+* //   'Data' => '...binary data...' (only when $embed is true),
+* //   'Size1' => 1234,
+* //   'Size2' => 5678
+* // )
+* @param {string} $file - Path to the Type1 font file (usually .pfb or .pfa). The corresponding AFM is expected at the same path with the .afm extension.
+* @param {bool} $embed - If true, the function will read and return the binary font segments (Data, Size1, Size2) for embedding.
+* @param {array} $map - Character map indexed 0..255 where each entry is an array with a 'name' key (e.g. $map[65]['name'] == 'A') used to build the Widths array.
+* @returns {array} Associative array of extracted font information (FontName, Weight, Bold, ItalicAngle, Ascender, Descender, UnderlineThickness, UnderlinePosition, IsFixedPitch, FontBBox, CapHeight, StdVW, MissingWidth, Widths and optionally Data, Size1, Size2).
+*/
 function GetInfoFromType1($file, $embed, $map)
 {
 	// Return informations from a Type1 font
@@ -193,6 +256,25 @@ function GetInfoFromType1($file, $embed, $map)
 	return $info;
 }
 
+/**
+* Build a font descriptor array string from a font metrics/info array used by makefont.
+* @example
+* $info = array(
+*   'Ascender'    => 800,
+*   'Descender'   => -200,
+*   'CapHeight'   => 700,
+*   'IsFixedPitch'=> false,
+*   'ItalicAngle' => 0,
+*   'FontBBox'    => array(-50, -200, 1000, 900),
+*   // 'StdVW' not set
+*   'Bold'        => false,
+*   'MissingWidth'=> 600
+* );
+* $result = MakeFontDescriptor($info);
+* echo $result; // render some sample output value: array('Ascent'=>800,'Descent'=>-200,'CapHeight'=>700,'Flags'=>32,'FontBBox'=>'[-50 -200 1000 900]','ItalicAngle'=>0,'StemV'=>70,'MissingWidth'=>600)
+* @param {array} $info - Associative array of font metrics and properties (keys: Ascender, Descender, CapHeight (optional), IsFixedPitch, ItalicAngle, FontBBox (array of 4 numbers), StdVW (optional), Bold, MissingWidth).
+* @returns {string} Returns a string representing a PHP array literal describing the font descriptor for PDF embedding.
+*/
 function MakeFontDescriptor($info)
 {
 	// Ascent
@@ -230,6 +312,14 @@ function MakeFontDescriptor($info)
 	return $fd;
 }
 
+/**
+* Builds a PHP array literal string that maps every byte value (0-255) to a character key (printable characters quoted, single quote and backslash escaped, non-printables represented as chr(n)) with the corresponding width values.
+* @example
+* $widths = array_fill(0, 256, 600);
+* $widths[32] = 250; // space
+* $widths[65] = 600; // 'A'
+* $result = MakeWidthArray($widths);
+* echo $result // render a PHP array string like: array(' '=>250,'!'=>600, /* ... */
 function MakeWidthArray($widths)
 {
 	$s = "array(\n\t";
@@ -253,6 +343,19 @@ function MakeWidthArray($widths)
 	return $s;
 }
 
+/**
+* Build a PDF font encoding "Differences" string by comparing a given map to the cp1252 reference.
+* @example
+* $sample_map = [
+*   32  => ['name' => 'space'],
+*   128 => ['name' => 'Euro'],
+*   130 => ['name' => 'quotesinglbase']
+* ];
+* $result = MakeFontEncoding($sample_map);
+* echo $result; // Example output: "128 /Euro 130 /quotesinglbase"
+* @param array $map - Associative array indexed by codepoint (0-255) where each entry is an array containing at least a 'name' key with the glyph name.
+* @returns string Returns a trimmed string listing differences in the PDF "Differences" format (codepoints and /glyphnames).
+*/
 function MakeFontEncoding($map)
 {
 	// Build differences from reference encoding
@@ -281,6 +384,29 @@ function SaveToFile($file, $s, $mode)
 	fclose($f);
 }
 
+/**
+* Generate and save a PHP font definition file containing font metadata (name, descriptor, widths, encoding, embed info, etc.) used by MakeFont.
+* @example
+* $info = array(
+*     'FontName' => 'Helvetica',
+*     'UnderlinePosition' => -100,
+*     'UnderlineThickness' => 50,
+*     'Widths' => array(32 => 250, 65 => 600),
+*     'File' => 'helvetica.ttf',
+*     'Size1' => 0,
+*     'Size2' => 0,
+*     'OriginalSize' => 12345
+* );
+* MakeDefinitionFile('helvetica.php', 'TrueType', 'cp1252', true, array(), $info);
+* // Generates 'helvetica.php' containing PHP variables describing the font
+* @param {string} $file - Destination filename for the generated PHP definition file.
+* @param {string} $type - Font type (e.g. 'TrueType' or 'Type1').
+* @param {string} $enc - Encoding name to write into the definition (e.g. 'cp1252').
+* @param {bool} $embed - Whether the font file should be embedded (true) or not (false).
+* @param {array} $map - Character mapping/encoding differences used to build the $diff entry.
+* @param {array} $info - Associative array with font metadata (must include keys like 'FontName', 'UnderlinePosition', 'UnderlineThickness', 'Widths', 'File', and optionally 'Size1','Size2','OriginalSize').
+* @returns {void} Writes the PHP definition file to disk and does not return a value.
+*/
 function MakeDefinitionFile($file, $type, $enc, $embed, $map, $info)
 {
 	$s = "<?php\n";
@@ -309,6 +435,18 @@ function MakeDefinitionFile($file, $type, $enc, $embed, $map, $info)
 	SaveToFile($file, $s, 't');
 }
 
+/**
+* Generate a font definition file (and optional compressed font data) from a TTF/OTF/PFB font.
+* @example
+* MakeFont('/var/www/fonts/DejaVuSans.ttf', 'cp1252', true);
+* // Example output messages:
+* // "Font file compressed: DejaVuSans.z"
+* // "Font definition file generated: DejaVuSans.php"
+* @param {string} $fontfile - Path to the font file to process (supported extensions: .ttf, .otf, .pfb).
+* @param {string} $enc - Encoding/map to use for the font (default: 'cp1252').
+* @param {bool} $embed - Whether to embed the font data in the generated files (default: true).
+* @returns {void} Generates a .php font definition (and optionally a .z compressed font file); does not return a value.
+*/
 function MakeFont($fontfile, $enc='cp1252', $embed=true)
 {
 	// Generate a font definition file
