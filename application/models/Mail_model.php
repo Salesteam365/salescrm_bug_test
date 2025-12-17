@@ -9,6 +9,27 @@ class Mail_model extends CI_Model
 	var $order 		= array('id' => 'desc');
 	
   
+   /**
+    * Prepare the active CodeIgniter query used by server-side DataTables.
+    *
+    * Builds the query on $this->db using session constraints (company email/name),
+    * optional user filter, date range or preset date filters ("This Week"),
+    * text search across configured searchable columns, delete-status filter,
+    * and ordering parameters from POST. This method does not execute the query;
+    * it only modifies the active query builder object so the caller can call
+    * $this->db->get() or further chain limits/offsets (for pagination).
+    *
+    * @example
+    * // Typical usage inside the model:
+    * // Assume POST contains search and order parameters and session contains company info.
+    * $this->_get_datatables_query();
+    * $query = $this->db->get(); // executes the prepared query
+    * $rows = $query->result();
+    * // Sample output: array of invoice objects, e.g.:
+    * // [ (object) ['id' => 123, 'invoice_date' => '2025-01-10', 'sess_eml' => 'user@example.com'], ... ]
+    *
+    * @return void Prepare the active query builder on $this->db; no direct return value.
+    */
    private function _get_datatables_query()
    {
 		$sess_eml           = $this->session->userdata('email');
@@ -117,6 +138,26 @@ class Mail_model extends CI_Model
   
   
   
+  /**
+   * Retrieve mail configuration for the current session's company; falls back to the global default if none found.
+   * @example
+   * $result = $this->mail_model->get_allemail();
+   * print_r($result);
+   * // Example output:
+   * // Array
+   * // (
+   * //   [id] => 3
+   * //   [smtp_host] => smtp.example.com
+   * //   [smtp_port] => 587
+   * //   [session_comp_email] => support@example.com
+   * //   [session_company] => Example Ltd
+   * //   [status] => 1
+   * //   [delete_status] => 0
+   * //   [default_setting] => 0
+   * //   ...
+   * // )
+   * @returns array|null Mail configuration as an associative array for the session company, or the default mail configuration if none exists; returns null if no configuration found. 
+   */
   public function get_allemail()
   {
     // old code
@@ -146,6 +187,26 @@ class Mail_model extends CI_Model
         return $mail_conf;
   }
   
+  /**
+   * Retrieve child roles for a given parent role ID filtered by the current session company and active flags.
+   * @example
+   * $result = $this->Mail_model->get_allroles_tree(3);
+   * print_r($result); // Example output:
+   * // Array (
+   * //   [0] => Array (
+   * //       'id' => 7,
+   * //       'role_name' => 'Supervisor',
+   * //       'parent_role_id' => 3,
+   * //       'status' => 1,
+   * //       'delete_status' => 1,
+   * //       'session_comp_email' => 'acme@example.com',
+   * //       'session_company' => 'Acme Corp'
+   * //   ),
+   * //   [1] => Array ( ... )
+   * // )
+   * @param int $prntid - Parent role ID to retrieve child roles for.
+   * @returns array Return an array of associative arrays representing roles that match the parent ID and session company, or an empty array if none found.
+   */
   public function get_allroles_tree($prntid)
   {
     $sess_eml           = $this->session->userdata('email');
@@ -163,6 +224,14 @@ class Mail_model extends CI_Model
   
   
 
+  /**
+  * Retrieve a single email record by its ID, scoped to the current session's company and company email.
+  * @example
+  * $result = $this->Mail_model->get_emailby_id(42);
+  * print_r($result); // Array ( ['id'] => 42, ['subject'] => 'Welcome to Acme Corp', ['to'] => 'user@example.com', ... )
+  * @param {int} $id - ID of the email record to retrieve.
+  * @returns {array|null} Return associative array of the email record if found, or null/empty if not found.
+  */
   public function get_emailby_id($id)
   {
     $sess_eml           = $this->session->userdata('email');
