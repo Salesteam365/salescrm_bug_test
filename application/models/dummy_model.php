@@ -1,6 +1,15 @@
 <?php 
 
 Class dummy_model extends CI_Model{
+    /**
+    * Fetch a user record from the "users" table by ID, optionally filtering by email.
+    * @example
+    * $result = $this->dummy_model->fetch_Data(42, 'jane.doe@example.com');
+    * print_r($result); // Array ( [id] => 42 [email] => 'jane.doe@example.com' [name] => 'Jane Doe' )
+    * @param {int|string} $id - User ID to fetch.
+    * @param {string} $email - Optional email to further filter the user; defaults to an empty string.
+    * @returns {array|false} Returns an associative array of the user row when found, or false if no matching record exists.
+    */
     public function fetch_Data($id, $email = ''){
         $this->db->select('*');
         $this->db->from('users');
@@ -16,6 +25,15 @@ Class dummy_model extends CI_Model{
         }   
     }
 
+    /**
+    * Insert a new record into the 'user' table and return the inserted record ID or false on failure.
+    * @example
+    * $sample_data = ['username' => 'alice', 'email' => 'alice@example.com'];
+    * $result = $this->dummy_model->insert_Data($sample_data);
+    * echo $result // 42 or false;
+    * @param {array} $data - Associative array of column => value pairs to insert into the 'user' table.
+    * @returns {int|false} Insert ID on success, or false on failure or when $data is empty.
+    */
     public function insert_Data($data){
         if (!empty($data)) {
             $this->db->insert('user', $data);
@@ -83,6 +101,16 @@ public function get_datatables(){
   var $search_by = array('subject','org_name','saleorder_id','owner','status','approved_by','datetime');
   var $order = array('id' => 'desc');
   
+  /**
+  * Build the Active Record/Query Builder for server-side DataTables (applies filters, search, date range, ordering and optional sum selection).
+  * @example
+  * // from inside the model (private method), example usage:
+  * $this->_get_datatables_query('sum');
+  * $query = $this->db->get();
+  * echo $query->num_rows(); // e.g. 10
+  * @param {string} $action - Optional action flag (default ''). If non-empty the query will select SUM(sub_totals) (example values: 'sum', 'export').
+  * @returns {void} No direct return; the method modifies $this->db query builder state.
+  */
   private function _get_datatables_query($action='')
   {
 	$sess_eml = $this->session->userdata('email');
