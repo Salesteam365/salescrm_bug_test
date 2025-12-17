@@ -10,6 +10,19 @@ class Pipeline_model extends CI_Model
     
     
  
+  /**
+   * Get aggregated pipeline values grouped by month for the current company (and current user when session type is "standard"), applying optional POST filters (filterYear, searchDate, filterStage, filterFrom/filterTo).
+   * @example
+   * $CI =& get_instance();
+   * $CI->load->model('Pipeline_model');
+   * $result = $CI->Pipeline_model->get_pipeline_value();
+   * // Example returned value:
+   * // [
+   * //   (object) ['id' => 1, 'month_name' => 'January', 'sub_total' => '1500.00', 'weighted_revenue' => '750.00'],
+   * //   (object) ['id' => 2, 'month_name' => 'February', 'sub_total' => '2000.00', 'weighted_revenue' => '1200.00']
+   * // ]
+   * @returns {array|false} Array of result objects (each with id, month_name, sub_total, weighted_revenue) when records exist, or false when no records found.
+   */
   public function get_pipeline_value(){
 	  
       $session_company = $this->session->userdata('company_name');
@@ -71,6 +84,19 @@ class Pipeline_model extends CI_Model
       }
 }
 
+/**
+* Retrieve pipeline funnel totals grouped by stage for the current session/company, honoring optional POST filters (searchDate, filterStage, filterFrom/filterTo) and user type scoping.
+* @example
+* $result = $this->Pipeline_model->get_pipeline_funnel();
+* // sample returned value (array of stdClass objects):
+* // [
+* //   (object) ['id' => '1', 'stage' => 'Prospect', 'sub_total' => '12500.00'],
+* //   (object) ['id' => '2', 'stage' => 'Qualified', 'sub_total' => '8400.50']
+* // ]
+* var_dump($result);
+* @param void $none - No arguments. Method uses session and POST data for scoping and filters.
+* @returns array|false Returns an array of result objects (fields: id, stage, sub_total) grouped by stage, or false if no records are found.
+*/
 public function get_pipeline_funnel(){
 	  
       $session_company = $this->session->userdata('company_name');
@@ -125,6 +151,14 @@ public function get_pipeline_funnel(){
       }
 }
 
+  /**
+  * Retrieve aggregated pipeline funnel data for a given stage.
+  * @example
+  * $result = $this->Pipeline_model->get_pipeline_funnel_byStage('Proposal');
+  * print_r($result); // sample output: stdClass Object ( [id] => 12 [stage] => Proposal [total_oppo] => 3 [sub_total] => 4500 )
+  * @param {string} $stage - Stage name to filter pipeline results (e.g. 'Qualification', 'Proposal', 'Negotiation').
+  * @returns {object|false} Return an object containing id, stage, total_oppo and sub_total when records exist; returns false if no records found.
+  */
   public function get_pipeline_funnel_byStage($stage){
 	  $session_company = $this->session->userdata('company_name');
       $session_comp_email = $this->session->userdata('company_email');
@@ -157,6 +191,27 @@ public function get_pipeline_funnel(){
       }  
   }
 
+  /**
+  * Retrieve pipeline activity grouped by current date for the current session/company with optional filters (year, date range, stage).
+  * @example
+  * $this->load->model('Pipeline_model');
+  * $result = $this->Pipeline_model->get_pipeline_activity();
+  * // Example returned value (array of objects) on success:
+  * // [
+  * //   (object)[
+  * //     'id' => 1,
+  * //     'month_name' => '3',
+  * //     'stage' => 'Negotiation',
+  * //     'expclose_date' => '2025-06-01',
+  * //     'name' => 'Deal A',
+  * //     'sub_total' => '1500.00'
+  * //   ],
+  * //   ...
+  * // ]
+  * var_dump($result);
+  * @param void No parameters.
+  * @returns array|false Returns an array of result objects grouped by currentdate on success, or false if no records found.
+  */
   public function get_pipeline_activity()
   {
 	  
@@ -221,6 +276,14 @@ public function get_pipeline_funnel(){
   }
 
   
+  /**
+  * Get monthly lead counts for the current year filtered by user/company based on the report type.
+  * @example
+  * $result = $this->Pipeline_model->get_report_leads_by_user('standard');
+  * print_r($result); // Example output: Array ( [0] => stdClass Object ( [id] => 1 [month_name] => "January" [total_deals] => "10" ) )
+  * @param {{string}} {{$type}} - Report type. Use 'standard' to filter by the current logged-in user, or 'admin' to get company-wide results.
+  * @returns {{mixed}} Returns an array (or result object list) of monthly totals on success, or false if no records are found.
+  */
   public function get_report_leads_by_user($type)
   {
     $y = strtotime('-1day');
@@ -266,6 +329,19 @@ public function get_pipeline_funnel(){
   }
   
   
+  /**
+   * Retrieve deal counts grouped by month for the current company (and optionally current user), with optional date and stage filters.
+   * @example
+   * $result = $this->Pipeline_model->get_all_deals_by_date('standard', '2025-01-01', '2025-01-01', '2025-12-31', 2025, 'Negotiation');
+   * print_r($result); // Example output: [ (object) ['id' => 1, 'month_name' => 'January', 'total_deals' => 5], ... ] or bool(false) if no records
+   * @param {string} $type - 'standard' to filter by the logged-in user and company, 'admin' to filter by company only.
+   * @param {string} $date - (optional) Minimum currentdate to include (YYYY-MM-DD). Pass '' to ignore.
+   * @param {string} $from_date - (optional) Start date for a date range (YYYY-MM-DD). Requires $to_date to be effective.
+   * @param {string} $to_date - (optional) End date for a date range (YYYY-MM-DD).
+   * @param {int|string} $date_year - (optional) Year to filter results by (e.g. 2025).
+   * @param {string} $deal_stage - (optional) Deal stage to filter by (e.g. 'Closed Won').
+   * @returns {array|false} Returns an array of result objects (fields: id, month_name, total_deals) grouped by month on success, or false if no records found.
+   */
   public function get_all_deals_by_date($type,$date='',$from_date='',$to_date='',$date_year='',$deal_stage='')
   {
     $session_company = $this->session->userdata('company_name');
