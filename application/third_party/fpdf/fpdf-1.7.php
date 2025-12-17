@@ -207,6 +207,16 @@ function SetAutoPageBreak($auto, $margin=0)
 	$this->PageBreakTrigger = $this->h-$margin;
 }
 
+/**
+* Set the viewer display mode for zoom and page layout.
+* @example
+* $pdf = new FPDF();
+* $pdf->SetDisplayMode('fullpage', 'single');
+* // Example: sets ZoomMode to 'fullpage' and LayoutMode to 'single' on the $pdf instance.
+* @param {string|mixed} $zoom - Zoom mode to use: 'fullpage', 'fullwidth', 'real', 'default' or any non-string value (non-string values are accepted).
+* @param {string} $layout - Layout mode to use: 'single', 'continuous', 'two' or 'default'.
+* @returns {void} No return value; updates internal ZoomMode and LayoutMode or triggers an error if an invalid string value is provided.
+*/
 function SetDisplayMode($zoom, $layout='default')
 {
 	// Set display mode in viewer
@@ -271,6 +281,17 @@ function Error($msg)
 	throw new Exception('FPDF error: '.$msg);
 }
 
+/**
+* Close the PDF document: ensure at least one page, invoke the footer, finish the current page and finalize the document.
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage();
+* // ... add content ...
+* $pdf->Close();
+* echo $pdf->state; // sample output: 3 (document closed)
+* @param {void} $none - No arguments.
+* @returns {void} Document is finalized and no value is returned.
+*/
 function Close()
 {
 	// Terminate document
@@ -307,6 +328,17 @@ function PrintChapter($num, $title, $file)
     $this->ChapterTitle($num,$title);
 }
 
+/**
+* AddPage — Start a new page in the PDF document (handles header/footer and restores graphics state).
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage('P', 'A4', 0);
+* // Adds a portrait A4 page, triggers Header() and Footer() callbacks, and restores drawing/font/color state. No return value.
+* @param {string} $orientation - Page orientation ('P' for portrait, 'L' for landscape). Empty string uses the current orientation.
+* @param {string} $size - Page size (e.g. 'A4', 'Letter') or custom size identifier. Empty string uses the current size.
+* @param {int} $rotation - Page rotation in degrees (0, 90, 180, 270). Default is 0.
+* @returns {void} No return value; the method appends a new page to the PDF document.
+*/
 function AddPage($orientation='', $size='', $rotation=0)
 {
 	// Start a new page
@@ -376,6 +408,15 @@ function AddPage($orientation='', $size='', $rotation=0)
 	$this->ColorFlag = $cf;
 }
 
+/**
+* Render the page header for a proforma invoice (adds title, colors and a horizontal rule).
+* @example
+* $pdf = new PDF(); // PDF is a class that extends FPDF and includes this Header() override
+* $pdf->AddPage(); // Header() is invoked automatically when a new page is added
+* $pdf->Output('I', 'proforma-invoice.pdf'); // sends the generated PDF inline to the browser
+* @param void $none - No parameters.
+* @returns void Header is drawn directly onto the current PDF page; nothing is returned.
+*/
 function Header()
 {
 	// Logo
@@ -482,6 +523,17 @@ function Rect($x, $y, $w, $h, $style='')
 	$this->_out(sprintf('%.2F %.2F %.2F %.2F re %s',$x*$this->k,($this->h-$y)*$this->k,$w*$this->k,-$h*$this->k,$op));
 }
 
+/**
+* Add a TrueType, OpenType or Type1 font to the PDF instance.
+* @example
+* $pdf = new FPDF();
+* $result = $pdf->AddFont('DejaVu Sans', 'B');
+* echo $result // null (no return; the font is registered in the PDF instance)
+* @param {string} $family - Font family name (case-insensitive), e.g. 'Arial' or 'DejaVu Sans'.
+* @param {string} $style - Optional font style ('' | 'B' | 'I' | 'U' | 'BI'); 'IB' will be normalized to 'BI'. Default: ''.
+* @param {string} $file - Optional font definition PHP filename relative to the font directory; if omitted it's derived from the family and style (e.g. 'dejavusansb.php').
+* @returns {void} Registers the font in $this->fonts and, if embedded, adds file info to $this->FontFiles; no value is returned.
+*/
 function AddFont($family, $style='', $file='')
 {
 	// Add a TrueType, OpenType or Type1 font
@@ -507,6 +559,19 @@ function AddFont($family, $style='', $file='')
 	$this->fonts[$fontkey] = $info;
 }
 
+/**
+* Select and set the current font for PDF output; size is given in points.
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage();
+* $pdf->SetFont('Arial','B',12);
+* $pdf->Cell(40,10,'Hello World!');
+* $pdf->Output(); // outputs a PDF with "Hello World!" in Helvetica Bold 12pt
+* @param string $family - Font family name (e.g. 'Arial', 'Times', 'Symbol'). If empty, the current family is kept.
+* @param string $style - Font style flags: combination of 'B' (bold), 'I' (italic), 'U' (underline). 'IB' is normalized to 'BI'. Default is ''.
+* @param float|int $size - Font size in points. If 0, the current font size is used.
+* @returns void Sets the font on the FPDF instance; no return value.
+*/
 function SetFont($family, $style='', $size=0)
 {
 	// Select a font; size given in points
@@ -592,6 +657,19 @@ function Link($x, $y, $w, $h, $link)
 	$this->PageLinks[$this->page][] = array($x*$this->k, $this->hPt-$y*$this->k, $w*$this->k, $h*$this->k, $link);
 }
 
+/**
+* Print a text string at a specified position on the current PDF page using the currently selected font and text settings (supports underline and text color).
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage();
+* $pdf->SetFont('Arial','',12);
+* // Place the text "Hello World" at X=10, Y=20 (user units, typically mm)
+* $pdf->Text(10.0, 20.0, 'Hello World');
+* @param float $x - X coordinate (in user units, typically mm) where the text will start.
+* @param float $y - Y coordinate (in user units, typically mm) where the text baseline will be placed.
+* @param string $txt - The text string to output; special characters are escaped automatically.
+* @returns void Returns nothing; the text is written directly to the PDF output buffer.
+*/
 function Text($x, $y, $txt)
 {
 	// Output a string
@@ -611,6 +689,22 @@ function AcceptPageBreak()
 	return $this->AutoPageBreak;
 }
 
+/**/ **
+* Output a rectangular cell (optionally with text, border, fill and link) and advance the current position; handles automatic page breaks.
+* @example
+* // Add a 40x10 cell with centered text, a border, move to next line and add a link
+* $this->Cell(40, 10, 'Hello World', 1, 1, 'C', false, 'https://example.com');
+* // No direct return; the PDF content is modified (cell rendered on current page)
+* @param float $w - Cell width in user units. If 0 the cell extends up to the right margin.
+* @param float $h - Cell height in user units (default 0).
+* @param string $txt - String to print inside the cell (default empty).
+* @param int|string $border - 0 (no border), 1 (frame), or string containing any of 'L', 'T', 'R', 'B' to draw specific borders (default 0).
+* @param int $ln - Indicates where the current position should go after the call: 0 to the right, 1 to the beginning of the next line, >1 below (default 0).
+* @param string $align - Text alignment inside the cell: 'L', 'C', 'R' or '' for left (default '').
+* @param bool $fill - Whether to draw a background fill (true) or not (false) (default false).
+* @param string $link - URL or internal link identifier to attach to the cell text (default empty).
+* @returns void Return description: Modifies the internal PDF buffer (no direct return value).
+*/*/
 function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
 {
 	// Output a cell
@@ -691,6 +785,19 @@ function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link
 		$this->x += $w;
 }
 
+/**
+* Outputs a multi-line cell into the PDF with automatic or explicit line breaks and advances to the next line.
+* @example
+* $pdf->MultiCell(80,6,"This is a long example text that will be wrapped automatically across lines.",1,'J',false);
+* // Renders wrapped text into the PDF and advances to the next line.
+* @param {float} $w - Cell width. If 0, the cell extends to the right margin.
+* @param {float} $h - Minimum cell height for each line.
+* @param {string} $txt - Text to be printed; may contain "\n" for explicit line breaks.
+* @param {int|string|bool} $border - Border specification: 0 (no border), 1 (full border), or a string containing any of 'L','R','T','B' to specify sides.
+* @param {string} $align - Text alignment: 'L' (left), 'C' (center), 'R' (right), 'J' (justified). Default 'J'.
+* @param {bool} $fill - Indicates whether to fill the cell background. Default false.
+* @returns {void} Does not return a value; writes output directly to the PDF document.
+*/
 function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=false)
 {
 	// Output text with automatic or explicit line breaks
@@ -806,6 +913,19 @@ function MultiCell($w, $h, $txt, $border=0, $align='J', $fill=false)
 	$this->x = $this->lMargin;
 }
 
+/**
+* Write text in flowing mode: outputs the given text into the PDF, performing automatic line wrapping and handling explicit newlines; an optional link can be attached to the text.
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage();
+* $pdf->SetFont('Arial','',12);
+* $pdf->Write(5, "This is a long text that will wrap automatically across lines.", "http://example.com");
+* // Writes the text to the current position in the PDF (no return value).
+* @param float $h - Line height (height of each line in user units).
+* @param string $txt - Text string to output; supports newline characters and automatic wrapping.
+* @param string $link - Optional URL or internal link identifier to apply to the written text (default: '').
+* @returns void No return value; content is written directly to the PDF document.
+*/
 function Write($h, $txt, $link='')
 {
 	// Output text in flowing mode
@@ -899,6 +1019,23 @@ function Ln($h=null)
 		$this->y += $h;
 }
 
+/**
+ * Place an image on the current PDF page.
+ * Supports automatic sizing, DPI-based negative sizes, automatic page breaks in flowing mode, and optional clickable links.
+ * @example
+ * $pdf = new FPDF();
+ * $pdf->AddPage();
+ * // Place 'logo.png' at x=10mm, y=20mm, width=50mm (height auto), PNG type inferred, clickable to example.com
+ * $pdf->Image('images/logo.png', 10, 20, 50, 0, 'png', 'https://example.com');
+ * @param string $file - Path to the image file. Required. Example: 'images/logo.png'
+ * @param float|null $x - X position in user units. If null uses current x. Example: 10
+ * @param float|null $y - Y position in user units. If null uses current y and enables flowing mode (may trigger automatic page break). Example: 20
+ * @param float $w - Width in user units. 0 = auto-calculate, negative = treat as DPI (e.g. -96 for 96 DPI). Example: 50
+ * @param float $h - Height in user units. 0 = auto-calculate, negative = treat as DPI. Example: 0
+ * @param string $type - Image type/extension (e.g. 'jpg', 'png', 'gif'). If empty, inferred from filename. Example: 'png'
+ * @param string $link - Optional URL or internal link target to make the image clickable. Example: 'https://example.com'
+ * @returns void Does not return a value; writes image drawing operations into the PDF output.
+ */
 function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
 {
 	// Put an image on the page
@@ -1015,6 +1152,23 @@ function SetXY($x, $y)
 	$this->SetY($y,false);
 }
 
+/**
+* Output the generated PDF to a destination: inline to browser, force download, save to local file, or return as a string.
+* @example
+* // Inline to browser:
+* $pdf->Output('I', 'report.pdf');
+* // Force download:
+* $pdf->Output('D', 'document.pdf');
+* // Save to local file:
+* $pdf->Output('F', '/path/to/output.pdf');
+* // Return PDF as string:
+* $content = $pdf->Output('S');
+* echo substr($content, 0, 8); // "%PDF-1.4"
+* @param string $dest - Destination: 'I' (inline), 'D' (download), 'F' (save to file), 'S' (return as string). Default 'I'.
+* @param string $name - Filename for inline/download or path when saving to file. Default 'doc.pdf'.
+* @param bool $isUTF8 - Whether $name is UTF-8 encoded (affects header encoding). Default false.
+* @returns string Return PDF content when $dest == 'S', otherwise an empty string after output.
+*/
 function Output($dest='', $name='', $isUTF8=false)
 {
 	// Output PDF to some destination
@@ -1082,6 +1236,14 @@ protected function _dochecks()
 		@set_magic_quotes_runtime(0);
 }
 
+/**
+* Check whether any output or headers have already been sent before delivering a PDF, and clean a BOM/whitespace-only output buffer if safe.
+* @example
+* $this->_checkoutput();
+* // No output: method returns silently and PDF can be sent.
+* // If headers were already sent or unexpected output exists, $this->Error(...) will be invoked.
+* @returns {void} Does not return a value; may call $this->Error() when headers or unexpected output exist.
+*/
 protected function _checkoutput()
 {
 	if(PHP_SAPI!='cli')
@@ -1102,6 +1264,14 @@ protected function _checkoutput()
 	}
 }
 
+/**
+* Get canonical page size as a two-element array [width, height].
+* @example
+* $result = $this->_getpagesize('A4');
+* print_r($result); // render some sample output e.g. Array ( [0] => 210 [1] => 297 )
+* @param {string|array} $size - Page size name (string, e.g. 'A4') or numeric array [width, height] in the current unit.
+* @returns {array} Return width and height as an array [width, height], with width <= height.
+*/
 protected function _getpagesize($size)
 {
 	if(is_string($size))
@@ -1121,6 +1291,18 @@ protected function _getpagesize($size)
 	}
 }
 
+/**
+* Begin a new PDF page: increments the internal page counter, initializes page content and state,
+* resets the current position to margins, sets or updates page orientation, size and rotation,
+* and records page information (size in points and rotation) when different from defaults.
+* @example
+* $pdf->_beginpage('P', 'A4', 0);
+* // Starts a new portrait A4 page with no rotation
+* @param string $orientation - Page orientation. Accepts '' to use the default, or values like 'P' (portrait) or 'L' (landscape); case-insensitive.
+* @param string|array $size - Page size. Can be a standard size name (e.g. 'A4') or an array(width, height) in user units; use '' to apply the default page size.
+* @param int $rotation - Page rotation in degrees. Must be a multiple of 90 (for example 0, 90, 180, 270). An error is raised for invalid rotation values.
+* @returns void No return value; the method updates the object's internal page-related state.
+*/
 protected function _beginpage($orientation, $size, $rotation)
 {
 	$this->page++;
@@ -1173,6 +1355,14 @@ protected function _endpage()
 	$this->state = 1;
 }
 
+/**
+ * Load a font definition file from the configured font directory and return its defined variables.
+ * @example
+ * $result = $this->_loadfont('arial.php');
+ * echo $result['name']; // render some sample output value; e.g. "Arial"
+ * @param string $font - Font definition file name (e.g. 'arial.php'). Must not contain '/' or '\' characters.
+ * @returns array Return associative array of font definition variables (for example: 'name', 'type', 'file', 'size', 'up', 'ut', 'cw', 'enc', 'subsetted').
+ */
 protected function _loadfont($font)
 {
 	// Load a font definition file from the font directory
@@ -1200,6 +1390,16 @@ protected function _isascii($s)
 	return true;
 }
 
+/**
+* Encode an HTTP header field parameter, returning either a quoted ASCII value or an RFC5987-style UTF-8 percent-encoded value, with special handling for older MSIE user agents.
+* @example
+* $result = $this->_httpencode('filename', 'résumé.pdf', true);
+* echo $result // e.g. filename*=UTF-8''r%C3%A9sum%C3%A9.pdf
+* @param {{string}} {$param} - Header parameter name (e.g., 'filename').
+* @param {{string}} {$value} - Parameter value to encode.
+* @param {{bool}} {$isUTF8} - Whether $value is already UTF-8 encoded (true) or needs conversion (false).
+* @returns {{string}} Encoded header parameter string ready to append to an HTTP header.
+*/
 protected function _httpencode($param, $value, $isUTF8)
 {
 	// Encode HTTP header field parameter
@@ -1213,6 +1413,15 @@ protected function _httpencode($param, $value, $isUTF8)
 		return $param."*=UTF-8''".rawurlencode($value);
 }
 
+/**
+* Convert a UTF-8 encoded string to UTF-16BE encoded string with a BOM.
+* @example
+* $sample = "Hello €"; // contains ASCII characters and a 3-byte Euro sign
+* $result = $this->_UTF8toUTF16($sample);
+* echo bin2hex($result); // render some sample output value: "feff00480065006c006c006f20ac"
+* @param string $s - UTF-8 encoded input string to convert.
+* @returns string UTF-16BE encoded string prefixed with BOM ("\xFE\xFF").
+*/
 protected function _UTF8toUTF16($s)
 {
 	// Convert UTF-8 to UTF-16BE with BOM
@@ -1272,6 +1481,14 @@ protected function _dounderline($x, $y, $txt)
 	return sprintf('%.2F %.2F %.2F %.2F re f',$x*$this->k,($this->h-($y-$up/1000*$this->FontSize))*$this->k,$w*$this->k,-$ut/1000*$this->FontSizePt);
 }
 
+/**
+* Parse a JPEG file and return its width, height, color space, bits-per-component, filter and raw image data. Calls $this->Error() on missing/invalid files.
+* @example
+* $result = $this->_parsejpg('/var/www/html/images/photo.jpg');
+* echo $result['w'].'x'.$result['h']; // render some sample output value; e.g. "800x600"
+* @param {string} $file - Path to the JPEG file to parse.
+* @returns {array} Return associative array with keys: 'w' (width), 'h' (height), 'cs' (color space, e.g. 'DeviceRGB'), 'bpc' (bits per component), 'f' (filter, e.g. 'DCTDecode'), 'data' (raw JPEG file contents).
+*/
 protected function _parsejpg($file)
 {
 	// Extract info from a JPEG file
@@ -1302,6 +1519,17 @@ protected function _parsepng($file)
 	return $info;
 }
 
+/**
+* Parse a PNG image stream and return an associative array with image parameters and image data suitable for embedding in a PDF.
+* @example
+* $f = fopen('path/to/image.png', 'rb');
+* $info = $this->_parsepngstream($f, 'image.png');
+* fclose($f);
+* print_r($info); // sample output: Array ( [w] => 800 [h] => 600 [cs] => 'DeviceRGB' [bpc] => 8 [f] => 'FlateDecode' [dp] => '/Predictor 15 /Colors 3 /BitsPerComponent 8 /Columns 800' [pal] => '' [trns] => '' [data] => '(binary compressed string)' [smask] => '(binary compressed string)' )
+* @param resource $f - Open file handle or stream resource containing PNG data.
+* @param string $file - Original filename (used for error messages).
+* @returns array Return associative array with keys: w (int width), h (int height), cs (string color space: DeviceGray/DeviceRGB/Indexed), bpc (int bits per component), f (string filter, e.g. 'FlateDecode'), dp (string decode parameters), pal (string palette data or ''), trns (mixed transparency info or ''), data (string compressed image data), smask (string compressed alpha mask, if present).
+*/
 protected function _parsepngstream($f, $file)
 {
 	// Check signature
@@ -1428,6 +1656,18 @@ protected function _parsepngstream($f, $file)
 	return $info;
 }
 
+/**
+* Read exactly $n bytes from a stream resource or raise an error if reading fails or EOF is reached early.
+* @example
+* $f = fopen('php://temp', 'r+');
+* fwrite($f, "HelloWorld");
+* rewind($f);
+* $result = $this->_readstream($f, 10);
+* echo $result; // HelloWorld
+* @param {{resource}} {$f} - Stream resource to read from.
+* @param {{int}} {$n} - Number of bytes to read from the stream.
+* @returns {{string}} Return the bytes read as a string.
+*/
 protected function _readstream($f, $n)
 {
 	// Read n bytes from stream
@@ -1452,6 +1692,14 @@ protected function _readint($f)
 	return $a['i'];
 }
 
+/**
+* Extract image information from a GIF file by converting it to PNG in-memory and parsing the PNG stream.
+* @example
+* $info = $this->_parsegif('/path/to/sample.gif');
+* var_export($info); // e.g. array('w' => 200, 'h' => 100, 'cs' => 'RGB', 'bpc' => 8, 'f' => 'png');
+* @param {string} $file - Path to the GIF file to parse.
+* @returns {array} Parsed image information array (width, height, color space, bits per channel, format, etc.).
+*/
 protected function _parsegif($file)
 {
 	// Extract info from a GIF file (via PNG conversion)
@@ -1477,6 +1725,18 @@ protected function _parsegif($file)
 	return $info;
 }
 
+/**
+* Append a line to the PDF document output according to the current internal state.
+* @example
+* // ensure state is set to 2 (page buffer mode) to see direct page append
+* $pdf->state = 2;
+* $pdf->page = 1;
+* $pdf->pages[$pdf->page] = '';
+* $pdf->_out('Hello, world!');
+* echo $pdf->pages[$pdf->page]; // outputs: Hello, world!\n
+* @param {string} $s - The string content to add to the document (a newline will be appended when writing to the page buffer).
+* @returns {void} No return value; modifies internal document buffers or raises an error if state is invalid.
+*/
 protected function _out($s)
 {
 	// Add a line to the document
@@ -1516,6 +1776,16 @@ protected function _putstream($data)
 	$this->_put('endstream');
 }
 
+/**
+* Writes a PDF stream object into the document buffer, optionally compressing the stream using FlateDecode when $this->compress is true.
+* @example
+* // Example usage from inside an FPDF subclass (protected method)
+* $stream = "BT /F1 12 Tf (Hello, PDF!) Tj ET\n";
+* $pdf->_putstreamobject($stream);
+* // After calling, the stream has been appended as a new PDF object in the internal buffer.
+* @param string $data - Stream data (binary-safe) to be written into the PDF object.
+* @returns void Writes a PDF object containing the stream with /Length and optional /Filter /FlateDecode entries to the output buffer.
+*/
 protected function _putstreamobject($data)
 {
 	if($this->compress)
@@ -1532,6 +1802,15 @@ protected function _putstreamobject($data)
 	$this->_put('endobj');
 }
 
+/**
+* Write a single PDF page object (internal use) including MediaBox, rotation, resources, links/annotations, transparency group and content stream.
+* @example
+* // Typical internal usage after pages are created; page index is zero-based
+* $pdf = new FPDF(); // FPDF instance with pages prepared
+* $pdf->_putpage(0); // writes page 0 objects/streams into the PDF output buffer
+* @param {int} $n - Zero-based page index identifying which page to write into the PDF file.
+* @returns {void} No return value; the function emits PDF objects and a content stream to the internal output buffer.
+*/
 protected function _putpage($n)
 {
 	$this->_newobj();
@@ -1574,6 +1853,18 @@ protected function _putpage($n)
 	$this->_putstreamobject($this->pages[$n]);
 }
 
+/**
+ * Assemble and write all page objects and the Pages root into the PDF object buffer.
+ * @example
+ * $pdf = new FPDF();
+ * // simulate that two pages were created internally
+ * $pdf->page = 2;
+ * // protected method; typically called internally when finalizing the document
+ * $pdf->_putpages();
+ * // no direct return; internal PDF objects for pages and the /Pages root have been written
+ * @param void $none - No arguments.
+ * @returns void Writes page objects and the Pages root into the PDF buffer (no return value).
+ */
 protected function _putpages()
 {
 	$nb = $this->page;
@@ -1604,6 +1895,14 @@ protected function _putpages()
 	$this->_put('endobj');
 }
 
+/**
+* Embed and write all font-related PDF objects (font files, encodings, ToUnicode CMaps, font dictionaries, widths and descriptors) into the PDF document.
+* @example
+* $this->_putfonts();
+* // No direct output; updates the internal PDF object stream with embedded fonts.
+* @param void $none - No parameters.
+* @returns void No return value; writes objects to the internal PDF buffer.
+*/
 protected function _putfonts()
 {
 	foreach($this->FontFiles as $file=>$info)
@@ -1721,6 +2020,18 @@ protected function _putfonts()
 	}
 }
 
+/**
+* Generate a ToUnicode CMap string from a mapping of single-byte character codes to Unicode code points or ranges.
+* @example
+* $uv = [
+*     0x20 => 0x0020,           // space
+*     0x41 => [0x0041, 26],     // map 0x41..0x5A to U+0041..U+005A ('A'..'Z')
+* ];
+* $cmap = $this->_tounicodecmap($uv);
+* echo substr($cmap, 0, 120); // render some sample output, e.g. "/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n"
+* @param array $uv - Mapping of byte values (ints 0x00..0xFF) to either a single Unicode code point (int) or an array [startUnicode(int), length(int)] describing a consecutive range.
+* @returns string Return the generated CMap content (ToUnicode CMap) as a string ready to be embedded in a PDF.
+*/
 protected function _tounicodecmap($uv)
 {
 	$ranges = '';
@@ -1782,6 +2093,22 @@ protected function _putimages()
 	}
 }
 
+/**
+* Write an image XObject into the PDF stream (and any associated soft mask or palette objects).
+* @example
+* // Example usage from within the FPDF class or a subclass (protected method)
+* $info = array(
+*   'w'   => 100,                       // width in pixels
+*   'h'   => 50,                        // height in pixels
+*   'cs'  => 'DeviceRGB',               // colorspace: DeviceRGB | DeviceGray | DeviceCMYK | Indexed
+*   'bpc' => 8,                         // bits per component
+*   'f'   => 'FlateDecode',             // optional filter name
+*   'data'=> gzcompress('...raw image bytes...') // image stream data (possibly compressed)
+* );
+* $this->_putimage($info); // writes the image object(s) into the PDF document stream
+* @param array &$info - Associative array describing the image (keys: w,h,cs,bpc,data; optional: pal, f, dp, trns, smask).
+* @returns void Writes image objects (and optional soft mask/palette) to the PDF output stream.
+*/
 protected function _putimage(&$info)
 {
 	$this->_newobj();
@@ -1865,6 +2192,24 @@ protected function _putinfo()
 		$this->_put('/'.$key.' '.$this->_textstring($value));
 }
 
+/**
+ * Write the PDF Catalog (root) object into the document buffer.
+ * Determines the /OpenAction entry based on $this->ZoomMode (fullpage, fullwidth, real, or numeric zoom)
+ * and the /PageLayout entry based on $this->LayoutMode (single, continuous, two).
+ * Uses $this->PageInfo[1]['n'] to reference the first page object.
+ * @example
+ * $pdf = new FPDF();
+ * $pdf->ZoomMode = 'fullpage';    // other examples: 'fullwidth', 'real', 150 (numeric zoom)
+ * $pdf->LayoutMode = 'single';    // other examples: 'continuous', 'two'
+ * // This protected method is normally invoked internally when generating output:
+ * // $pdf->_putcatalog(); // (called by the class; protected)
+ * // Example lines written to the PDF buffer when ZoomMode='fullpage' and LayoutMode='single':
+ * // /Type /Catalog
+ * // /Pages 1 0 R
+ * // /OpenAction [2 0 R /Fit]
+ * // /PageLayout /SinglePage
+ * @returns void Writes the catalog entries to the PDF internal buffer (no return value).
+ */
 protected function _putcatalog()
 {
 	$n = $this->PageInfo[1]['n'];
@@ -1898,6 +2243,15 @@ protected function _puttrailer()
 	$this->_put('/Info '.($this->n-1).' 0 R');
 }
 
+/**
+* Finalize the PDF document by writing header, pages, resources, info, catalog, cross-reference table and trailer into the internal buffer.
+* @example
+* // Typically called internally; after this the PDF is complete and ready to be output.
+* $pdf->_enddoc();
+* // Afterwards use $pdf->Output() to send or save the finalized PDF (e.g. sends "%PDF-..." stream ending with "%%EOF").
+* @param void $none - This method does not accept parameters.
+* @returns void Finalizes the internal PDF structure; does not return a value.
+*/
 protected function _enddoc()
 {
 	$this->_putheader();
@@ -1952,6 +2306,21 @@ function SetAligns($a)
     $this->aligns=$a;
 }
 
+/**
+* Draws a single table row using the current column widths and alignments, handling text wrapping (MultiCell) and automatic page breaks.
+* @example
+* $pdf = new FPDF();
+* $pdf->AddPage();
+* $pdf->SetFont('Arial','',10);
+* // Define column widths and optional alignments before calling Row:
+* $pdf->SetWidths(array(40, 80, 60)); // widths in user units
+* $pdf->SetAligns(array('L', 'C', 'R')); // optional: left, center, right
+* // Render a row with three cells; long text in the second cell will wrap across lines
+* $pdf->Row(array('001', 'Very long product description that will wrap into multiple lines', '$9.99'));
+* // The call writes the row into the PDF at the current position (no return value).
+* @param array $data - Array of cell text values (strings) for each column in the row.
+* @returns void Does not return a value; outputs the rendered row to the PDF.
+*/
 function Row($data)
 {
 	
@@ -1988,6 +2357,16 @@ function CheckPageBreak($h)
         $this->AddPage($this->CurOrientation);
 }
 
+/**
+* Compute how many lines a MultiCell of the given width will occupy for a given text.
+* @example
+* $pdf = new FPDF(); // previously created FPDF instance with current font set
+* $result = $pdf->NbLines(50, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
+* echo $result; // e.g. 2
+* @param float|int $w - Cell width in current unit. If 0 the function uses the remaining width ($this->w - $this->rMargin - $this->x).
+* @param string $txt - The text to be measured (carriage returns are normalized).
+* @returns int Number of lines the text will be split into when rendered in a MultiCell of width $w.
+*/
 function NbLines($w,$txt)
 {
     //Computes the number of lines a MultiCell of width w will take
