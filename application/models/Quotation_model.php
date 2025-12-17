@@ -13,6 +13,20 @@ class Quotation_model extends CI_Model
   var $sort_by =array(null,'subject','org_name','quote_id','currentdate','owner','datetime',null);
   var $search_by = array('subject','org_name','quote_id','currentdate', 'owner','datetime');
   var $order = array('id' => 'desc');
+  /**
+  * Build and apply DataTables query filters and ordering on the model's CI query builder based on session data and POST inputs.
+  * @example
+  * // Called internally in the model before executing the query for DataTables
+  * $this->_get_datatables_query();
+  * // Example POST/session values:
+  * // $_POST['search']['value'] = 'Acme';
+  * // $_POST['order'][0]['column'] = 2; $_POST['order'][0]['dir'] = 'desc';
+  * // $this->input->post('searchDate') = '2025-01-01';
+  * // $this->session->userdata('type') = 'admin';
+  * // After calling, $this->db will have appropriate FROM, WHERE, LIKE, GROUP and ORDER BY clauses applied.
+  * @param {void} $none - No arguments are accepted.
+  * @returns {void} Applies filters/order to $this->db; does not return a value.
+  */
   private function _get_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
@@ -117,6 +131,22 @@ class Quotation_model extends CI_Model
 
  //////////////////////////////////////////////////// monthwise chart for quotatiion graph starts/////////////////////////////////////////////////////////////////////
     
+ /**
+ * Retrieve monthly quote subtotal totals grouped by year and month for the current session company.
+ * Admin users receive results for the entire company; standard users receive results filtered by the logged-in user's email.
+ * Only quotes with delete_status = 1 are included. Results are grouped and ordered by year and month (derived from the `currentdate` column).
+ * @example
+ * // From a controller:
+ * $this->load->model('Quotation_model');
+ * $result = $this->Quotation_model->getquotegraph();
+ * // Example returned value:
+ * // [
+ * //   (object) ['year' => '2025', 'month' => '6', 'subtotal' => '1234.56'],
+ * //   (object) ['year' => '2025', 'month' => '7', 'subtotal' => '987.65']
+ * // ]
+ * @param void $none - This method does not accept any parameters.
+ * @returns array|null Array of result objects (properties: year, month, subtotal) on success, or null if a database error occurred.
+ */
  public function getquotegraph() {
   $sess_eml = $this->session->userdata('email');
   $session_comp_email = $this->session->userdata('company_email');
@@ -223,6 +253,14 @@ class Quotation_model extends CI_Model
     $this->db->limit(5);
     return $this->db->get('opportunity')->result();
   }
+  /**
+  * Retrieve opportunity records for a given opportunity_id from the 'opportunity' table.
+  * @example
+  * $result = $this->Quotation_model->getOppValue(['opportunity_id' => 123]);
+  * print_r($result); // sample output: Array ( [0] => Array ( [opportunity_id] => 123 [name] => 'Acme Project' [value] => '10000' ) )
+  * @param {array} $opportunity_id - Associative array containing the 'opportunity_id' key (int) used to filter the query.
+  * @returns {array} Array of matching opportunity rows (each row as an associative array); returns an empty array if no id provided or no matches found.
+  */
   public function getOppValue($opportunity_id)
   {
     $response = array();
@@ -254,6 +292,17 @@ class Quotation_model extends CI_Model
     return $query->row_array();
   }
   
+    /**
+    * Retrieve a paginated list of quotations filtered by session company/user, date range and optional search term.
+    * @example
+    * $result = $this->Quotation_model->get_all_quot('This Week', 'Acme', 10, 0);
+    * print_r($result); // sample output: Array ( [0] => Array ( 'id' => 123, 'currentdate' => '2025-12-15', 'company' => 'Acme Corp', 'sess_eml' => 'user@example.com', 'quote_number' => 'Q-0001' ) )
+    * @param string $search_date - Date filter; use "This Week" to filter from last Monday or provide a 'YYYY-MM-DD' date string.
+    * @param string $search - Optional search term to match across configured searchable columns.
+    * @param int $per_page - Number of records to return (pagination limit).
+    * @param int $start - Offset for pagination (starting record index).
+    * @returns array Returns an array of quotation records (each record as an associative array).
+    */
     public function get_all_quot($search_date,$search,$per_page, $start)
   {
 	  
@@ -306,6 +355,15 @@ class Quotation_model extends CI_Model
     return $query->result_array();
   }
   
+  /**
+  * Get the total count of quotations filtered by date, search term and current user/company session.
+  * @example
+  * $result = $this->Quotation_model->get_all_count('This Week', 'Acme');
+  * echo $result; // 12
+  * @param {string} $search_date - Start date (YYYY-MM-DD) or the special value "This Week" to use last Monday; empty string defaults to last Monday.
+  * @param {string} $search - Search keyword used with LIKE across searchable columns; empty string disables search.
+  * @returns {int} Total number of matching rows.
+  */
   public function get_all_count($search_date,$search){
 	$sess_eml 			= $this->session->userdata('email');
     $session_comp_email = $this->session->userdata('company_email');
@@ -352,6 +410,14 @@ class Quotation_model extends CI_Model
     return $query->num_rows();
   }
   
+    /**
+    * Get the summed initial_total for quotes in a specific quote stage for the current session/company.
+    * @example
+    * $result = $this->Quotation_model->getTotalPrice('approved');
+    * echo print_r($result, true); // Array ( [quote_stage] => approved [initial_total] => 12345.67 )
+    * @param string|int $stage - Quote stage to filter by (e.g. 'approved' or 2).
+    * @returns array Associative array with keys 'quote_stage' and 'initial_total' (sum of initial_total for the given stage).
+    */
     public function getTotalPrice($stage){
     $sess_eml = $this->session->userdata('email');
     $session_comp_email = $this->session->userdata('company_email');
@@ -371,6 +437,25 @@ class Quotation_model extends CI_Model
     return $query->row_array();
   }
   
+  /**
+  * Get GST records for the current session's company from the 'gst' table.
+  * @example
+  * $this->load->model('Quotation_model');
+  * $result = $this->Quotation_model->get_gst();
+  * print_r($result); // Example output:
+  * // array(
+  * //   0 => array(
+  * //     'id' => '1',
+  * //     'tax_name' => 'GST',
+  * //     'tax_value' => '18',
+  * //     'session_comp_email' => 'billing@company.com',
+  * //     'session_company' => 'Example Company',
+  * //     'delete_status' => '1'
+  * //   )
+  * // )
+  * @param {void} $none - This method does not accept any parameters.
+  * @returns {array} Array of associative arrays containing GST rows for the current company (empty array if none).
+  */
   public function get_gst(){
     $sess_eml = $this->session->userdata('email');
     $session_comp_email = $this->session->userdata('company_email');
@@ -386,6 +471,15 @@ class Quotation_model extends CI_Model
   }
   
   
+  /**
+   * Update a record in the quotations table by ID using the provided data array.
+   * @example
+   * $result = $this->Quotation_model->update_status(['status' => 'closed'], 42);
+   * echo $result ? 'true' : 'false'; // outputs 'true' on success
+   * @param array $leadArr - Associative array of columns to update (e.g. ['status' => 'closed']).
+   * @param int|string $id - Record primary key ID to match for the update (e.g. 42).
+   * @returns bool Return true if the update succeeded, false otherwise.
+   */
   public function update_status($leadArr,$id)
   { 
     $this->db->where('id',$id);
@@ -406,6 +500,15 @@ class Quotation_model extends CI_Model
     $this->db->insert($this->table, $data);
     return $this->db->insert_id();
   }
+  /**
+  * Update the quote_id field for a record identified by its id.
+  * @example
+  * $result = $this->Quotation_model->quote_id(123, 45);
+  * echo $result // true
+  * @param int|string $quote_id - New quote identifier to set.
+  * @param int $id - Database primary key id of the record to update.
+  * @returns bool True if the update succeeded, false otherwise.
+  */
   public function quote_id($quote_id,$id)
   {
     $data = array(
@@ -421,6 +524,16 @@ class Quotation_model extends CI_Model
       return false;
     }
   }
+  /**
+   * Update records in the model's table. If current session user type is not 'admin',
+   * the update will be restricted to rows matching the session email (sess_eml).
+   * @example
+   * $result = $this->Quotation_model->update(['id' => 5], ['status' => 'approved']);
+   * echo $result // render some sample output value; // e.g. 1
+   * @param {{array|string}} {{\$where}} - WHERE clause to select rows to update (array or SQL string).
+   * @param {{array}} {{\$data}} - Associative array of column => value pairs to be updated.
+   * @returns {{int}} Number of affected rows.
+   */
   public function update($where,$data)
   {
     if($this->session->userdata('type') == 'admin')
@@ -815,6 +928,15 @@ class Quotation_model extends CI_Model
   /******New pdf template*****/
   
  
+  /**
+  * Generate and return the full HTML markup for a quotation identified by the given ID.
+  * @example
+  * $result = $this->Quotation_model->view(123, 'dn');
+  * echo $result // renders the generated HTML quotation (starts with "<!DOCTYPE html>...").
+  * @param {int|string} $id - Quotation record identifier (e.g. 123).
+  * @param {string} $download - Optional download flag; use 'dn' to include payment link for downloadable view (e.g. 'dn' or '').
+  * @returns {string} HTML string containing the complete quotation document.
+  */
   public function view($id,$download)
   {
     $this->db->where('id', $id);
