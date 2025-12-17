@@ -38,6 +38,14 @@ public function checkPass($pass){
 
 }
 
+/**
+* Change the current logged-in user's password; uses session user id and type to update admin_users or standard_users with an MD5-hashed password.
+* @example
+* $result = $this->Password_model->changePassword('MyNewP@ssw0rd');
+* var_dump($result); // bool(true)
+* @param {string} $newpass - New plaintext password to set; will be MD5-hashed before saving.
+* @returns {bool} True on successful update (returns true after attempting the database update).
+*/
 public function changePassword($newpass){
 	    $userid = $this->session->userdata('id');
 		$data_type = $this->session->userdata('type');
