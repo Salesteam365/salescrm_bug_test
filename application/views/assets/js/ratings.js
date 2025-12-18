@@ -23,6 +23,14 @@
         }
     });
 
+    /**
+    * Initialize RTL star rating widgets on specific DOM elements, attach rate/hover/leave callbacks, and handle async busy rating updates.
+    * @example
+    * initializeRatings()
+    * undefined
+    * @param {{void}} {{none}} - No arguments.
+    * @returns {{void}} Does not return a value; sets up rating UI components.
+    **/
     let ratingRTL = ()=>{
 
         [document.querySelector("#rater-steps"),document.querySelector("#rater-basic")
@@ -78,6 +86,14 @@
             }
         })
     }
+    /**
+    * Initialize star rating widgets on the page, remove placeholder children, and wire up callbacks for rating, busy state and hover behavior.
+    * @example
+    * initRatings()
+    * undefined
+    * @param {{void}} {{none}} - No arguments.
+    * @returns {{void}} Return undefined.
+    **/
     let ratingLTR = ()=>{
 
         [document.querySelector("#rater-steps"),document.querySelector("#rater-basic")
