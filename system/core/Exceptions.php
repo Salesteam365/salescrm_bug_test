@@ -187,6 +187,14 @@ class CI_Exceptions {
 
 	// --------------------------------------------------------------------
 
+ /**
+ * Display a formatted exception page (CLI or HTML) from the configured error view templates.
+ * @example
+ * $result = $this->show_exception(new Exception('Sample error message'));
+ * // In a web request this will echo an HTML error page; in CLI it will echo a plain-text error.
+ * @param {{Exception}} {{$exception}} - The Exception (or Throwable) instance to display.
+ * @returns {{void}} Nothing is returned; the formatted error page is echoed directly.
+ */
 	public function show_exception($exception)
 	{
 		$templates_path = config_item('error_views_path');
