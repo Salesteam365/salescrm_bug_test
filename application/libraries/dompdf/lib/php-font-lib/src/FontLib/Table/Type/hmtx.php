@@ -42,6 +42,15 @@ class hmtx extends Table {
     $this->data = $data;
   }
 
+  /**
+  * Encode horizontal metrics (hmtx) data for the current font subset and return total bytes written.
+  * @example
+  * // Called from the table instance inside the library (method is protected)
+  * $result = $hmtx->_encode();
+  * echo $result; // e.g. 1024
+  * @param void $none - This method accepts no arguments.
+  * @returns int Total number of bytes written while encoding the hmtx table.
+  */
   protected function _encode() {
     $font   = $this->getFont();
     $subset = $font->getSubset();

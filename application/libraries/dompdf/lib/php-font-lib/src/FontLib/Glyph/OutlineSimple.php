@@ -25,6 +25,19 @@ class OutlineSimple extends Outline {
   public $instructions;
   public $points;
 
+  /**
+  * Parse simple glyph outline data from the current font stream and populate the glyph's points and instructions.
+  * It reads contour end points, instruction bytes, flag arrays (including repeated flags), and delta-encoded X/Y coordinates
+  * according to the TrueType/OpenType "simple glyph" format, then builds $this->points and $this->instructions.
+  * @example
+  * $glyph = $font->getGlyph($gid); // obtain glyph instance from the font library
+  * $glyph->parseData();
+  * // After parsing:
+  * echo json_encode($glyph->instructions); // e.g. "[10,21,0]"
+  * echo json_encode($glyph->points); // e.g. '[{"onCurve":true,"endOfContour":false,"x":0,"y":0},{"onCurve":false,"endOfContour":true,"x":120,"y":-30}]'
+  * @param void $none - This method accepts no parameters.
+  * @returns void Populates $this->points (array of points with keys "x", "y", "onCurve", "endOfContour") and $this->instructions (byte array); does not return a value.
+  */
   function parseData() {
     parent::parseData();
 
@@ -122,6 +135,15 @@ class OutlineSimple extends Outline {
     return $matches[0];
   }
 
+  /**
+   * Convert an SVG path string (or token array) into an array of point descriptors for a glyph outline.
+   * @example
+   * $outline = new FontLib\Glyph\OutlineSimple();
+   * $result = $outline->makePoints('M10 10 L20 20 Q15 15 25 25 z');
+   * echo json_encode($result); // [{"onCurve":true,"x":10,"y":10,"endOfContour":false},{"onCurve":true,"x":20,"y":20,"endOfContour":false},{"onCurve":false,"x":15,"y":15,"endOfContour":false},{"onCurve":true,"x":25,"y":25,"endOfContour":true}]
+   * @param string|array $path - SVG path data as a string or an already tokenized path array.
+   * @returns array Array of points; each point is an associative array with keys 'onCurve' (bool), 'x' (number), 'y' (number), and 'endOfContour' (bool).
+   */
   public function makePoints($path) {
     $path = $this->splitSVGPath($path);
     $l    = count($path);
@@ -189,6 +211,18 @@ class OutlineSimple extends Outline {
     return $this->size = $this->encodePoints($this->points);
   }
 
+  /**
+  * Encode an array of outline points into the font binary (glyf) structure and write contour end points, flags and coordinate deltas to the font buffer. Updates local bounds while encoding and returns the total number of bytes written.
+  * @example
+  * $points = [
+  *   ['x' => 0,  'y' => 0,  'onCurve' => true,  'endOfContour' => false],
+  *   ['x' => 50, 'y' => 0,  'onCurve' => false, 'endOfContour' => true],
+  * ];
+  * $bytes = $outline->encodePoints($points);
+  * echo $bytes; // e.g. 34
+  * @param {array} $points - Array of associative arrays describing points. Each point should have keys: 'x' (int), 'y' (int), 'onCurve' (bool), and 'endOfContour' (bool).
+  * @returns {int} Total number of bytes written to the font buffer.
+  */
   public function encodePoints($points) {
     $endPtsOfContours = array();
     $flags            = array();
@@ -254,6 +288,18 @@ class OutlineSimple extends Outline {
     return $l;
   }
 
+  /**
+  * Builds and returns an SVG path string describing the contours from the given glyph points.
+  * @example
+  * $points = [
+  *   ['x' => 10, 'y' => 10, 'endOfContour' => false],
+  *   ['x' => 20, 'y' => 10, 'endOfContour' => true]
+  * ];
+  * $svg = $glyph->getSVGContours($points);
+  * echo $svg // "M10 10L20 10Z"
+  * @param array|null $points - Array of associative point arrays with keys 'x', 'y' and 'endOfContour'. If null, uses the object's parsed points.
+  * @returns string Return SVG path data string representing one or more contours.
+  */
   public function getSVGContours($points = null) {
     $path = "";
 
@@ -282,6 +328,21 @@ class OutlineSimple extends Outline {
     return $path;
   }
 
+  /**
+  * Convert a sequence of glyph outline points into a closed SVG path string.
+  * @example
+  * $points = [
+  *   ['x' => 0,   'y' => 0,   'onCurve' => true],
+  *   ['x' => 50,  'y' => 0,   'onCurve' => false],
+  *   ['x' => 100, 'y' => 0,   'onCurve' => true],
+  * ];
+  * $result = $this->getSVGPath($points, 0, 3);
+  * echo $result // renders: "M0,0 Q50,0,100,0 z ";
+  * @param array $points - Array of associative arrays describing points. Each point must contain keys 'x' (number), 'y' (number) and 'onCurve' (bool).
+  * @param int $startIndex - Starting index in the $points array for the contour.
+  * @param int $count - Number of points in the contour to process.
+  * @returns string Return the generated SVG path commands (closed with 'z ').
+  */
   protected function getSVGPath($points, $startIndex, $count) {
     $offset = 0;
     $path   = "";
