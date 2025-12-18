@@ -25,6 +25,14 @@
         }
     }
 
+    /**
+    * Apply saved UI preferences from localStorage to the document (colors, theme, layout, navigation and header styles, background, and related UI adjustments).
+    * @example
+    * localStorageBackup()
+    * undefined
+    * @param {{void}} {{none}} - No arguments.
+    * @returns {{void}} Does not return a value; applies saved settings directly to the document (mutates DOM and CSS custom properties).
+    **/
     function localStorageBackup() {
 
         // if there is a value stored, update color picker and background color
