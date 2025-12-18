@@ -102,6 +102,14 @@
         };
     }
     // L.geoJson(statesData, { style: style }).addTo(geomap);
+    /**
+    * Highlight a Leaflet layer by changing its style and bringing it to front when supported.
+    * @example
+    * highlightFeature(e)
+    * undefined
+    * @param {Object} e - Leaflet event object whose target is the layer to highlight.
+    * @returns {void} No return value.
+    **/
     function highlightFeature(e) {
         var layer = e.target;
         layer.setStyle({
