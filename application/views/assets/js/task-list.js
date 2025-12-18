@@ -77,6 +77,13 @@
     let checkAll = document.querySelector('.check-all');
     checkAll.addEventListener('click', checkAllFn)
 
+    /**
+    * Toggle selection of all tasks based on the state of the global "checkAll" checkbox.
+    * @example
+    * checkAllFn()
+    * undefined
+    * @returns {void} No return value; updates DOM to check/uncheck items and add/remove "selected" class.
+    */
     function checkAllFn() {
         if (checkAll.checked) {
             document.querySelectorAll('.task-checkbox input').forEach(function (e) {
