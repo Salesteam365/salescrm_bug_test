@@ -463,6 +463,14 @@
 })();
 
 // Target report chart
+/**
+* Initialize and render a weekly 'Revenue' bar chart into the DOM element with id "report" using ApexCharts.
+* @example
+* targetReport()
+* undefined
+* @param {{void}} {{noArgs}} - Function accepts no arguments.
+* @returns {{void}} Renders the chart to the "#report" element and does not return a value.
+**/
 function targetReport() {
     var options = {
         series: [{
@@ -556,6 +564,14 @@ function targetReport() {
     chart.render();
 }
 
+/**
+* Initialize and render an ApexCharts line/area chart for weekly job views and applications inside the DOM element with id "views".
+* @example
+* pageviews()
+* undefined
+* @param {{void}} {{none}} - This function takes no arguments.
+* @returns {{void}} Nothing; the function renders the chart into the #views element.
+**/
 function pageviews() {
     var options = {
         series: [{
