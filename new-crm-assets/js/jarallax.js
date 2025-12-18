@@ -87,6 +87,15 @@
     var Jarallax = (function() {
         var instanceID = 0;
 
+        /**
+        * Initializes a Jarallax parallax instance for a given element, configuring image, options and events.
+        * @example
+        * new Jarallax(document.querySelector('.parallax'), { speed: 0.3 })
+        * undefined
+        * @param {{(Element|jQuery|string)}} {{item}} - The target DOM element, CSS selector or jQuery object to attach the parallax to.
+        * @param {{Object}} {{userOptions}} - Optional user configuration to override defaults (e.g. speed, imgSrc, imgWidth, imgHeight).
+        * @returns {{void}} Does not return a value; constructs and initializes a Jarallax instance.
+        **/
         function Jarallax(item, userOptions) {
             var _this = this,
                 dataOptions;
