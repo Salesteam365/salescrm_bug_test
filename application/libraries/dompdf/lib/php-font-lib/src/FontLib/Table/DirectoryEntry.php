@@ -36,6 +36,14 @@ class DirectoryEntry extends BinaryStream {
 
   protected $origF;
 
+  /**
+  * Compute a checksum for binary data (used for font table directory entries).
+  * @example
+  * $result = DirectoryEntry::computeChecksum(""); 
+  * echo $result // 0;
+  * @param {string} $data - Binary-safe input data to checksum; will be padded with NUL bytes to a 4-byte boundary if necessary.
+  * @returns {int} Checksum value as an integer.
+  */
   static function computeChecksum($data) {
     $len = strlen($data);
     $mod = $len % 4;
@@ -77,6 +85,15 @@ class DirectoryEntry extends BinaryStream {
     $this->font_table = $font_table;
   }
 
+  /**
+  * Encode and write this table's directory entry and its table data into the font stream at the specified entry offset.
+  * @example
+  * $directoryEntry = new FontLib\Table\DirectoryEntry($font, $tag, $table);
+  * $result = $directoryEntry->encode(2048);
+  * var_dump($result); // NULL; table data and directory entry are written directly into the font stream
+  * @param int $entry_offset - Offset within the font file where the directory entry should be written.
+  * @returns void No return value; the method writes bytes (tag, checksum, offset, length and table data) into the font stream.
+  */
   function encode($entry_offset) {
     Font::d("\n==== $this->tag ====");
     //Font::d("Entry offset  = $entry_offset");
