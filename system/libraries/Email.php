@@ -1434,6 +1434,14 @@ class CI_Email {
 
 	// --------------------------------------------------------------------
 
+ /**
+ * Check whether any attachment has its 'multipart' value equal to the provided type.
+ * @example
+ * $has_multipart = $this->_attachments_have_multipart(TRUE);
+ * var_export($has_multipart); // bool(true) or bool(false)
+ * @param {bool} $type - Multipart type to check for (for example: TRUE to find multipart attachments).
+ * @returns {bool} TRUE if at least one attachment matches the given multipart type, FALSE otherwise.
+ */
 	protected function _attachments_have_multipart($type)
 	{
 		foreach ($this->_attachments as &$attachment)
