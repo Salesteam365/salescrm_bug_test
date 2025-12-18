@@ -843,6 +843,18 @@
             y: 160
         }]
     }];
+    /**
+    * Build and return a shuffled series of yearly data objects (2011–2016) for charting.
+    * @example
+    * makeData()
+    * [
+    *   { x: "2011", y: 123, color: "#ff0000", quarters: [30, 31, 31, 31] },
+    *   { x: "2012", y: 110, color: "#00ff00", quarters: [28, 27, 27, 28] },
+    *   ...
+    * ]
+    * @param {void} none - This function accepts no arguments; it reads globals arrayData and colors.
+    * @returns {Array<Object>} An array of six objects each with properties: x (year string), y (numeric value), color (string), and quarters (array) for use as chart series.
+    */
     function makeData() {
         var dataSet = shuffleArray(arrayData)
         var dataYearSeries = [{
@@ -879,6 +891,15 @@
 
         return dataYearSeries
     }
+    /**
+    * Updates a destination ApexCharts chart with quarter data derived from the selected points of a source chart.
+    * @example
+    * updateQuarterChart(sourceChart, 'quarterChartId')
+    * ApexCharts.exec('quarterChartId', 'updateOptions', { series: [{ name: '2023', data: [...] }], colors: ['#...'], fill: { colors: ['#...'] } })
+    * @param {{Object}} {{sourceChart}} - Source ApexCharts chart instance containing selectedDataPoints and series configuration.
+    * @param {{string}} {{destChartIDToUpdate}} - ID of the destination ApexCharts chart to update.
+    * @returns {{*}} Return value from ApexCharts.exec() that updates the destination chart, or undefined if no selection exists.
+    **/
     function updateQuarterChart(sourceChart, destChartIDToUpdate) {
         var series = [];
         var seriesIndex = 0;
