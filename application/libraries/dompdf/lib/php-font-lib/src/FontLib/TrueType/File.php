@@ -123,6 +123,14 @@ class File extends BinaryStream {
     }
   }
 
+  /**
+   * Convert a UTF-8 encoded string into an array of Unicode code points.
+   * @example
+   * $result = utf8toUnicode("A€");
+   * print_r($result); // Array ( [0] => 65 [1] => 8364 )
+   * @param {string} $str - Input UTF-8 encoded string.
+   * @returns {int[]} Array of Unicode code points corresponding to each UTF-8 character.
+   */
   function utf8toUnicode($str) {
     $len = strlen($str);
     $out = array();
@@ -154,6 +162,14 @@ class File extends BinaryStream {
     return $out;
   }
 
+  /**
+  * Get the Unicode-to-glyph index mapping from the font's 'cmap' subtables.
+  * @example
+  * $map = $font->getUnicodeCharMap();
+  * // Get glyph index for Unicode code point U+0041 ('A')
+  * echo isset($map[0x0041]) ? $map[0x0041] : 'not found'; // e.g. outputs 5
+  * @returns {{array|null}} Array mapping Unicode code points (int) to glyph indices (int), or null if no suitable subtable is found.
+  */
   function getUnicodeCharMap() {
     $subtable = null;
     foreach ($this->getData("cmap", "subtables") as $_subtable) {
@@ -170,6 +186,16 @@ class File extends BinaryStream {
     return null;
   }
 
+  /**
+   * Set the glyph subset for the TrueType file from an array of Unicode code points or a UTF-8 string.
+   * @example
+   * $font->setSubset(array(0x0041, 0x0042)); // pass Unicode code points for 'A' and 'B'
+   * // or
+   * $font->setSubset("AB"); // pass a UTF-8 string; will be converted to Unicode code points internally
+   * print_r($font->glyph_subset); // sample output: Array ( [0] => 0 [1] => 1 [2] => 45 )
+   * @param array|int[]|string $subset - Array of Unicode code points (ints) or a UTF-8 string of characters to include in the subset.
+   * @returns void Return nothing; updates internal $glyph_subset and $glyph_all properties.
+   */
   function setSubset($subset) {
     if (!is_array($subset)) {
       $subset = $this->utf8toUnicode($subset);
@@ -215,6 +241,16 @@ class File extends BinaryStream {
     return $this->glyph_subset;
   }
 
+  /**
+  * Encode and write TrueType/OpenType tables and directory records into the file stream.
+  * @example
+  * $file = new FontLib\TrueType\File();
+  * // prepare $file and its directory entries prior to encoding
+  * $file->encode(['head', 'hhea', 'cmap', 'glyf']); 
+  * echo "Tables encoded and written\n";
+  * @param {{array}} {{$tags}} - Optional array of table tag strings to encode; if empty, a default set of essential tables is used (unless raw mode is enabled, in which case all directory keys are used).
+  * @returns {{void}} No return value; writes table data to the file/stream and updates internal offsets.
+  */
   function encode($tags = array()) {
     if (!self::$raw) {
       $tags = array_merge(array("head", "hhea", "cmap", "hmtx", "maxp", "glyf", "loca", "name", "post"), $tags);
@@ -269,6 +305,15 @@ class File extends BinaryStream {
     return $class_parts[1];
   }
 
+  /**
+  * Parse the font file header (if needed) and read the table directory entries, populating $this->directory with TableDirectoryEntry instances keyed by tag.
+  * @example
+  * $file = new FontLib\TrueType\File($stream);
+  * $file->parseTableEntries();
+  * echo count($file->directory); // e.g. 12
+  * @param void $none - No parameters.
+  * @returns void Populates $this->directory and returns nothing.
+  */
   function parseTableEntries() {
     $this->parseHeader();
 
@@ -297,6 +342,15 @@ class File extends BinaryStream {
     return round($value * ($base / $this->getData("head", "unitsPerEm")));
   }
 
+  /**
+  * Read and parse a font table identified by its 4-character tag and store the resulting Table object in $this->data.
+  * @example
+  * $file = new FontLib\TrueType\File($stream);
+  * $file->readTable('cmap');
+  * echo get_class($file->data['cmap']); // e.g. "FontLib\Table\Type\cmap"
+  * @param {string} $tag - Table tag to read (e.g. 'cmap', 'head', 'name').
+  * @returns {void} No return value; the parsed Table object (or Table base class if raw) is stored in $this->data[$tag].
+  */
   protected function readTable($tag) {
     $this->parseTableEntries();
 
@@ -333,6 +387,17 @@ class File extends BinaryStream {
     $this->data[$name] = $data;
   }
 
+  /**
+  * Retrieve parsed TrueType table data by table name, optionally returning a specific key.
+  * @example
+  * $result = $this->getData('head');
+  * var_dump($result); // e.g. array|object with 'head' table data
+  * $value = $this->getData('name', 1);
+  * echo $value; // e.g. "Font Name"
+  * @param string $name - Name of the TrueType table to retrieve.
+  * @param int|string|null $key - Optional key or index within the table data to return.
+  * @returns mixed|null Return the whole table data (array/object) if no key given, a single value if key provided, or null if the table is not present.
+  */
   public function getData($name, $key = null) {
     $this->parseTableEntries();
 
@@ -451,6 +516,17 @@ class File extends BinaryStream {
     return $this->getNameTableString(name::NAME_POSTSCRIPT_NAME);
   }
 
+  /**
+  * Reduce the font's name table records to a minimal set of commonly used name IDs.
+  * @example
+  * $file = new FontLib\TrueType\File('/path/to/font.ttf');
+  * $before = count($file->data['name']->data['records']);
+  * $file->reduce();
+  * $after = count($file->data['name']->data['records']);
+  * echo "$before -> $after"; // e.g. "20 -> 7"
+  * @param {void} None - No arguments.
+  * @returns {void} Modifies the object's name records in-place; no return value.
+  */
   function reduce() {
     $names_to_keep = array(
       name::NAME_COPYRIGHT,

@@ -27,6 +27,16 @@ class File extends \FontLib\TrueType\File {
     $this->header->parse();
   }
 
+  /**
+  * Loads a WOFF font file, parses and rebuilds its table directory and data into a temporary file, then re-parses the table entries.
+  * @example
+  * $file = '/path/to/font.woff';
+  * $woff = new \FontLib\WOFF\File();
+  * $woff->load($file);
+  * echo 'Loaded WOFF file with reconstructed tables';
+  * @param {{string}} {{$file}} - Path to the WOFF file to load (e.g. '/var/www/fonts/example.woff').
+  * @returns {{void}} Void. The object's header and directory are reinitialized and table entries are re-parsed.
+  */
   public function load($file) {
     parent::load($file);
 
