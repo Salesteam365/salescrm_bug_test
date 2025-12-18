@@ -68,6 +68,14 @@ if (element !== null) {
   chart1.render();
 }
 
+/**
+* Update the global chart1 color by converting the RGB values in the global myVarVal string to a hex color and applying it via chart1.updateOptions.
+* @example
+* waterTrack()
+* undefined
+* @param {void} none - No parameters; the function reads globals: myVarVal (CSV RGB) and chart1.
+* @returns {void} Does not return a value.
+**/
 function waterTrack() {
   function rgbToHex(r, g, b) {
       return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
