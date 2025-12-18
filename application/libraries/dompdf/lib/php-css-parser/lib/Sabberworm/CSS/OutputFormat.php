@@ -88,6 +88,16 @@ class OutputFormat {
 		return null;
 	}
 	
+ /**
+ * Set a value on the first existing property that matches the provided name(s) with common prefixes (a, s, m, b, f, o, c, i).
+ * @example
+ * $outputFormat = new Sabberworm\CSS\OutputFormat();
+ * $result = $outputFormat->set('margin*', '10px'); // tries aMarginBefore, aMarginBetween, aMarginAfter, sMarginBefore, ... etc
+ * var_dump($result); // object(Sabberworm\CSS\OutputFormat) on success or bool(false) if no matching property was found
+ * @param string|array $aNames - Name or array of names to set; a string containing '*' expands to Before/Between/After.
+ * @param mixed $mValue - Value to assign to the matching prefixed property.
+ * @returns mixed|false Return $this for chaining when a matching property was set, otherwise false.
+ */
 	public function set($aNames, $mValue) {
 		$aVarPrefixes = array('a', 's', 'm', 'b', 'f', 'o', 'c', 'i');
 		if(is_string($aNames) && strpos($aNames, '*') !== false) {
@@ -195,6 +205,15 @@ class OutputFormatter {
 		$this->oFormat = $oFormat;
 	}
 	
+ /**
+ * Retrieve and prepare a configured space string by name and optional type.
+ * @example
+ * $result = $this->space('BeforeRule', 'block');
+ * echo $result // e.g. " " (a single space) or "\n" depending on configuration
+ * @param {string} $sName - Name of the space configuration to retrieve (e.g. 'BeforeRule', 'AfterSelector').
+ * @param {string|null} $sType - Optional type to select a specific value when multiple values are configured (e.g. 'block'); pass null to use the default.
+ * @returns {string} Prepared space string suitable for output.
+ */
 	public function space($sName, $sType = null) {
 		$sSpaceString = $this->oFormat->get("Space$sName");
 		// If $sSpaceString is an array, we have multple values configured depending on the type of object the space applies to
@@ -298,6 +317,14 @@ class OutputFormatter {
 		return $sResult;
 	}
 	
+ /**
+ * Remove the last semicolon from a semicolon-separated string unless the OutputFormat option 'SemicolonAfterLastRule' is enabled.
+ * @example
+ * $result = $obj->removeLastSemicolon("rule1;rule2;");
+ * echo $result; // "rule1;rule2"
+ * @param {string} $sString - The semicolon-separated string to process (e.g. a CSS rule list).
+ * @returns {string} The processed string with the final semicolon removed when SemicolonAfterLastRule is false; otherwise the original string.
+ */
 	public function removeLastSemicolon($sString) {
 		if($this->oFormat->get('SemicolonAfterLastRule')) {
 			return $sString;

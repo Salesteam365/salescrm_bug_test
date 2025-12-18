@@ -30,6 +30,15 @@ class Rule implements Renderable, Commentable {
 		$this->aComments = array();
 	}
 
+ /**
+ * Parse a CSS declaration (property: value) from the provided ParserState and return a populated Rule instance.
+ * @example
+ * $parserState = new ParserState("color: red !important;");
+ * $result = Rule::parse($parserState);
+ * echo $result->getRule(); // color
+ * @param ParserState $oParserState - ParserState positioned at the start of a CSS rule/declaration.
+ * @returns Rule The parsed Rule object.
+ */
 	public static function parse(ParserState $oParserState) {
 		$aComments = $oParserState->consumeWhiteSpace();
 		$oRule = new Rule($oParserState->parseIdentifier(), $oParserState->currentLine());
@@ -195,6 +204,16 @@ class Rule implements Renderable, Commentable {
 		return $this->render(new \Sabberworm\CSS\OutputFormat());
 	}
 
+ /**
+  * Render the CSS rule as a single declaration string using the provided OutputFormat.
+  * @example
+  * $oOutputFormat = new \Sabberworm\CSS\OutputFormat(); // configure spacing if needed
+  * $rule = new \Sabberworm\CSS\Rule\Rule('color', '#fff'); // example rule
+  * $result = $rule->render($oOutputFormat);
+  * echo $result; // e.g. "color: #fff;" or "color: #fff !important;"
+  * @param \Sabberworm\CSS\OutputFormat $oOutputFormat - Output format object controlling spacing and formatting.
+  * @returns string Rendered CSS declaration (includes property name, value, optional IE hacks, optional "!important", and trailing semicolon).
+  */
 	public function render(\Sabberworm\CSS\OutputFormat $oOutputFormat) {
 		$sResult = "{$this->sRule}:{$oOutputFormat->spaceAfterRuleName()}";
 		if ($this->mValue instanceof Value) { //Can also be a ValueList
