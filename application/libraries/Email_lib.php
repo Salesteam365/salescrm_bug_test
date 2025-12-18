@@ -7,6 +7,18 @@ class Email_lib {
         $this->_CI->load->model('Mail_model');
         error_reporting(0);
     }
+    /**
+    * Send an email using SMTP settings retrieved from Mail_model; initializes CodeIgniter email library and attempts to send the message.
+    * @example
+    * $result = $this->email_lib->send_email('recipient@example.com', 'Order Confirmation', '<p>Your order has shipped</p>', 'cc@example.com', '/path/to/invoice.pdf');
+    * echo $result // render some sample output true (on success) or false (on failure);
+    * @param {string|array} $to - Recipient email address or array of addresses.
+    * @param {string} $subject - Email subject line.
+    * @param {string} $message - Email body (HTML allowed).
+    * @param {string|array} $cc - Optional CC recipient email address or array of addresses (default: '').
+    * @param {string|array} $attach - Optional file path or array of file paths to attach (default: '').
+    * @returns {bool} Return TRUE on successful send, FALSE on failure (also returns FALSE if SMTP config cannot be loaded and sets flashdata).
+    */
     public function send_email($to, $subject, $message, $cc = '', $attach = '') {
         $data_all = $this->_CI->Mail_model->get_allemail();
         if(!$data_all){
