@@ -1,6 +1,14 @@
 (function () {
   'use strict';
 
+  /**
+   * Update the profile image preview from a file input change event.
+   * @example
+   * handleProfileImageChange(event)
+   * undefined
+   * @param {{Event}} {{event}} - The file input change event object; expects event.target.files[0] to be the selected file.
+   * @returns {{void}} Does not return a value.
+   **/
   let loadFile = function (event) {
       var reader = new FileReader();
       reader.onload = function () {
