@@ -139,6 +139,14 @@ jQuery.fn.extend({
         // function to initialize croppr.js on the image inside modal
         // returnMode option is not supported in cropzee
         // see https://jamesooi.design/Croppr.js/
+        /**
+        * Initialize and attach a Croppr instance to the modal image element (#cropzee-modal-image) using the global options object.
+        * @example
+        * cropzeeTriggerCroppr()
+        * undefined
+        * @param {Object} [options] - Global options object used to configure the Croppr instance (e.g., aspectRatio, maxSize, minSize, startSize, and callbacks).
+        * @returns {void} No return value; assigns the created Croppr instance to window.cropzeeCroppr.
+        **/
         function cropzeeTriggerCroppr() {
             window.cropzeeCroppr = new Croppr('#cropzee-modal-image', {
                 aspectRatio: options.aspectRatio,
@@ -154,6 +162,15 @@ jQuery.fn.extend({
         }
         // function to trigger modal and pass image data to display in the modal
         // function takes in input id and image (to be cropped) data
+        /**
+        * Create and open a modal that displays the provided image, draws it onto a hidden canvas, and initializes crop/rotate controls.
+        * @example
+        * cropzeeTriggerModal('myImageInput', 'https://example.com/image.jpg')
+        * undefined
+        * @param {string} id - Identifier for the image/input used in callback buttons (e.g., element id).
+        * @param {string} src - Source URL of the image to display inside the modal.
+        * @returns {void} Appends a light-modal to the document, draws the image to a hidden canvas, and triggers croppr/modal initialization; does not return a value.
+        */
         function cropzeeTriggerModal(id, src) {
             // take in animation option and add 'animated' before it
             var animation = options.modalAnimation;
@@ -207,6 +224,15 @@ jQuery.fn.extend({
         }
         // function to capture input and insert it into various elements for previewing and display
         // function takes in input object and its id
+        /**
+        * Read the selected image from a file input, draw it onto preview canvases matching the given id, and trigger the crop modal.
+        * @example
+        * cropzeeReadURL(document.getElementById('fileInput'), 'myCropId')
+        * undefined
+        * @param {{HTMLInputElement}} {{input}} - File input element whose first selected file (image) will be read.
+        * @param {{string}} {{id}} - Identifier (data-cropzee value) used to locate preview canvases and open the modal.
+        * @returns {{void}} Does not return a value.
+        **/
         function cropzeeReadURL(input, id) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
