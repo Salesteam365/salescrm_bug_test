@@ -10,6 +10,15 @@ class Color extends CSSFunction {
 		parent::__construct(implode('', array_keys($aColor)), $aColor, ',', $iLineNo);
 	}
 
+ /**
+ * Parse a color from the given ParserState and return a Color object.
+ * @example
+ * $parserState = new ParserState('#ff000080'); // hex with alpha (rgba(255,0,0,0.5))
+ * $result = Color::parse($parserState);
+ * var_dump($result); // Color object representing r=255, g=0, b=0, a=0.5
+ * @param {{ParserState}} {{$oParserState}} - The ParserState instance positioned at the color token to parse.
+ * @returns {{Color}} The parsed Color instance containing r, g, b (and optional a) components.
+ */
 	public static function parse(ParserState $oParserState) {
 		$aColor = array();
 		if ($oParserState->comes('#')) {
@@ -79,6 +88,20 @@ class Color extends CSSFunction {
 		return $this->render(new \Sabberworm\CSS\OutputFormat());
 	}
 
+ /**
+ * Render the color as a CSS string, using 3-digit hexadecimal shorthand when the output format allows it and the color components permit.
+ * @example
+ * // Assume $color is an instance of Sabberworm\CSS\Value\Color with components r=255, g=204, b=0
+ * $oOutputFormat = new \Sabberworm\CSS\OutputFormat();
+ * // When RGB hash shorthand is allowed:
+ * // (e.g. $oOutputFormat->getRGBHashNotation() === true)
+ * echo $color->render($oOutputFormat); // '#fc0'
+ * // When RGB hash shorthand is not allowed:
+ * // (e.g. $oOutputFormat->getRGBHashNotation() === false)
+ * echo $color->render($oOutputFormat); // '#ffcc00'
+ * @param \Sabberworm\CSS\OutputFormat $oOutputFormat - Output format instance that controls rendering options (e.g. whether RGB hash shorthand is allowed).
+ * @returns string Return the rendered CSS color string (e.g. '#fc0' or '#ffcc00').
+ */
 	public function render(\Sabberworm\CSS\OutputFormat $oOutputFormat) {
 		// Shorthand RGB color values
 		if($oOutputFormat->getRGBHashNotation() && implode('', array_keys($this->aComponents)) === 'rgb') {

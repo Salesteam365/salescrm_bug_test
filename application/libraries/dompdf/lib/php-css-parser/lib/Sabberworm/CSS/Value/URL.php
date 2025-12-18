@@ -13,6 +13,15 @@ class URL extends PrimitiveValue {
 		$this->oURL = $oURL;
 	}
 
+ /**
+ * Parse a CSS URL value from the given ParserState and return a URL object.
+ * @example
+ * $parser = new ParserState('url("http://example.com/image.png")');
+ * $result = URL::parse($parser);
+ * echo $result; // URL object representing "http://example.com/image.png"
+ * @param ParserState $oParserState - ParserState positioned at the start of a URL token or string.
+ * @returns URL URL object representing the parsed CSS URL value.
+ */
 	public static function parse(ParserState $oParserState) {
 		$bUseUrl = $oParserState->comes('url', true);
 		if ($bUseUrl) {
