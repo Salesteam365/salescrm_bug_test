@@ -54,6 +54,13 @@ if (element !== null) {
     var stocks1 = new ApexCharts(document.querySelector("#total-invested"), stocks1);
     stocks1.render();
 }
+/**
+* Update the chart's color using a comma-separated RGB string from the global myVarVal and apply it to stocks1.
+* @example
+* stockstotalInvested()
+* undefined
+* @returns {{void}} No return value; updates stocks1 options in-place.
+**/
 function stockstotalInvested() {
     function rgbToHex(r, g, b) {
         return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
@@ -578,6 +585,13 @@ if (element !== null) {
     chart2.render();
 }
 
+/**
+* Update chart2 colors using RGB values parsed from the global myVarVal string.
+* @example
+* totalInvestmentsStats()
+* undefined
+* @returns {void} Does not return a value; updates chart2 options with a hex color derived from myVarVal.
+**/
 function totalInvestmentsStats() {
     function rgbToHex(r, g, b) {
         return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
@@ -890,6 +904,14 @@ if (element !== null) {
     chart.render();
 }
 
+/**
+ * Update the candlestick chart colors using a global RGB string and a fixed downward color.
+ * @example
+ * stocksMarketcap()
+ * undefined
+ * @param {void} none - This function does not accept any arguments; it reads globals like myVarVal and chart.
+ * @returns {void} Updates chart options in-place and does not return a value.
+ */
 function stocksMarketcap() {
     function rgbToHex(r, g, b) {
         return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
