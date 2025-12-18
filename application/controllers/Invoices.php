@@ -11,6 +11,21 @@ class Invoices extends CI_Controller
 	$this->load->model('Login_model','Login');
 	$this->load->library('email_lib');
   }
+  /**
+  * Display the invoice list view or redirect based on authentication and permission checks.
+  * @example
+  * // Typical call from routing / another controller:
+  * $this->Invoices->index();
+  * // Possible outcomes:
+  * // - Not logged in: redirects to 'login'
+  * // - Missing 'Generate Invoicing' module: redirects to 'home'
+  * // - Missing 'Invoice' retrieve permission: redirects to 'permission'
+  * // - Success: loads 'sales/list-view-invoice' with sample data, e.g.:
+  * //   $data['user']  = 'john.doe@example.com';
+  * //   $data['admin'] = 'Site Admin';
+  * @param void none - No parameters.
+  * @returns void Performs redirects or renders the invoice list view.
+  */
   public function index()
   {
   	if($this->session->userdata('email'))
@@ -34,6 +49,14 @@ class Invoices extends CI_Controller
     }
   }
   
+  /**
+  * Displays invoice detail page after verifying user session, module access and retrieve permission. Expects base64-encoded GET parameters inv_id (invoice id), cnp and ceml; loads 'sales/view-invoice-details' with invoice, branch, client and payment data or redirects to login/permission/home when checks fail.
+  * @example
+  * // Example (browser URL with sample base64 values):
+  * // /invoices/view_invoice?inv_id=MTAwMQ==&cnp=Y29tcGFueTEyMw==&ceml=Y2xpZW50QGV4YW1wbGUuY29t
+  * @param {void} $none - No direct function parameters; the method reads GET parameters inv_id, cnp and ceml (base64-encoded).
+  * @returns {void} Loads the invoice details view or issues a redirect (to login, permission or home) depending on session and permission checks.
+  */
   public function view_invoice()
   {
   	  if($this->session->userdata('email'))
@@ -77,6 +100,33 @@ class Invoices extends CI_Controller
     
   }
   
+  /**
+  * Send an invoice email to a recipient, optionally CC an address and attach a generated PDF invoice.
+  * @example
+  * $_POST = [
+  *   'orgName' => 'Acme Corp',
+  *   'orgEmail' => 'billing@acme.com',
+  *   'ccEmail' => 'accounting@acme.com',
+  *   'subEmail' => 'Invoice from Team365',
+  *   'descriptionTxt' => '<p>Your invoice is attached.</p>',
+  *   'invoiceurl' => 'https://team365.io/invoice/123',
+  *   'piid' => '123',               // internal invoice id
+  *   'compeml' => 'invoices@me.com',
+  *   'compname' => 'My Company'
+  * ];
+  * $this->Invoices->send_email();
+  * // outputs '1' on success or '0' on failure and exits
+  * @param string $orgName - Recipient organization name (POST 'orgName').
+  * @param string $orgEmail - Recipient email address (POST 'orgEmail').
+  * @param string|null $ccEmail - CC email address, optional (POST 'ccEmail').
+  * @param string $subEmail - Email subject (POST 'subEmail').
+  * @param string $descriptionTxt - Additional HTML description/body content (POST 'descriptionTxt').
+  * @param string $invoiceurl - URL to view the invoice (POST 'invoiceurl').
+  * @param int|string $piid - Purchase/invoice identifier used to generate the PDF attachment (POST 'piid').
+  * @param string $compeml - Company email used in PDF generation (POST 'compeml').
+  * @param string $compname - Company name used in PDF generation and email header (POST 'compname').
+  * @returns string Echoes '1' on successful send, '0' on failure; the method echoes the result and exits (no return value).
+  */
   public function send_email(){
 	  
 	  $orgName		= $this->input->post('orgName');
@@ -197,6 +247,38 @@ class Invoices extends CI_Controller
   
   
   
+  /**
+  * Return a JSON-encoded list of invoices formatted for DataTables and echo it.
+  * @example
+  * // Typical AJAX POST to CodeIgniter controller endpoint:
+  * // POST to: /invoices/ajax_list with DataTables parameters (draw, start, length, search, etc.)
+  * // Example JSON response:
+  * // {
+  * //   "draw": 1,
+  * //   "recordsTotal": 125,
+  * //   "recordsFiltered": 12,
+  * //   "data": [
+  * //     [
+  * //       "INV-001",               // invoice_no (with inline action links)
+  * //       "Acme Corporation",      // org_name
+  * //       "₹1,200.00",             // formatted sub_total
+  * //       "Active",                // status label (Active/Pending)
+  * //       "2 days ago",            // human-friendly invoice date (with tooltip full date)
+  * //       "<action html>"          // action buttons HTML (view/edit/delete depending on permissions)
+  * //     ],
+  * //     [
+  * //       "INV-002",
+  * //       "Beta Ltd",
+  * //       "₹3,500.00",
+  * //       "Pending",
+  * //       "1 month ago",
+  * //       "<action html>"
+  * //     ]
+  * //   ]
+  * // }
+  * @param void $none - No direct function parameters; uses $_POST and session data inside the controller.
+  * @returns void Echoes the JSON response expected by DataTables (draw, recordsTotal, recordsFiltered, data).
+  */
   public function ajax_list()
   {
 	
@@ -285,6 +367,16 @@ class Invoices extends CI_Controller
   } 
   
   
+  /**
+  * Display the "New Invoice" page (or load an existing invoice for update) after validating session and permissions.
+  * @example
+  * // From a controller context:
+  * $this->invoices->new_invoice();
+  * // Result: loads 'sales/add-invoices' view with prepared $data (branch, customer, terms, declaration, record, action)
+  * // or redirects to 'login', 'home', or 'permission' depending on session/permission checks.
+  * @param {void} none - No arguments.
+  * @returns {void} Renders the invoice creation/update view or performs a redirect.
+  */
   public function new_invoice()
   {
 	
@@ -330,6 +422,18 @@ class Invoices extends CI_Controller
   
   
   
+  /**
+   * Prepare and render the "New Invoice" creation page after validating session, module access,
+   * user permissions and account license/invoice limits. Loads data used by the 'setting/invoices' view
+   * (admin, branch, customer, terms, and any existing record when an ID segment is present).
+   * May redirect to 'login', 'permission' or 'home' depending on checks.
+   * @example
+   * // From another controller method (when session/email present and permissions allow):
+   * $this->Invoices->new_invoice_old();
+   * // Result: renders the 'setting/invoices' view with prepared $data, or redirects to 'login', 'permission' or 'home'.
+   * @param {{void}} {{none}} - This controller method does not accept parameters.
+   * @returns {{void}} Does not return a value; outputs a view or performs a redirect.
+   */
   public function new_invoice_old()
   {
   	if($this->session->userdata('email'))
@@ -409,6 +513,28 @@ class Invoices extends CI_Controller
     }
   }
   
+    /**
+     * Check monthly invoice total against the admin account/license limits and echo a JSON response.
+     * This method retrieves admin details and the total invoices for the current month, compares the total
+     * against different limits depending on the admin's invoice_account_type and invoice_license_type,
+     * and echoes a JSON object indicating whether the limit is exceeded.
+     * Behavior:
+     *  - For free accounts (invoice_account_type == '') the limit is 9 invoices.
+     *  - For Paid accounts with license 'Basic' the limit is 99 invoices.
+     *  - For Paid accounts with license 'Standard' the limit is 499 invoices.
+     *  - For Paid accounts with license 'Professional' there is no limit (always returns status 200).
+     *  - If the total is within the allowed limit the method echoes: {"status":200}
+     *  - If the total exceeds the allowed limit the method echoes: {"status":201,"totalinvoices":<number>}
+     *
+     * @example
+     * // Called from a controller context (no arguments). Example outputs shown:
+     * $this->Invoices->checkInvoicetotal();
+     * // Possible echoed responses:
+     * // {"status":200}
+     * // {"status":201,"totalinvoices":123}
+     *
+     * @returns {void} Echoes a JSON response directly; no return value.
+     */
     public function checkInvoicetotal()
     {
          $Adminlist = $this->Login->get_admin_detail();
@@ -463,6 +589,14 @@ class Invoices extends CI_Controller
   
   
   
+  /**
+  * Delete a pro forma invoice (PI) by ID, update the related sale order payment and output a JSON status.
+  * @example
+  * $result = $this->delete_pi(123);
+  * echo $result // {"status":true}
+  * @param {int} $id - ID of the pro forma/invoice to delete.
+  * @returns {void} Echoes a JSON encoded status response (e.g., {"status":true}).
+  */
   public function delete_pi($id)
   {
     $this->invoice_model->delete_pi($id);
@@ -478,6 +612,17 @@ class Invoices extends CI_Controller
     echo json_encode(array("status" => TRUE));
   }
   
+  /**
+  * Create a new invoice from submitted POST data: validate input, assemble invoice details, persist the invoice,
+  * create payment history and update related sales order payment, then send workflow-driven email notifications.
+  * Echoes a JSON response with a redirect URL fragment on success or an error status on failure.
+  * @example
+  * // Invoked from controller (reads $_POST). Example successful echoed output:
+  * // $this->add_invoiceDetails();
+  * // Outputs: {"status": true, "id": "?inv_id=MTIz&cnp=Q29tcGFueQ==&ceml=Y2VtcEBleGFtcGxlLmNvbQ=="}
+  * @param {void} $none - No function arguments; uses $this->input->post() to read form fields.
+  * @returns {void} Echoes JSON. On success: {"status": true, "id": "<url_fragment>"}; on failure: {"status": false} or validation error code.
+  */
   public function add_invoiceDetails()
   {
 	
@@ -759,6 +904,16 @@ class Invoices extends CI_Controller
   }
   
   
+  /**
+  * Update invoice details from POST data, persist changes to the database and echo a JSON status response.
+  * @example
+  * // Called in a controller context after sending POST data (invoice_date, product_name, unit_price, etc.)
+  * $this->update_invoiceDetails();
+  * // Sample echoed output:
+  * // {"status":true,"id":"?inv_id=QzEyMzQ=&cnp=Q29tcGFueU5hbWU=&ceml=Y29tcEBleGFtcGxlLmNvbQ==","st":200}
+  * @param array|null $postData - POST payload (accessed via $this->input->post()) containing invoice fields such as 'invoice_date' => '2025-12-01', 'product_name' => ['Widget A','Widget B'], 'unit_price' => ['1000','2000'], 'invc_id' => '1234', etc.
+  * @returns void Echoes JSON indicating success or failure and does not return a value.
+  */
   public function update_invoiceDetails(){
 	  
 	$validation = $this->check_validation();
@@ -891,6 +1046,15 @@ class Invoices extends CI_Controller
   }
   
   
+  /**
+  * Validate invoice form input and return validation errors as JSON or HTTP status 200 on success.
+  * @example
+  * $result = $this->check_validation();
+  * echo $result; // On failure (sample): {"st":202,"invoice_date":"Invoice Date is required","product_name":"product name is required","quantity":"Quantity is required","unit_price":"Unit Price is required","billedby":"Ship To is required","billedto":"Customer Name is required"}
+  * // On success (sample):
+  * echo $result; // 200
+  * @returns {int|string} Return 200 (int) when validation passes; otherwise a JSON-encoded string containing validation error messages and a status code 202.
+  */
   public function check_validation()
   {
     //$this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; margin-left: 10px;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -920,6 +1084,15 @@ class Invoices extends CI_Controller
       return 200;
     }
   }
+  /**
+  * Uploads a base64-encoded signature image (data URI) to the server and returns the saved filename.
+  * @example
+  * $signatureData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...'; // sample base64 data URI
+  * $result = $this->uploadSignature($signatureData);
+  * echo $result; // render some sample output value, e.g. "605c8e3a9f7b2.png"
+  * @param {{string}} {{$signature_image}} - Base64-encoded image string in data URI format (e.g. "data:image/png;base64,...").
+  * @returns {{string}} The generated filename (unique id + extension) of the saved image (e.g. "605c8e3a9f7b2.png").
+  */
   public function uploadSignature($signature_image)
   {
 	    $folderPath = "./assets/pi_images/";
@@ -936,6 +1109,43 @@ class Invoices extends CI_Controller
 		file_put_contents($file, $image_base64); 
         return $signature_img = $uniqid . '.'.$image_type; 	
   }
+    /**
+    * Update an existing branch using POSTed form data and return a JSON status.
+    * @example
+    * $_POST = array(
+    *   'branch_id' => 5,
+    *   'branch_name' => 'Main Branch',
+    *   'branch_email' => 'branch@example.com',
+    *   'comp_name' => 'Example Company Pvt Ltd',
+    *   'branch_phone' => '+911234567890',
+    *   'branch_gstin' => '27ABCDE1234F1Z5',
+    *   'branch_cin' => 'U12345MH2000PTC000000',
+    *   'branch_pan' => 'ABCDE1234F',
+    *   'country_br' => 'India',
+    *   'state_br' => 'Maharashtra',
+    *   'city_br' => 'Mumbai',
+    *   'zipcode_br' => '400001',
+    *   'address_br' => '123 Example Street',
+    *   'show_email' => '1'
+    * );
+    * $this->update_branch();
+    * // Outputs: {"status":true}
+    * @param {int} $branch_id - Branch ID to update (taken from POST key 'branch_id').
+    * @param {string} $branch_name - Branch name (POST key 'branch_name').
+    * @param {string} $branch_email - Branch contact email (POST key 'branch_email').
+    * @param {string} $company_name - Company name associated with the branch (POST key 'comp_name').
+    * @param {string} $contact_number - Branch contact number (POST key 'branch_phone').
+    * @param {string} $gstin - GSTIN of the branch (POST key 'branch_gstin').
+    * @param {string} $cin - CIN of the company/branch (POST key 'branch_cin').
+    * @param {string} $pan - PAN of the branch/company (POST key 'branch_pan').
+    * @param {string} $country - Country of the branch (POST key 'country_br').
+    * @param {string} $state - State of the branch (POST key 'state_br').
+    * @param {string} $city - City of the branch (POST key 'city_br').
+    * @param {string} $zipcode - ZIP/postal code of the branch (POST key 'zipcode_br').
+    * @param {string} $address - Full address of the branch (POST key 'address_br').
+    * @param {string|int} $show_email - Flag to indicate whether to show email (POST key 'show_email', e.g. '1' or '0').
+    * @returns {string} JSON encoded string with operation status, e.g. '{"status":true}'.
+    */
     public function update_branch()
     {
      $data = array(      
@@ -957,6 +1167,17 @@ class Invoices extends CI_Controller
     echo json_encode(array("status" => TRUE));
   }
   //check invoice no
+  /**
+  * Check whether an invoice number already exists and echo HTML/JS to enable or disable the invoice save button.
+  * @example
+  * $_POST['invoice_no'] = 'INV-001';
+  * $this->check_invoiceduplicate();
+  * // If exists: echoes '<span style="color:red;font-size:10px;"><i class="fa fa-times" aria-hidden="true"></i>&nbsp;Invoice no already exit!</span>'
+  * // and echoes "<script>$('#invoiceSave').prop('disabled',true);</script>"
+  * // If not exists: echoes "<script>$('#invoiceSave').prop('disabled',false);</script>"
+  * @param string $invoice_no - Invoice number supplied via $_POST['invoice_no'] (e.g. 'INV-001').
+  * @returns void No return value; outputs HTML/JS directly to the response.
+  */
   public function check_invoiceduplicate()
   {
       if($this->invoice_model->check_invice_no($_POST['invoice_no']))
@@ -1490,6 +1711,19 @@ class Invoices extends CI_Controller
     }
     
   }
+  /**
+  * Change the declaration status of a proforma invoice: reads POST keys 'inv_id' and 'declaration_status', updates the invoice via the model and echoes a JSON result.
+  * @example
+  * // HTTP POST example (curl)
+  * // curl -X POST -d "inv_id=123&declaration_status=approved" https://example.com/invoices/chnage_declaration_status
+  * // Sample successful response:
+  * // {"status":true,"st":200}
+  * // Sample failure response:
+  * // {"status":false}
+  * @param int $inv_id - Invoice ID supplied in POST (key: 'inv_id'), e.g. 123.
+  * @param string $declaration_status - Declaration status supplied in POST (key: 'declaration_status'), e.g. 'approved'.
+  * @returns void Echoes a JSON response indicating success ({ "status": true, "st": 200 }) or failure ({ "status": false }); does not return a PHP value.
+  */
   public function chnage_declaration_status()
   {
 	  $piId=$this->input->post('inv_id');
@@ -1503,6 +1737,23 @@ class Invoices extends CI_Controller
       }
   }
   
+  /**
+  * Change the enable_payment status for a bank detail record using POSTed values.
+  * @example
+  * // Example using HTTP POST to the controller endpoint:
+  * // POST: bankdetails_id=123 & bank_status=1
+  * $result = file_get_contents('http://example.com/invoices/changebankstatus', false, stream_context_create([
+  *   'http' => [
+  *     'method' => 'POST',
+  *     'header' => 'Content-type: application/x-www-form-urlencoded',
+  *     'content' => http_build_query(['bankdetails_id' => 123, 'bank_status' => 1])
+  *   ]
+  * ]));
+  * echo $result; // {"st":200}
+  * @param {{int}} {{bankdetails_id}} - ID of the bank details record provided via POST.
+  * @param {{int|bool}} {{bank_status}} - New enable_payment value from POST (e.g. 1 to enable, 0 to disable).
+  * @returns {{void}} Echoes a JSON response with status: {"st":200} on success or {"st":201} on failure.
+  */
   public function changebankstatus()
   {
 	  $bankdetails_id = $this->input->post('bankdetails_id');
@@ -1520,6 +1771,27 @@ class Invoices extends CI_Controller
   }
   
   
+  /**
+   * Create bank details from POSTed form data, save to the database, and echo a JSON result indicating success or failure.
+   * @example
+   * // Example using cURL:
+   * // curl -X POST http://example.com/invoices/create_bankDetails \
+   * //  -d "bank_name=ABC Bank" \
+   * //  -d "account_no=123456789012" \
+   * //  -d "acc_holder_name=John Doe" \
+   * //  -d "ifsc_code=ABCD0123456" \
+   * //  -d "account_type=Savings" \
+   * //  -d "mobile_no=9999999999" \
+   * //  -d "upi_id=john@upi" \
+   * //  -d "terms_conditionbnk[]=Term1" -d "terms_conditionbnk[]=Term2" \
+   * //  -d "bank_country=India"
+   * // Possible printed responses:
+   * // Success: {"status":true,"st":200}
+   * // Failure: {"status":false}
+   * // Validation error (if check_validation_bank() returns non-200): prints the validation message and exits.
+   * @param void $none - No direct function arguments; reads required values from POST and session.
+   * @returns void Outputs JSON (or a validation message) and terminates execution.
+   */
   public function create_bankDetails()
   {
 	 
@@ -1562,6 +1834,37 @@ class Invoices extends CI_Controller
       }
 	}
   }
+  /**
+  * Handle validation and update of bank details from POST data; echoes a JSON response indicating success or failure.
+  * @example
+  * // Example POST data (sent to Invoices/update_bankDetails via HTTP POST)
+  * $_POST = [
+  *   'bank_name' => 'State Bank',
+  *   'account_no' => '1234567890',
+  *   'acc_holder_name' => 'John Doe',
+  *   'ifsc_code' => 'SBIN0001234',
+  *   'account_type' => 'Savings',
+  *   'mobile_no' => '9876543210',
+  *   'upi_id' => 'john@upi',
+  *   'terms_conditionbnk' => ['Term A','Term B'],
+  *   'bank_country' => 'India',
+  *   'account_details_id' => '5'
+  * ];
+  * $this->invoices->update_bankDetails();
+  * // Sample echoed output on success:
+  * echo '{"status":true,"st":200}';
+  * @param {string} bank_name - Bank name submitted via POST.
+  * @param {string} account_no - Account number submitted via POST.
+  * @param {string} acc_holder_name - Account holder's name submitted via POST.
+  * @param {string} ifsc_code - IFSC code submitted via POST.
+  * @param {string} account_type - Account type (e.g., 'Savings', 'Current') submitted via POST.
+  * @param {string} mobile_no - Registered mobile number submitted via POST.
+  * @param {string} upi_id - UPI ID submitted via POST (optional).
+  * @param {array|string} terms_conditionbnk - Terms/conditions as array (checkboxes) or string; will be imploded with "<br>".
+  * @param {string} bank_country - Country of the bank submitted via POST.
+  * @param {int|string} account_details_id - ID of the bank account record to update.
+  * @returns {string} JSON - Echoes a JSON encoded string indicating status: success {"status":true,"st":200} or failure {"status":false}.
+  */
   public function update_bankDetails()
   {
 	 
@@ -1605,6 +1908,20 @@ class Invoices extends CI_Controller
       }
 	}
   }
+  /**
+  * Validate bank-related POST inputs and return either success or JSON-encoded validation errors.
+  * @example
+  * // Typical usage inside the Invoices controller:
+  * $result = $this->check_validation_bank();
+  * // On validation failure (missing required fields) returns JSON:
+  * // echo $result; // {"st":202,"bank_country":"Bank Country is required","bank_name":"Bank Name is required","acc_holder_name":"Account Holder Name is required","account_no":"Acoount Number is required","ifsc_code":"IFSC Code is required","mobile_no":"Phone no is required"}
+  * // If UPI checkbox was set to 'checked_upi' and upi_id is missing:
+  * // echo $result; // {"st":202,...,"upi_id":"UPI Id is required"}
+  * // On success returns integer 200:
+  * // echo $result; // 200
+  * @param void $none - This function does not accept direct arguments; it validates POST data via $this->input->post().
+  * @returns int|string 200 on successful validation, or a JSON-encoded string (st = 202) containing field-specific error messages on failure.
+  */
   public function check_validation_bank()
   {
 	  //print_r($this->input->post());
@@ -1640,6 +1957,16 @@ class Invoices extends CI_Controller
     }
   }
   
+  /**
+  * Generate a PDF invoice for a given product/invoice record, save it to disk and return the saved file path.
+  * @example
+  * $result = $this->generate_pdf_attachment_old(123, 'CNP001', 'owner@example.com');
+  * echo $result // outputs 'assets/img/invoice_123.pdf';
+  * @param {int} $product_id - The numeric ID of the product/invoice record to generate the PDF for.
+  * @param {string} $cnp - Company/record identifier used to locate the proforma/invoice (e.g. 'CNP001').
+  * @param {string} $ceml - Company or session email associated with the record (e.g. 'owner@example.com').
+  * @returns {string} Return the relative path to the generated PDF file (e.g. 'assets/img/invoice_123.pdf').
+  */
   public function generate_pdf_attachment_old($product_id,$cnp,$ceml)
   {
 	  	$row = $this->invoice_model->get_pi_byId($product_id,$cnp,$ceml);
@@ -2407,6 +2734,23 @@ class Invoices extends CI_Controller
   }
   
   
+  /**
+  * Handle creation and update of invoice payment terms from POSTed arrays and respond with JSON status.
+  * @example
+  * // Simulate POST payload (controller context)
+  * $_POST['terms_name'] = ['Net 30', 'Due on receipt'];
+  * $_POST['no_ofdays'] = [30, 0];
+  * $_POST['defaults_value'] = [0, 1];
+  * $_POST['terms_id'] = [0, 5]; // 0 = create new term, 5 = update existing term with ID 5
+  * // Call the controller method
+  * $this->get_payment_terms();
+  * // Possible outputs (echoed JSON):
+  * // {"st":200}   // all terms processed successfully
+  * // {"st":201}   // database save/update failed
+  * // {"st":202,"terms_name":"Terms name and terms value is required"} // validation error for missing name/value
+  * @param void $none - No function arguments; reads POST arrays: terms_name[], no_ofdays[], defaults_value[], terms_id[].
+  * @returns void Echoes a JSON status object; does not return a PHP value.
+  */
   public function get_payment_terms()
   {
 	$terms_name		= $this->input->post('terms_name'); 
@@ -2454,6 +2798,14 @@ class Invoices extends CI_Controller
 	echo json_encode($result);	
   }
    
+  /**
+  * Deletes a payment record and updates related invoice and sale order payment totals.
+  * @example
+  * deletePayment(123);
+  * // Outputs: {"status":true}
+  * @param {int} $id - ID of the payment_history record to delete.
+  * @returns {void} Echoes a JSON object {"status": true} on success and does not return a value.
+  */
   public function deletePayment($id){
     $result 	= $this->invoice_model->get_payment_byid($id);
 	$allResult 	= $this->invoice_model->get_inv_payment($result['invoice_id']);
@@ -2480,6 +2832,37 @@ class Invoices extends CI_Controller
 	echo json_encode(array("status" => TRUE));
   }
   
+  /**
+  * Update payment mode and advanced payment for an invoice and corresponding sales order.
+  * Validates POST input, updates invoice and sales-order payment records, creates a payment history entry,
+  * triggers workflow email notifications based on configurable rules and returns a JSON response.
+  * @example
+  * $_POST = [
+  *   'sales_id' => '123', 
+  *   'inv_id' => '456',
+  *   'payment_mode' => 'Cash',
+  *   'cheque_no' => '',
+  *   'adv_payments' => '1,000',
+  *   'add_adv_payment' => '0',
+  *   'cal_pending_amount' => '5,000',
+  *   'totals_amt' => '6,000',
+  *   'payment_date' => '2025-12-17',
+  *   'remarks' => 'Payment received'
+  * ];
+  * $result = $this->Invoices->update_paymentMode();
+  * echo $result; // sample output: {"status":true} or {"st":202,"payment_mode":"Payment Mode is required","adv_payments":""}
+  * @param string $sales_id - POST sales order id. Example: '123'
+  * @param string $inv_id - POST invoice id. Example: '456'
+  * @param string $payment_mode - POST payment mode (required). Example: 'Cash' or 'Cheque'
+  * @param string $cheque_no - POST cheque/reference number (optional). Example: 'CHK12345'
+  * @param string|float $adv_payments - POST advanced payment amount (required, commas allowed). Example: '1,000'
+  * @param string|float $add_adv_payment - POST additional advanced payment to add (optional). Example: '0'
+  * @param string|float $cal_pending_amount - POST calculated pending amount (required). Example: '5,000'
+  * @param string|float $totals_amt - POST total invoice amount. Example: '6,000'
+  * @param string $payment_date - POST payment date. Example: '2025-12-17'
+  * @param string $remarks - POST optional remarks. Example: 'Received partial payment'
+  * @returns string JSON encoded response: returns status JSON. On success: '{"status":true}', on DB update failure: '{"status":false}', on validation failure: '{"st":202,"payment_mode":"<error>","adv_payments":"<error>"}'.
+  */
   public function update_paymentMode()
   {
 	$this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; margin-left: 10px;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
