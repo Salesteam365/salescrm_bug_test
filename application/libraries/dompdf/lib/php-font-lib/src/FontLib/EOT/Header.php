@@ -27,6 +27,27 @@ class Header extends \FontLib\Header {
     "rangeShift"    => self::uint16,
   );
 
+  /**
+   * Parse the EOT header from the attached font stream and populate $this->data with the parsed fields.
+   * @example
+   * $font = new \FontLib\Stream\FontFile($filePath); // example font reader instance
+   * $header = new \FontLib\EOT\Header($font);
+   * $header->parse();
+   * // Example inspection of parsed data:
+   * // print_r($header->data);
+   * // Array (
+   * //   [EOTSize] => 123456
+   * //   [FontDataSize] => 65536
+   * //   [Version] => 131072
+   * //   [FamilyName] => "Arial"
+   * //   [StyleName] => "Regular"
+   * //   [FullName] => "Arial Regular"
+   * //   [RootString] => array("http://example.com\0", "")
+   * //   ...
+   * // )
+   * @throws \Exception When the EOT version is unknown.
+   * @return void Populates the instance's data property with parsed header information.
+   */
   public function parse() {
     $font = $this->font;
 
