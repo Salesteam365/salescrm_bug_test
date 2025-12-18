@@ -9,6 +9,14 @@
             buildDropdown(this);
         }
 
+        /**
+        * Replace a native select element with a custom, searchable, keyboard-navigable dropdown and keep the original select synchronized.
+        * @example
+        * buildDropdown($('#mySelect'))
+        * undefined
+        * @param {{jQuery}} {{originalDropdown}} - jQuery-wrapped select element to be replaced by the enhanced dropdown.
+        * @returns {{void}} Returns nothing; the function mutates the DOM and binds event handlers to create the custom dropdown.
+        **/
         function buildDropdown(originalDropdown) {
             var itemName = settings.itemName;
             var id = originalDropdown[0].id;
@@ -125,6 +133,14 @@
                 resizeDropdown();
             });
 
+            /**
+            * Selects a given dropdown item in the custom BetterDropdown UI, updates the visible label, syncs the original <select> element, clears any filter, and closes the dropdown.
+            * @example
+            * selectItem($('#myDropdownItem'))
+            * undefined
+            * @param {{jQuery}} {{$item}} - The jQuery element representing the dropdown item to select.
+            * @returns {{void}} No value is returned; the function updates DOM state and triggers events.
+            **/
             function selectItem($item) {
                 $item.parent().children().removeClass('selected');
                 $item.addClass('selected');
@@ -147,6 +163,14 @@
                 $item.addClass('hovered');
             }
 
+            /**
+            * Filters dropdown items by the given text, hiding non-matching items and showing a "no results" message when none match.
+            * @example
+            * filterItems('searchTerm')
+            * undefined
+            * @param {{string}} {{filterText}} - Text to filter the dropdown items by.
+            * @returns {{void}} No return value.
+            **/
             function filterItems(filterText) {
                 // hide 'no items found' message
                 $('.' + className + '-no-result-message').remove();
@@ -193,6 +217,13 @@
                 }
             }
 
+            /**
+            * Toggle the filter dropdown for the current BetterDropdown instance: open it (closing other dropdowns), focus and scroll to the selected result, re-highlight the selected item and flip the arrow, or close it if already open.
+            * @example
+            * toggleDropdown()
+            * undefined
+            * @returns {void} No return value.
+            **/
             function toggleDropdown() {
                 var $filterWrapper = $('.' + className + '-filter-wrapper');
                 var $filterBox = $('.' + className + '-filter-box');
@@ -236,6 +267,13 @@
                 }
             }
 
+            /**
+            * Toggle the dropdown arrow icon for the current dropdown by switching the element's classes between 'down-arrow' and 'up-arrow'.
+            * @example
+            * flipDropdownArrow()
+            * // undefined — toggles the icon classes on elements with '.' + className + '-dropdown-icon'
+            * @returns {void} Does not return a value; mutates DOM classes to reflect the toggled arrow state.
+            */
             function flipDropdownArrow() {
                 var $dropdownIcon = $('.' + className + '-dropdown-icon');
 
@@ -258,6 +296,14 @@
                     .addClass('down-arrow');
             }
 
+            /**
+            * Handles arrow-up, arrow-down and enter keys to move the hovered selection within visible dropdown results and optionally select an item.
+            * @example
+            * arrowKeyNavigate(event)
+            * undefined
+            * @param {{Event}} {{e}} - Keydown event object (KeyboardEvent or jQuery.Event) representing the user's key press.
+            * @returns {{void}} No return value.
+            **/
             function arrowKeyNavigate(e) {
                 var $hoveredItem = $('.' + className + '-result.hovered');
                 var $nextItem = $hoveredItem.nextAll().filter(':visible').first(),
@@ -281,6 +327,16 @@
                         break;
                 }
 
+                /**
+                * Move hover/focus to the given sibling or wrap target and ensure it is scrolled into view.
+                * @example
+                * upOrDown($item, $sibling, $wrapToItem)
+                * undefined
+                * @param {{jQuery}} {{$item}} - jQuery element(s) representing the currently targeted item.
+                * @param {{jQuery}} {{$sibling}} - jQuery element(s) representing the adjacent sibling to move to.
+                * @param {{jQuery}} {{$wrapToItem}} - jQuery element(s) to wrap to when no sibling is present.
+                * @returns {{void}} No return value; updates hover state and scrolls the results wrapper.
+                **/
                 function upOrDown($item, $sibling, $wrapToItem) {
                     if ($item.length > 0) {
                         if ($sibling.length > 0) {
@@ -297,6 +353,14 @@
                 }
             }
 
+            /**
+            * Ensure the hovered result item is visible by scrolling the filter results wrapper if necessary.
+            * @example
+            * scrollFilterResultsWrapper($hoveredItem)
+            * undefined
+            * @param {{jQuery}} {{$hoveredItem}} - The jQuery-wrapped DOM element for the currently hovered result item.
+            * @returns {{void}} No return value.
+            **/
             function scrollFilterResultsWrapper($hoveredItem) {
                 var hoverItemTop = $hoveredItem.offset().top;
                 var hoverItemBottom = $hoveredItem.height() + hoverItemTop;
