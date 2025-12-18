@@ -61,6 +61,13 @@ if (element !== null) {
     // crm1.render();
 }
 
+/**
+* Convert a global comma-separated RGB string (myVarVal) to a hex color and update the crm1 chart's colors.
+* @example
+* crmtotalCustomers()
+* undefined
+* @returns {void} Updates crm1 chart colors; no return value.
+*/
 function crmtotalCustomers() {
     function rgbToHex(r, g, b) {
         return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
@@ -618,6 +625,13 @@ function crmProfitsearned() {
 /* Leads By Source Chart */
 let chartInstance; // Declare chartInstance in the same scope as the leads() function
 
+/**
+* Initialize and render a customized Chart.js doughnut chart for lead sources, destroying any previous chart instance first.
+* @example
+* leads()
+* undefined
+* @returns {void} No return value.
+**/
 function leads() {
     // Destroy the existing chart instance if it exists
     if (typeof chartInstance !== 'undefined' && chartInstance !== null) {
