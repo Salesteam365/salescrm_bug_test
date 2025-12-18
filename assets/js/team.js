@@ -75,6 +75,13 @@
 
       var _proto = ControlSidebar.prototype;
 
+      /**
+      * Collapse the control sidebar (hides it using slide/animation settings) and trigger the COLLAPSED event on the element.
+      * @example
+      * collapse()
+      * undefined
+      * @returns {{void}} No return value.
+      */
       _proto.collapse = function collapse() {
         // Show the control sidebar
         if (this._config.controlsidebarSlide) {
@@ -92,6 +99,13 @@
         $(this._element).trigger(collapsedEvent);
       };
 
+      /**
+      * Show the control sidebar by either sliding it into view (with animation) or opening it instantly, then trigger the EXPANDED event.
+      * @example
+      * show()
+      * undefined
+      * @returns {{void}} No return value.
+      **/
       _proto.show = function show() {
         // Collapse the control sidebar
         if (this._config.controlsidebarSlide) {
@@ -124,6 +138,13 @@
       } // Private
       ;
 
+      /**
+      * Initialize layout helpers and attach window resize and scroll handlers to keep heights and scroll heights updated.
+      * @example
+      * _init()
+      * undefined
+      * @returns {void} No return value.
+      */
       _proto._init = function _init() {
         var _this = this;
 
@@ -143,6 +164,13 @@
         });
       };
 
+      /**
+      * Adjusts the control sidebar's top/bottom offsets and content height based on document/window heights, header/footer sizes, and current scroll position.
+      * @example
+      * _fixScrollHeight()
+      * undefined
+      * @returns {void} Does not return a value.
+      **/
       _proto._fixScrollHeight = function _fixScrollHeight() {
         var heights = {
           scroll: $(document).height(),
@@ -199,6 +227,13 @@
         }
       };
 
+      /**
+       * Adjusts the control sidebar content height to fill the available window space, taking into account header/footer sizes and fixed layout/footer classes, and initializes overlayScrollbars if available.
+       * @example
+       * _fixHeight()
+       * undefined
+       * @returns {void} No return value.
+       */
       _proto._fixHeight = function _fixHeight() {
         var heights = {
           window: $(window).height(),
@@ -231,6 +266,14 @@
       } // Static
       ;
 
+      /**
+      * Initializes ControlSidebar instances on the matched elements (if not present) and invokes the given operation on each instance.
+      * @example
+      * $(".control-sidebar")._jQueryInterface('open')
+      * $(".control-sidebar")
+      * @param {{string}} {{operation}} - Name of the ControlSidebar method to invoke on each matched element.
+      * @returns {{jQuery}} The original jQuery collection for chaining.
+      **/
       ControlSidebar._jQueryInterface = function _jQueryInterface(operation) {
         return this.each(function () {
           var data = $(this).data(DATA_KEY);
@@ -346,6 +389,14 @@
 
       var _proto = Layout.prototype;
 
+      /**
+      * Adjusts the layout content min-height to fit the window, header, footer, sidebar, or control sidebar and initializes overlay scrollbars when layout is fixed.
+      * @example
+      * fixLayoutHeight('control_sidebar')
+      * undefined
+      * @param {{string|null}} {{extra}} - Optional flag; set to 'control_sidebar' to force using the control sidebar height, defaults to null.
+      * @returns {{void}} No return value; updates DOM min-height and may initialize overlay scrollbars.
+      **/
       _proto.fixLayoutHeight = function fixLayoutHeight(extra) {
         if (extra === void 0) {
           extra = null;
@@ -392,6 +443,13 @@
       } // Private
       ;
 
+      /**
+      * Initialize layout watchers and event handlers to maintain and adjust the page layout height for the UI.
+      * @example
+      * _init()
+      * undefined
+      * @returns {void} No return value.
+      */
       _proto._init = function _init() {
         var _this = this;
 
@@ -434,6 +492,14 @@
       } // Static
       ;
 
+      /**
+      * jQuery plugin interface that ensures a Layout instance is attached to each element and optionally initializes it.
+      * @example
+      * _jQueryInterface.call($('.team'), 'init')
+      * $('.team')
+      * @param {{string}} {{config}} - Action to perform; 'init' or '' (default) to initialize the Layout instance.
+      * @returns {{jQuery}} The original jQuery collection for chaining.
+      **/
       Layout._jQueryInterface = function _jQueryInterface(config) {
         if (config === void 0) {
           config = '';
@@ -547,6 +613,13 @@
 
       var _proto = PushMenu.prototype;
 
+      /**
+      * Expand the UI component: remove the collapsed class from body, optionally add the open class on small screens, persist the open state if enabled, and trigger a shown event.
+      * @example
+      * expand()
+      * undefined
+      * @returns {void} No return value.
+      **/
       _proto.expand = function expand() {
         if (this._options.autoCollapseSize) {
           if ($(window).width() <= this._options.autoCollapseSize) {
@@ -564,6 +637,14 @@
         $(this._element).trigger(shownEvent);
       };
 
+      /**
+      * Collapse the component: adds the COLLAPSED class to the body, optionally auto-collapses based on configured autoCollapseSize, persists the state when remembering is enabled, and triggers a COLLAPSED event on the element.
+      * @example
+      * collapse()
+      * undefined
+      * @param {{void}} {{none}} - No parameters.
+      * @returns {{void}} No return value.
+      **/
       _proto.collapse = function collapse() {
         if (this._options.autoCollapseSize) {
           if ($(window).width() <= this._options.autoCollapseSize) {
@@ -589,6 +670,14 @@
         }
       };
 
+      /**
+      * Auto-collapses the team sidebar based on the configured autoCollapseSize and optional resize flag.
+      * @example
+      * autoCollapse(true)
+      * undefined
+      * @param {{boolean}} {{resize}} - Whether the call originates from a window resize event; defaults to false.
+      * @returns {{void}} Does not return a value.
+      **/
       _proto.autoCollapse = function autoCollapse(resize) {
         if (resize === void 0) {
           resize = false;
@@ -607,6 +696,14 @@
         }
       };
 
+      /**
+      * Apply the remembered collapsed/expanded layout state to the document body using localStorage and current options.
+      * @example
+      * remember()
+      * undefined
+      * @param {Object} context - The instance (this) containing _options (enableRemember, noTransitionAfterReload) and other properties used by the function.
+      * @returns {void} No return value.
+      */
       _proto.remember = function remember() {
         if (this._options.enableRemember) {
           var toggleState = localStorage.getItem("remember" + EVENT_KEY);
@@ -657,6 +754,14 @@
       } // Static
       ;
 
+      /**
+      * Bridges a jQuery collection to the PushMenu class: ensures a PushMenu instance is attached to each element and invokes collapse/expand/toggle operations.
+      * @example
+      * _jQueryInterface('toggle')
+      * $('selector') // returns the original jQuery collection for chaining
+      * @param {{string}} {{operation}} - The action to perform, one of 'collapse', 'expand' or 'toggle'.
+      * @returns {{jQuery}} jQuery collection for chaining.
+      **/
       PushMenu._jQueryInterface = function _jQueryInterface(operation) {
         return this.each(function () {
           var data = $(this).data(DATA_KEY);
@@ -773,6 +878,15 @@
         this._setupListeners();
       };
 
+      /**
+       * Expand the given treeview sub-menu with animation, handle accordion behavior, and trigger the expanded event.
+       * @example
+       * expand(treeviewMenu, parentLi)
+       * undefined
+       * @param {jQuery} treeviewMenu - jQuery object representing the sub-menu element to expand.
+       * @param {jQuery|HTMLElement} parentLi - jQuery or DOM element for the parent <li> that will receive the open state.
+       * @returns {void} Performs the expand action and triggers an EXPANDED event; no value is returned.
+       */
       _proto.expand = function expand(treeviewMenu, parentLi) {
         var _this = this;
 
@@ -806,6 +920,14 @@
         });
       };
 
+      /**
+      * Toggle a treeview submenu for the triggered element: expands it if collapsed or collapses it if open.
+      * @example
+      * toggle(event)
+      * undefined
+      * @param {{jQuery.Event}} {{event}} - The jQuery event object from the triggering element (e.g., click).
+      * @returns {{void}} No return value; performs DOM updates to expand or collapse the menu.
+      **/
       _proto.toggle = function toggle(event) {
         var $relativeTarget = $(event.currentTarget);
         var $parent = $relativeTarget.parent();
@@ -848,6 +970,14 @@
       } // Static
       ;
 
+      /**
+      * jQuery interface for the Treeview plugin: ensures a Treeview instance exists on each element and optionally invokes a method (for example, 'init').
+      * @example
+      * _jQueryInterface('init')
+      * jQuery
+      * @param {string} config - Name of the action/method to invoke on each Treeview instance (e.g. 'init').
+      * @returns {jQuery} The jQuery collection (this) to allow chaining.
+      **/
       Treeview._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
           var data = $(this).data(DATA_KEY);
@@ -939,6 +1069,14 @@
       } // Static
       ;
 
+      /**
+      * Ensure each element in the jQuery collection has a DirectChat instance and invoke the named method on that instance.
+      * @example
+      * _jQueryInterface('toggle')
+      * jQuery collection of the matched elements
+      * @param {string} config - Name of the DirectChat instance method to invoke on each element.
+      * @returns {jQuery} jQuery collection for chaining.
+      **/
       DirectChat._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
           var data = $(this).data(DATA_KEY);
@@ -1057,6 +1195,14 @@
       } // Static
       ;
 
+      /**
+      * Initialize TodoList plugin on each element in the jQuery collection (handles 'init' command).
+      * @example
+      * _jQueryInterface('init')
+      * $(selector)
+      * @param {string} config - Command to run; use 'init' to create and initialize the TodoList instance on each element.
+      * @returns {jQuery} jQuery collection to allow chaining.
+      **/
       TodoList._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
           var data = $(this).data(DATA_KEY);
@@ -1166,6 +1312,14 @@
 
       var _proto = CardWidget.prototype;
 
+      /**
+      * Collapse the card: slide up its body/footer, update icon and collapsed class, and emit a COLLAPSED event.
+      * @example
+      * collapse()
+      * undefined
+      * @param {void} none - This method does not accept any parameters.
+      * @returns {void} No return value; performs UI updates and triggers a COLLAPSED event.
+      **/
       _proto.collapse = function collapse() {
         var _this = this;
 
@@ -1180,6 +1334,14 @@
         this._element.trigger(collapsed, this._parent);
       };
 
+      /**
+      * Expand the card: slide down its body and footer, update the header icon to the collapsed state, and trigger the EXPANDED event.
+      * @example
+      * expand()
+      * undefined
+      * @param {void} none - No arguments are accepted.
+      * @returns {void} No return value.
+      **/
       _proto.expand = function expand() {
         var _this2 = this;
 
@@ -1211,6 +1373,13 @@
         this.collapse();
       };
 
+      /**
+      * Maximizes the widget's parent: updates icon classes, fixes dimensions, applies maximize classes and triggers a MAXIMIZED event.
+      * @example
+      * maximize()
+      * undefined
+      * @returns {void} No return value; function mutates DOM and triggers events.
+      **/
       _proto.maximize = function maximize() {
         this._parent.find(this._settings.maximizeTrigger + ' .' + this._settings.maximizeIcon).addClass(this._settings.minimizeIcon).removeClass(this._settings.maximizeIcon);
 
@@ -1234,6 +1403,13 @@
         this._element.trigger(maximized, this._parent);
       };
 
+      /**
+      * Minimizes the UI panel by reverting inline size styles, removing maximized classes, restoring collapsed state if necessary, and triggering a MINIMIZED event.
+      * @example
+      * instance.minimize()
+      * undefined
+      * @returns {void} No return value.
+      **/
       _proto.minimize = function minimize() {
         this._parent.find(this._settings.maximizeTrigger + ' .' + this._settings.minimizeIcon).addClass(this._settings.maximizeIcon).removeClass(this._settings.minimizeIcon);
 
@@ -1267,6 +1443,14 @@
       } // Private
       ;
 
+      /**
+      * Initialize card controls by storing the parent card and binding collapse, maximize, and remove click handlers.
+      * @example
+      * _init($('#myCard'))
+      * undefined
+      * @param {{jQuery|HTMLElement}} {{card}} - Card element (jQuery object or DOM element) to attach to and store as this._parent.
+      * @returns {{void}} Void.
+      **/
       _proto._init = function _init(card) {
         var _this3 = this;
 
@@ -1283,6 +1467,14 @@
       } // Static
       ;
 
+      /**
+      * jQuery plugin interface that initializes or controls a CardWidget instance on the current element.
+      * @example
+      * _jQueryInterface('collapse')
+      * undefined
+      * @param {{(string|Object)}} {{config}} - Command string (collapse|expand|remove|toggle|maximize|minimize|toggleMaximize) to invoke on the widget or an options object to initialize the widget.
+      * @returns {{undefined}} No return value.
+      **/
       CardWidget._jQueryInterface = function _jQueryInterface(config) {
         var data = $(this).data(DATA_KEY);
 
@@ -1414,6 +1606,13 @@
 
       var _proto = CardRefresh.prototype;
 
+      /**
+      * Loads remote content from this._settings.source into the component, shows an overlay while loading, inserts the response into the configured content area when requested, calls onLoadStart and onLoadDone callbacks, and triggers a LOADED event.
+      * @example
+      * load()
+      * undefined
+      * @returns {void} No return value.
+      */
       _proto.load = function load() {
         this._addOverlay();
 
@@ -1460,6 +1659,14 @@
       } // Static
       ;
 
+      /**
+      * jQuery plugin interface to initialize a CardRefresh instance on the element or call a CardRefresh method.
+      * @example
+      * _jQueryInterface.call(element, 'load')
+      * undefined
+      * @param {{string|object}} {{config}} - Command name (e.g. 'load') or an options object used to initialize the CardRefresh instance.
+      * @returns {{void}} Returns nothing; the function initializes data or dispatches a method call on the CardRefresh instance.
+      **/
       CardRefresh._jQueryInterface = function _jQueryInterface(config) {
         var data = $(this).data(DATA_KEY);
 
@@ -1556,6 +1763,14 @@
       } // Static
       ;
 
+      /**
+      * Initialize Dropdown instances on matched elements and optionally invoke an action (e.g. toggleSubmenu).
+      * @example
+      * _jQueryInterface('toggleSubmenu')
+      * $(selector)
+      * @param {{(string|Object)}} {{config}} - Action name (such as 'toggleSubmenu') or an options object merged with defaults and element data.
+      * @returns {{jQuery}} jQuery collection of the processed elements for chaining.
+      **/
       Dropdown._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
           var data = $(this).data(DATA_KEY);
@@ -1686,6 +1901,14 @@
 
       var _proto = Toasts.prototype;
 
+      /**
+      * Create and display a Bootstrap toast using this._config, prepend it to the configured container, trigger CREATED and REMOVED events, and optionally auto-remove it.
+      * @example
+      * create()
+      * undefined
+      * @param {{object}} {{this}} - Context object containing a _config object with toast options (autohide, fade, class, delay, image, imageAlt, imageHeight, icon, title, subtitle, close, body, autoremove).
+      * @returns {{void}} No return value.
+      **/
       _proto.create = function create() {
         var toast = $('<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"/>');
         toast.data('autohide', this._config.autohide);
@@ -1766,6 +1989,13 @@
         }
       };
 
+      /**
+      * Ensure the container element for notifications exists, set its position class, and toggle its fixed state.
+      * @example
+      * this._prepareContainer()
+      * // Creates the container if missing, applies a position class (top-right/top-left/bottom-right/bottom-left) and adds/removes the 'fixed' class based on configuration
+      * @returns {void} No return value; modifies the DOM to create/update the notification container.
+      **/
       _proto._prepareContainer = function _prepareContainer() {
         if ($(this._getContainerId()).length === 0) {
           var container = $('<div />').attr('id', this._getContainerId().replace('#', ''));
