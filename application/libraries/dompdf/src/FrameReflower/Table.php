@@ -51,6 +51,18 @@ class Table extends AbstractFrameReflower
         $this->_min_max_cache = null;
     }
 
+    /**
+    * Resolve and assign column widths for a table frame based on the frame's style, containing block, and the table's min/max constraints.
+    * This method computes the table width (respecting margins, padding and borders), classifies columns as absolute/percent/auto,
+    * and distributes available space according to the CSS table layout rules implemented (cases for all-auto, absolute-only, percent-only, and mixed).
+    * Resulting widths are written into the frame's cellmap; the method does not return a value.
+    * @example
+    * // After preparing a FrameReflower\Table instance ($reflower) with its frame/state populated:
+    * $reflower->_assign_widths();
+    * // Column widths are stored in the frame's cellmap, e.g.:
+    * echo $reflower->get_cellmap()->get_column_width(0); // e.g. "120.0"
+    * @returns {void} Assigns computed widths into the frame's cellmap; no return value.
+    */
     protected function _assign_widths()
     {
         $style = $this->_frame->get_style();
