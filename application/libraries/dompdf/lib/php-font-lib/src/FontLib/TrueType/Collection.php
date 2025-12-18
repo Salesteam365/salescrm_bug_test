@@ -31,6 +31,16 @@ class Collection extends BinaryStream implements Iterator, Countable {
   protected $version;
   protected $numFonts;
 
+  /**
+   * Parse the TrueType Collection (TTC) header from the current stream and populate
+   * the object's properties (version, numFonts and collectionOffsets).
+   * @example
+   * $collection = new FontLib\TrueType\Collection($stream);
+   * $collection->parse();
+   * echo $collection->numFonts; // 3
+   * @param void $none - This method accepts no arguments.
+   * @returns void Populates $this->version, $this->numFonts and $this->collectionOffsets; does not return a value.
+   */
   function parse() {
     if (isset($this->numFonts)) {
       return;

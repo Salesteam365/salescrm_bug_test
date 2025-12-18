@@ -31,6 +31,14 @@ class OutlineComposite extends Outline {
    */
   public $components = array();
 
+  /**
+  * Returns an array of glyph IDs referenced by this composite glyph; parses component data if needed.
+  * @example
+  * $composite = $font->getGlyph(45); // retrieve a composite glyph object (sample)
+  * $result = $composite->getGlyphIDs();
+  * echo implode(',', $result); // render some sample output value like "45,12,78"
+  * @returns {array} Array of integer glyph indices referenced by this composite glyph.
+  */
   function getGlyphIDs() {
     if (empty($this->components)) {
       $this->parseData();
@@ -131,6 +139,15 @@ class OutlineComposite extends Outline {
     } while ($flags & self::MORE_COMPONENTS);
   }
 
+  /**
+   * Encode the composite glyph's components into TrueType component data and return the total byte size.
+   * @example
+   * $composite = $font->getGlyph('uniE000'); // obtain a composite glyph instance from the font subset
+   * $size = $composite->encode();
+   * echo $size; // e.g. 128
+   * @param void $none - No arguments.
+   * @returns int Total number of bytes written for this composite glyph.
+   */
   function encode() {
     $font = $this->getFont();
 
@@ -217,6 +234,23 @@ class OutlineComposite extends Outline {
     return $size;
   }
 
+  /**
+  * Return SVG contour data for each component glyph in this composite glyph.
+  * @example
+  * $contours = $outlineComposite->getSVGContours();
+  * var_export($contours);
+  * // Example output:
+  * // array(
+  * //   array(
+  * //     'contours' => array(
+  * //       // each contour is an array of SVG path point sets (example simplified)
+  * //       array( array('x'=>0,'y'=>0), array('x'=>100,'y'=>0), array('x'=>100,'y'=>100) )
+  * //     ),
+  * //     'transform' => array(1, 0, 0, 0, 1, 0) // affine matrix [a, b, c, d, e, f]
+  * //   ),
+  * // );
+  * @returns {array} Array of component entries; each entry contains 'contours' (array) and 'transform' (array) in one line.
+  */
   public function getSVGContours() {
     $contours = array();
 

@@ -271,6 +271,13 @@ class BinaryStream {
     return $this->writeInt16($left) + $this->writeUInt16($right);
   }
 
+  /**
+   * Read a 64-bit "long" date/time value from the binary stream and return it formatted.
+   * @example
+   * $result = $stream->readLongDateTime();
+   * echo $result; // e.g. "2019-12-31 23:59:59"
+   * @returns {{string}} Formatted date/time string in "YYYY-MM-DD HH:MM:SS". Returns the Unix epoch "1970-01-01 00:00:00" if the value is invalid or out of PHP integer bounds.
+   */
   public function readLongDateTime() {
     $this->readUInt32(); // ignored
     $date = $this->readUInt32() - 2082844800;
