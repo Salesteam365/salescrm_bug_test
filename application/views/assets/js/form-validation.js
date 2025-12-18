@@ -48,6 +48,13 @@
   });
 
   // validate empty fields and set error object
+  /**
+  * Clear previous validation errors and styles, trim and validate form inputs, populate the global error object, display errors or submit the form after a 2 second delay.
+  * @example
+  * checkEmpty()
+  * // Triggers validation and related UI updates; if valid, submits the form after ~2s.
+  * @returns {void} Performs validation and side-effect actions (updates DOM, calls displayError or submitForm); does not return a value.
+  */
   function checkEmpty() {
     //loop and remove all key and value fields in the errors object
     for (let key in error) {
@@ -211,6 +218,13 @@
   }
 
   //display errors respectivey to the span html classes
+  /**
+  * Displays validation errors by adding error classes to inputs and showing corresponding error messages in the DOM.
+  * @example
+  * displayError()
+  * undefined
+  * @returns {void} Updates input styling and error message containers; does not return a value.
+  **/
   function displayError() {
       //set all errors to their respectivey and also changing hidden 
     // error containers to be a block.
