@@ -18,6 +18,13 @@ use Dompdf\FrameDecorator\AbstractFrameDecorator;
  */
 class Block extends AbstractPositioner {
 
+    /**
+    * Calculate and set the x/y position of a frame within its containing block.
+    * Determines the base x/y from the frame's containing block or its block parent line box,
+    * accounts for floats (advances line when not floating) and applies relative positioning offsets.
+    * @example
+    * // Prepare a frame with style and containing block
+    * $frame = /* concrete implementation of AbstractFrameDecorator */
     function position(AbstractFrameDecorator $frame)
     {
         $style = $frame->get_style();
