@@ -379,6 +379,28 @@ class Text extends AbstractFrameReflower
 
     // Returns an array(0 => min, 1 => max, "min" => min, "max" => max) of the
     // minimum and maximum widths of this frame
+    /**
+     * Calculate and return the minimum and maximum widths required by the frame's text.
+     * Considers the frame's style (white-space, word-wrap, font metrics, margins, borders, paddings)
+     * to compute:
+     * - a minimum unbreakable width (min),
+     * - a maximum width given whitespace collapse rules (max),
+     * - the minimum word width (min_word) used before adding surrounding box deltas.
+     *
+     * @example
+     * // Typical usage inside the FrameReflower/Text instance:
+     * $result = $this->get_min_max_width();
+     * // Sample returned array (floats) might look like:
+     * // [34.0, 220.5, 60.0, 'min' => 34.0, 'max' => 220.5, 'min_word' => 60.0]
+     *
+     * @return array Returns an array containing numeric widths (in points) both indexed and associative:
+     *               0 => (float) min width,
+     *               1 => (float) max width,
+     *               2 => (float) min_word width,
+     *               'min' => (float) min,
+     *               'max' => (float) max,
+     *               'min_word' => (float) min_word.
+     */
     function get_min_max_width()
     {
         /*if ( !is_null($this->_min_max_cache)  )

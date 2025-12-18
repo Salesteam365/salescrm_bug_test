@@ -878,6 +878,15 @@ class Helpers
         return [$content, $headers];
     }
 
+    /**
+    * Capitalize the first character of the string and the first character after common separators in a multibyte-safe way.
+    * Uses mb_strlen, mb_substr, mb_strtoupper and mb_strpos to handle multibyte encodings correctly. Single-character strings are fully uppercased.
+    * @example
+    * $result = Helpers::mb_ucwords('héllo world. this-is+php');
+    * echo $result // Héllo World. This-Is+Php
+    * @param {string} $str - The input multibyte string to transform.
+    * @returns {string} The transformed string with initial characters of words (after separators: space, '.', ',', '!', '?', '-', '+') uppercased.
+    */
     public static function mb_ucwords($str) {
         $max_len = mb_strlen($str);
         if ($max_len === 1) {

@@ -1517,6 +1517,18 @@ class Style
         return $this->_get_border("left");
     }
 
+    /**
+    * Get the computed width for a given CSS property; returns percentage strings unchanged or converts absolute lengths to points.
+    * @example
+    * // Percentage example
+    * $result = $style->_get_width('width'); // assume $style->_props_computed['width'] = '50%';
+    * echo $result; // "50%"
+    * // Absolute length example
+    * $result = $style->_get_width('width'); // assume $style->_props_computed['width'] = '12pt' and font_size = 12;
+    * echo $result; // 12.0
+    * @param string $prop - CSS property name to retrieve (e.g., 'width', 'max-width').
+    * @returns string|float Returns a percentage string (e.g., "50%") or a numeric value in points (float) for absolute lengths.
+    */
     private function _get_width($prop)
     {
         if (!isset($this->_props[$prop]) || $this->_props[$prop] === "inherit") {

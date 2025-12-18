@@ -733,6 +733,16 @@ class PDFLib implements Canvas
         return $this->_pdf->set_gstate($gstate);
     }
 
+    /**
+    * Set the default PDF view (open action) used by PDFLib when the document is opened.
+    * @example
+    * $pdf = new \Dompdf\Adapter\PDFLib($options);
+    * $result = $pdf->set_default_view('fitwindow', ['left' => 0, 'bottom' => 0, 'right' => 595, 'top' => 842]);
+    * echo $result // no output (void);
+    * @param string $view - Name of the view mode (e.g. 'fitheight', 'fitrect', 'fitvisible', 'fitvisibleheight', 'fitvisiblewidth', 'fitwidth', 'fitwindow', 'fixed').
+    * @param array $options - Optional associative array of parameters for the view (e.g. ['left' => 0, 'bottom' => 0, 'right' => 595, 'top' => 842]).
+    * @returns void No return value.
+    */
     public function set_default_view($view, $options = [])
     {
         // TODO
