@@ -16,6 +16,13 @@ function show_pass1(){
   }
 }
 
+/**
+* Toggle the visibility of the ".match" indicator based on whether the input values with IDs "pass" and "password" match.
+* @example
+* show()
+* // Shows the ".match" element if values differ, hides it if they match.
+* @returns {void} No return value; updates the DOM to show or hide the ".match" element.
+*/
 function show(){
   document.querySelector(".match").style.visibility = "hidden";
 	var pass = document.getElementById("pass").value;
