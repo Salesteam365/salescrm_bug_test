@@ -112,6 +112,14 @@ let mainContent;
 
 })();
 
+/**
+* Initialize and attach event handlers for the theme/layout switcher (light/dark themes, LTR/RTL direction, primary color presets and reset) updating localStorage and CSS variables as needed.
+* @example
+* switcherClick()
+* undefined
+* @param {void} none - No arguments.
+* @returns {void} Nothing is returned.
+**/
 function switcherClick() {
     let ltrBtn, rtlBtn, lightBtn, darkBtn, primaryDefaultColor1Btn, primaryDefaultColor2Btn, primaryDefaultColor3Btn, primaryDefaultColor4Btn, primaryDefaultColor5Btn, ResetAll;
     let html = document.querySelector('html');
@@ -251,6 +259,13 @@ function darkFn() {
     checkOptions();
 }
 
+/**
+* Reset all user interface settings to their defaults: remove dark mode class, clear localStorage, reset chart colors and layout/direction.
+* @example
+* ResetAllFn()
+* undefined
+* @returns {void} No return value.
+**/
 function ResetAllFn() {
     let html = document.querySelector('html');
     html.classList.remove("dark");
@@ -270,6 +285,13 @@ function ResetAllFn() {
 
 }
 
+/**
+* Restore theme and layout option checkboxes from localStorage so the UI reflects saved user preferences.
+* @example
+* checkOptions()
+* undefined
+* @returns {void} Does not return a value; updates DOM checkboxes based on stored options.
+**/
 function checkOptions() {
 
     // dark
@@ -296,6 +318,14 @@ function updateColors() {
 updateColors()
 
 
+/**
+* Restore theme, color, direction and layout settings from localStorage to the document (applies CSS variables, theme class, text direction and layout attributes).
+* @example
+* localStorageBackup()
+* undefined
+* @param {{void}} {{none}} - No parameters.
+* @returns {{void}} Does not return a value.
+**/
 function localStorageBackup() {
     if (localStorage.primaryRGB) {
         if (document.querySelector('.theme-container-primary')) {
@@ -333,6 +363,14 @@ function localStorageBackup() {
 
 // for menu target scroll on click
 window.addEventListener("scroll", reveal);
+/**
+* Toggle the "active" class on elements with class "reveal" when they enter or leave the viewport.
+* @example
+* reveal()
+* undefined
+* @param {void} none - No parameters.
+* @returns {void} No return value.
+**/
 function reveal() {
   var reveals = document.querySelectorAll(".reveal");
 
@@ -361,6 +399,14 @@ pageLink.forEach((elem) => {
   }
 });
 // section menu active
+/**
+* Updates active state of side-menu items based on the current scroll position by adding or removing the "active" class on matching menu links and their parent elements.
+* @example
+* onScroll(window.event)
+* undefined
+* @param {{Event}} {{event}} - The scroll event object (optional when calling manually).
+* @returns {{void}} No return value; the function mutates DOM classes directly.
+**/
 function onScroll(event) {
   const sections = document.querySelectorAll(".side-menu__item");
   const scrollPos =
