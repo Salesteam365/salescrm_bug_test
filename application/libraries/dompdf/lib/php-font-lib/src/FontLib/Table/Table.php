@@ -63,6 +63,14 @@ class Table extends BinaryStream {
     return "<pre>" . var_export($this->data, true) . "</pre>";
   }
 
+  /**
+  * Encode the table data and write it to the associated entry, returning the number of bytes written.
+  * @example
+  * $table = new Table($entry, $def);
+  * $result = $table->encode();
+  * echo $result; // e.g. 256
+  * @returns {int} Number of bytes written for this table.
+  */
   final public function encode() {
     $this->entry->startWrite();
 
@@ -78,6 +86,15 @@ class Table extends BinaryStream {
     return $length;
   }
 
+  /**
+   * Parse the table data by selecting the appropriate parsing routine and managing the entry read state.
+   * @example
+   * $entry = $font->getEntry('name'); // obtain a FontLib entry from a font resource
+   * $table = new FontLib\Table\Table($entry);
+   * $table->parse();
+   * // No return value; the table object is populated with parsed data.
+   * @returns void No return value.
+   */
   final public function parse() {
     $this->entry->startRead();
 

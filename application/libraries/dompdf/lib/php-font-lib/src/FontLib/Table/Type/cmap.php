@@ -41,6 +41,16 @@ class cmap extends Table {
     "ngroups"    => self::uint32
   );
 
+  /**
+  * Parse the 'cmap' (character to glyph mapping) table from the current font stream and populate $this->data.
+  * @example
+  * // After creating/loading the font and the cmap table object (called internally by the library)
+  * $cmap = new FontLib\Table\Type\cmap($font);
+  * // (protected) $cmap->_parse(); // invoked internally
+  * print_r($cmap->data); // e.g. Array ( [version] => 0 [numberSubtables] => 2 [subtables] => Array ( ... ) )
+  * @param void $none - No arguments are accepted by this method.
+  * @returns void Populates $this->data with an associative array representing parsed cmap subtables (formats 4 and 12 only).
+  */
   protected function _parse() {
     $font = $this->getFont();
 
@@ -159,6 +169,14 @@ class cmap extends Table {
     $this->data = $data;
   }
 
+  /**
+  * Encode and write the font 'cmap' table (format 4) for the current subset and return the number of bytes written.
+  * @example
+  * $cmap = $font->getTable('cmap');
+  * $length = $cmap->_encode();
+  * echo $length; // e.g. 1024
+  * @returns {int} Total number of bytes written to the font stream.
+  */
   function _encode() {
     $font = $this->getFont();
 

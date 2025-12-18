@@ -28,6 +28,20 @@ class post extends Table {
     "maxMemType1"        => self::uint32,
   );
 
+  /**
+   * Parse the OpenType/TrueType "post" table and populate $this->data with the parsed fields (format, glyph name indices and resolved names).
+   * @example
+   * // Called internally after the table definition has been loaded from the font stream.
+   * // After calling, $this->data will contain parsed post table information, for example:
+   * // Array (
+   * //   "format" => 2,
+   * //   "numberOfGlyphs" => 3,
+   * //   "glyphNameIndex" => array(0, 259, 260),
+   * //   "names" => array(".notdef", "customName1", "customName2")
+   * // )
+   * $postTable->_parse();
+   * @returns void Parse result is stored in $this->data property on the object.
+   */
   protected function _parse() {
     $font = $this->getFont();
     $data = $font->unpack($this->def);
@@ -81,6 +95,15 @@ class post extends Table {
     $this->data = $data;
   }
 
+  /**
+  * Encode the 'post' table for the current font and return its packed length in bytes.
+  * The method forces the post table format to 3 (no glyph name data) and delegates packing to the font packer.
+  * @example
+  * $postTable = $font->getTable('post');
+  * $result = $postTable->_encode();
+  * echo $result; // e.g. 64
+  * @returns {int} Number of bytes written (length of the packed post table).
+  */
   function _encode() {
     $font           = $this->getFont();
     $data           = $this->data;

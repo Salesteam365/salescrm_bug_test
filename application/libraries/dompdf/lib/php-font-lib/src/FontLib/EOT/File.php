@@ -36,6 +36,21 @@ class File extends \FontLib\TrueType\File {
     $this->header->parse();
   }
 
+  /**
+  * Parse the EOT file data stored in this object. Reads and populates the EOT header,
+  * examines Flags to handle embedded TrueType compression (TTEMBED_TTCOMPRESSED) and
+  * XOR-encrypted data (TTEMBED_XORENCRYPTDATA). When TTCOMPRESSED is set the parser
+  * reads the mtx_version, mtx_copy_limit, mtx_offset_1 and mtx_offset_2 values.
+  * Actual embedded font data reading is TODO.
+  * @example
+  * $file = new FontLib\EOT\File($stream);
+  * $file->parse();
+  * echo $file->header->data["Flags"]; // e.g. 3
+  * // If TTCOMPRESSED was set you may observe values read during parse:
+  * // mtx_version = 1, mtx_copy_limit = 65536, mtx_offset_1 = 1024, mtx_offset_2 = 2048
+  * @param void $none - No arguments.
+  * @returns void Returns nothing.
+  */
   function parse() {
     $this->parseHeader();
 

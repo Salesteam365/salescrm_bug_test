@@ -51,6 +51,16 @@ class loca extends Table {
     $this->data = $data;
   }
 
+  /**
+  * Encodes the 'loca' (Index to Location) table into the font stream based on head.indexToLocFormat and returns the number of bytes written.
+  * @example
+  * $locaTable = new FontLib\Table\Type\loca();
+  * // $locaTable->data should be an array of glyph offsets and a Font object must be attached to the table.
+  * $result = $locaTable->_encode();
+  * echo $result; // e.g. 2048
+  * @param void none - No arguments.
+  * @returns int Total number of bytes written to the font stream.
+  */
   function _encode() {
     $font = $this->getFont();
     $data = $this->data;

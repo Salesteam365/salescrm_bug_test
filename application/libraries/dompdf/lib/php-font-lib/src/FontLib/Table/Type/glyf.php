@@ -48,6 +48,14 @@ class glyf extends Table {
     return array_unique(array_merge($gids, $glyphIDs));
   }
 
+  /**
+  * Render an HTML preview of the glyf table: generates canvas elements, embedded Glyph JavaScript metadata and links for up to the first 500 glyphs (simple/composite indication). The canvases are scaled to fit within a 160px maximum dimension and include glyph IDs, character/name labels and component links for composite glyphs.
+  * @example
+  * $glyf = $font->getTable('glyf'); // instance of FontLib\Table\Type\glyf
+  * $html = $glyf->toHTML();
+  * echo $html; // Outputs HTML containing <canvas id="glyph-canvas-0">..., script tags setting Glyph.* data and a list of glyph previews
+  * @returns {string} HTML string containing glyph previews, per-glyph canvas elements and embedded JS metadata for rendering glyphs in the browser.
+  */
   public function toHTML() {
     $max  = 160;
     $font = $this->getFont();
@@ -133,6 +141,14 @@ class glyf extends Table {
   }
 
 
+  /**
+  * Encode glyf table for the current font subset and populate the corresponding 'loca' table with glyph offsets.
+  * @example
+  * // Given $glyf is an instance of FontLib\Table\Type\glyf with a prepared subset:
+  * $result = $glyf->_encode();
+  * echo $result; // 1234
+  * @returns {int} Total byte length of the encoded glyf table.
+  */
   protected function _encode() {
     $font   = $this->getFont();
     $subset = $font->getSubset();

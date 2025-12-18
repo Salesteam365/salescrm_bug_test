@@ -134,6 +134,28 @@ class name extends Table {
     ),
   );
 
+  /**
+  * Parse the OpenType/TrueType "name" table from the associated font stream and populate $this->data with the table header and mapped nameRecord objects.
+  * @example
+  * $nameTable = new FontLib\Table\Type\name();
+  * // (Assuming $nameTable has been initialized with the font stream via setFont or similar)
+  * $nameTable->_parse();
+  * print_r($nameTable->data);
+  * // Example output structure:
+  * // Array
+  * // (
+  * //   [format] => 0
+  * //   [count] => 3
+  * //   [stringOffset] => 6
+  * //   [records] => Array
+  * //       (
+  * //           [1] => nameRecord Object ( [nameID] => 1 [string] => "MyFont" ... )
+  * //           [2] => nameRecord Object ( [nameID] => 2 [string] => "Regular" ... )
+  * //       )
+  * // )
+  * @param void $none - This method does not accept any parameters.
+  * @returns void Populates the instance property $this->data with parsed header values and an array of nameRecord objects keyed by nameID.
+  */
   protected function _parse() {
     $font = $this->getFont();
 
@@ -163,6 +185,15 @@ class name extends Table {
     $this->data = $data;
   }
 
+  /**
+  * Encode the 'name' table: pack the header and each nameRecord, write UTF-16 name strings to the font stream and return the total number of bytes written.
+  * @example
+  * // assuming $name is an instance of the name table (method is protected so normally called inside the class)
+  * $bytes = $name->_encode();
+  * echo $bytes; // e.g. 512
+  * @param {void} $none - No parameters.
+  * @returns {int} Total number of bytes written for the encoded name table.
+  */
   protected function _encode() {
     $font = $this->getFont();
 
