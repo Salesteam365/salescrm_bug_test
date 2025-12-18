@@ -82,6 +82,14 @@
 						}
 
 						var meanRevealPos = "";
+      /**
+      * Centers the meanmenu reveal button horizontally in the viewport and applies the appropriate CSS or animation.
+      * @example
+      * centerMeanReveal()
+      * undefined
+      * @param {{void}} {{none}} - No arguments are accepted; relies on outer-scope variables meanRevealPosition and isMobile.
+      * @returns {{void}} No return value; performs DOM updates to position the '.meanmenu-reveal' element.
+      **/
 						var meanCentered = function() {
 							if (meanRevealPosition === "center") {
 								var newWidth = window.innerWidth || document.documentElement.clientWidth;
@@ -134,6 +142,14 @@
 						};
 
 						// navigation reveal
+      /**
+      * Initializes the responsive "meanmenu" mobile navigation, building DOM elements, handling submenu expansion, toggling visibility, and restoring the original menu when above the configured width.
+      * @example
+      * initMeanMenu()
+      * undefined
+      * @param {void} none - No arguments; configuration is read from surrounding scope variables.
+      * @returns {void} No return value.
+      **/
 						var showMeanMenu = function() {
 								var meanStyles = "background:"+meanRevealColour+";color:"+meanRevealColour+";"+meanRevealPos;
 								if (currentWidth <= meanScreenWidth) {
