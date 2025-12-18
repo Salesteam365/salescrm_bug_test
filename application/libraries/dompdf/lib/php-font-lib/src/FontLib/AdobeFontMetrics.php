@@ -28,6 +28,15 @@ class AdobeFontMetrics {
     $this->font = $font;
   }
 
+  /**
+  * Write an Adobe Font Metrics (AFM) file for the current font instance, optionally using a specified encoding map.
+  * @example
+  * $result = $font->write('/tmp/myfont.afm', 'WinAnsiEncoding');
+  * var_dump($result); // NULL
+  * @param {string} $file - Path to the output AFM file (e.g., "/tmp/myfont.afm").
+  * @param {?string} $encoding - Optional encoding name (alphanumeric, hyphen or underscore only, e.g. "WinAnsiEncoding"); if provided a corresponding "../maps/{encoding}.map" file must exist or an Exception is thrown.
+  * @returns {void} Writes AFM content to the given file and returns nothing.
+  */
   function write($file, $encoding = null) {
     $map_data = array();
 
