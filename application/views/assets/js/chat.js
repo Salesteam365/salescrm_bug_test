@@ -39,6 +39,17 @@
 
 })();
 
+/**
+* Activate a chat list item and update the chat UI (display name, avatar image, status and responsive class).
+* @example
+* setActiveChat(element, "Alice", "alice", "online")
+* undefined
+* @param {HTMLElement} element - The DOM element that was interacted with (used to find and mark the parent li as active).
+* @param {string} name - The display name to set for the active chat.
+* @param {string} img - The avatar image filename (without extension) to apply to chat images.
+* @param {string} status - The status class to apply to status elements (e.g., "online" or "offline").
+* @returns {void} No return value.
+*/
 let changeTheInfo = (element, name, img, status) => {
     document.querySelectorAll(".checkforactive").forEach((ele) => {
         ele.classList.remove("active")
