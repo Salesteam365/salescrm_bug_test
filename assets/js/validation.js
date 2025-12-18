@@ -173,6 +173,14 @@ $('.orgName').autocomplete({
   });
   
   
+  /**
+  * Fetch organization details by name and populate related form fields and contact options via AJAX.
+  * @example
+  * setOrgData('Acme Corporation')
+  * undefined
+  * @param {{string}} {{org_name}} - Name of the organization to fetch details for.
+  * @returns {{void}} Does not return a value; updates the DOM with organization data.
+  **/
   function setOrgData(org_name){
 
 	$.ajax({
@@ -263,6 +271,15 @@ $('.orgContact').change(function(){
     getContactDetails();
 });
   //getContactDetails();
+  /**
+  * Fetch contact details for a given organization contact from the server and populate related form fields in the page.
+  * @example
+  * getContactDetails()
+  * undefined
+  * @param {string} org_name - Organization name read from the .orgName input field prior to the AJAX request.
+  * @param {string} cnt_name - Contact name read from the .orgContact input field prior to the AJAX request.
+  * @returns {void} Does not return a value; on successful AJAX response it populates .orgEmail, .put_cnt_id, .orgMobile and .orgOfficePhone inputs.
+  */
   function getContactDetails(){
 	var org_name = $(".orgName").val();
     var cnt_name = $('.orgContact').val();
@@ -573,6 +590,14 @@ return value;
 }
 
 
+/**
+* Converts a number or numeric string to an Indian-formatted price string with commas (e.g., 12,34,567.89).
+* @example
+* numberToIndPrice(1234567.89)
+* "12,34,567.89"
+* @param {{number|string}} {{x}} - The number or numeric string to format.
+* @returns {{string}} Formatted number string using Indian digit grouping and preserving any decimal part.
+**/
 function numberToIndPrice(x){
 
 x=x.toString();
@@ -669,6 +694,13 @@ $(document).ready(function() {
     }
 	setInterval(function(){ showMeetingNotification(); }, 45000);
 });
+/**
+* Display web notifications fetched from the server for the current company; requests permission if needed.
+* @example
+* showNotification()
+* undefined
+* @returns {void} Requests Notification permission or shows push notifications; does not return a value.
+*/
 function showNotification() {	
 	if (!Notification) {
 		$('body').append('<h4 style="color:red">*Browser does not support Web Notification</h4>');
@@ -715,6 +747,14 @@ function showNotification() {
 };
 
 
+/**
+* Show meeting notifications retrieved from the server and display them as desktop notifications; requests permission if needed.
+* @example
+* showMeetingNotification()
+* undefined
+* @param {{void}} {{none}} - No parameters.
+* @returns {{void}} Does not return a value; triggers browser notifications asynchronously.
+**/
 function showMeetingNotification() {	
 	if(!Notification) {
 		$('body').append('<h4 style="color:red">*Browser does not support Web Notification</h4>');
