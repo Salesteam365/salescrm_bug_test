@@ -6,6 +6,16 @@ class Branch_model extends CI_Model
   var $sort_by 		= array('branch_name','branch_email','contact_number','company_name','gstin',null);
   var $search_by 	= array('branch_name','branch_email','contact_number','company_name','gstin');
   var $order 		= array('id' => 'desc');
+  /**
+  * Prepare and apply DataTables server-side filters, searching and ordering to the model's CI query builder.
+  * @example
+  * $this->_get_datatables_query();
+  * $query = $this->db->get();
+  * $result = $query->result();
+  * print_r($result); // e.g. Array ( [0] => stdClass Object ( [id] => 1 [name] => "Main Branch" [company_id] => 5 ... ) )
+  * @param void $none - No arguments. Uses session userdata (email, id), $_POST['search'] and $_POST['order'], and model properties (table, search_by, sort_by, order).
+  * @returns void Applies WHERE, LIKE (grouped), and ORDER BY clauses to $this->db; does not return a value.
+  */
   private function _get_datatables_query()
   {
     $sess_eml = $this->session->userdata('email');
