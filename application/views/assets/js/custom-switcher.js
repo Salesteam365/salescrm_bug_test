@@ -651,6 +651,13 @@ function rtlFn() {
   checkOptions();
 }
 
+/**
+* Apply the light theme to the document: sets HTML attributes, updates theme switches, clears related localStorage keys and CSS variables, and triggers color/option updates.
+* @example
+* lightFn()
+* undefined
+* @returns {{void}} No return value.
+**/
 function lightFn() {
   let html = document.querySelector('html');
   html.setAttribute('class', 'light');
@@ -690,6 +697,14 @@ function lightFn() {
 
 }
 
+/**
+* Enable the application's dark theme by updating HTML attributes, removing light-related CSS variables, toggling UI switches, updating color settings, and adjusting localStorage.
+* @example
+* darkFn()
+* undefined
+* @param {void} none - No parameters.
+* @returns {void} No return value; function performs DOM updates and side effects in localStorage.
+**/
 function darkFn() {
   let html = document.querySelector('html');
   html.setAttribute('class', 'dark');
@@ -726,6 +741,14 @@ function darkFn() {
   document.querySelector('#switcher-header-dark').checked = true;
 }
 
+/**
+* Switches the application navigation to a vertical overlay layout, updates related UI toggles, and adjusts stored navigation style.
+* @example
+* verticalFn()
+* undefined
+* @param {void} none - No parameters.
+* @returns {void} Performs DOM and localStorage side effects; does not return a value.
+*/
 function verticalFn() {
   let html = document.querySelector('html');
   html.setAttribute('data-nav-layout', 'vertical');
@@ -744,6 +767,13 @@ function verticalFn() {
   }
 }
 
+/**
+* Enable horizontal navigation layout, update related switches and HTML data attributes, and refresh option states.
+* @example
+* horizontalClickFn()
+* undefined
+* @returns {void} No return value.
+*/
 function horizontalClickFn() {
   document.querySelector('#switcher-horizontal').checked = true;
   document.querySelector('#switcher-menu-click').checked = true;
@@ -762,6 +792,13 @@ function horizontalClickFn() {
   checkHoriMenu();
 }
 
+/**
+* Reset all layout and theme settings to their default state by clearing stored options, removing added attributes and styles, and updating UI controls.
+* @example
+* ResetAllFn()
+* undefined
+* @returns {void} Resets UI controls, clears localStorage, removes theme attributes and inline styles, and applies default light/ltr/vertical layout.
+**/
 function ResetAllFn() {
   let html = document.querySelector('html');
   if (localStorage.getItem("ynexlayout") == "horizontal") {
@@ -855,6 +892,14 @@ function ResetAllFn() {
 
 }
 
+/**
+* Apply stored UI preferences from localStorage to the page switcher controls (sets corresponding checkbox inputs).
+* @example
+* checkOptions()
+* undefined
+* @param {void} none - This function does not accept any arguments.
+* @returns {void} No return value; updates DOM elements as a side effect.
+*/
 function checkOptions() {
 
   // dark
@@ -1012,6 +1057,13 @@ function checkOptions() {
 
 // chart colors
 let myVarVal, primaryRGB
+/**
+* Update color settings from the --primary-rgb CSS variable (or localStorage override) and initialize any present dashboard/chart widgets.
+* @example
+* updateColors()
+* // undefined
+* @returns {void} No return value.
+**/
 function updateColors() {
   'use strict'
   primaryRGB = getComputedStyle(document.documentElement).getPropertyValue('--primary-rgb').trim();
@@ -1358,6 +1410,13 @@ if (document.querySelector("#hs-overlay-switcher")) {
 
 updateColors()
 
+/**
+* Restore theme-related switcher states from localStorage and update corresponding checkboxes.
+* @example
+* localStorageBackup2()
+* undefined
+* @returns {void} No return value.
+**/
 function localStorageBackup2() {
   if (localStorage.bodyBgRGB || localStorage.darkBgRGB) {
     document.querySelector('#switcher-dark-theme').checked = true;
