@@ -10,6 +10,15 @@ class LineName extends ValueList {
 		parent::__construct($aComponents, ' ', $iLineNo);
 	}
 
+ /**
+ * Parse a CSS line-name value from the given parser state (identifiers enclosed in square brackets).
+ * @example
+ * $oParserState = new ParserState('[foo bar]');
+ * $result = LineName::parse($oParserState);
+ * print_r($result); // LineName object representing array('foo', 'bar') and its source line number
+ * @param {ParserState} $oParserState - The parser state positioned at the opening '[' of a line-name.
+ * @returns {LineName} The constructed LineName instance containing parsed identifiers and the originating line number.
+ */
 	public static function parse(ParserState $oParserState) {
 		$oParserState->consume('[');
 		$oParserState->consumeWhiteSpace();
