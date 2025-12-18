@@ -27,6 +27,14 @@ $('.show').click(function () {
     $('#div' + $(this).attr('target')).show();
 });
 
+/**
+* Calculate and update invoice totals, taxes (IGST/CGST/SGST) and related fields based on item quantities, unit prices, GST rates and discount; updates DOM inputs and text elements.
+* @example
+* calculate()
+* undefined
+* @param {void} none - No arguments; reads values from the DOM.
+* @returns {void} Updates DOM fields (totals, tax amounts, subtotals, percentages, etc.) and does not return a value.
+*/
 function calculate()
 {
     $(document).ready(function() {
@@ -517,6 +525,14 @@ function calculate()
 });
 } // calculate function ends here
 
+/**
+* Recalculates order totals, taxes (IGST/CGST/SGST), discounts and profit margin, and updates related DOM fields.
+* @example
+* calculate_order()
+* undefined
+* @param {void} none - This function takes no arguments.
+* @returns {void} Updates DOM elements with calculated values; does not return a value.
+**/
 function calculate_order()
 {
     $(document).ready(function() {
@@ -1009,6 +1025,14 @@ function calculate_order()
 }
 
 
+/**
+* Initialize and manage visibility of GST rate fields based on the selected type ('Instate' or 'Interstate').
+* @example
+* selectgst()
+* undefined
+* @param {{void}} {{none}} - No parameters.
+* @returns {{void}} No return value; sets initial visibility and attaches a change handler to #type to show/hide IGST, CGST and SGST elements.
+**/
 function selectgst() 
 {
     $('#igst12').hide();
@@ -1054,6 +1078,14 @@ function selectgst()
         }
     });
 }
+/**
+* Recalculates quote line totals, applies discounts and GST/IGST/CGST/SGST tax breakdowns, and updates related DOM fields.
+* @example
+* calculate_quote_opp()
+* undefined
+* @param {{void}} {{none}} - No arguments; function reads values from the DOM.
+* @returns {{void}} Updates DOM elements and returns nothing.
+**/
 function calculate_quote_opp()
 {
     $(document).ready(function() {
@@ -1521,6 +1553,14 @@ function calculate_quote_opp()
 });
 } // calculate function for opportunity page quotation ends here
 // function for quotation saleorder
+/**
+* Calculate and update Sales Order quote totals, taxes, discounts and profit by reading form inputs and writing computed values into the DOM.
+* @example
+* calculate_so_quote()
+* undefined
+* @param {{void}} {{none}} - No arguments; reads values from DOM inputs.
+* @returns {{void}} Updates DOM elements with calculated totals and tax amounts; does not return a value.
+**/
 function calculate_so_quote()
 {
     $(document).ready(function() {
@@ -2011,6 +2051,14 @@ function calculate_so_quote()
 });
 } // function for quotation salorder ends here
 // function for salesorder PO starts here
+/**
+* Calculate and update purchase order sales order totals (item totals, discounts, GST/IGST/CGST/SGST breakdowns, subtotals and profit) and write results into DOM fields.
+* @example
+* calculate_po_salesorder()
+* undefined
+* @param {void} none - No arguments; reads values from DOM inputs and updates DOM elements directly.
+* @returns {void} Updates DOM elements with calculated totals and does not return a value.
+**/
 function calculate_po_salesorder()
 {
     console.log('calculate_quote_so');
