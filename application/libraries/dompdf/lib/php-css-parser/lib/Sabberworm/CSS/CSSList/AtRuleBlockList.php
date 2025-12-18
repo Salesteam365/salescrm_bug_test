@@ -30,6 +30,13 @@ class AtRuleBlockList extends CSSBlockList implements AtRule {
 		return $this->render(new \Sabberworm\CSS\OutputFormat());
 	}
 
+ /**
+ * Render the at-rule block list as a CSS string using the provided output format.
+ * @example
+ * $format = new \Sabberworm\CSS\OutputFormat(); // formatting helper (example instance)
+ * $atRuleBlockList = new \Sabberworm\CSS\CSSList\AtRuleBlockList('media', 'screen and (max-width: 600px)'); // example instance
+ * $result = $atRuleBlockList->render($format);
+ * echo $result; // outputs something like "@media screen and (max-width: 600px) { /* rules... */
 	public function render(\Sabberworm\CSS\OutputFormat $oOutputFormat) {
 		$sArgs = $this->sArgs;
 		if($sArgs) {

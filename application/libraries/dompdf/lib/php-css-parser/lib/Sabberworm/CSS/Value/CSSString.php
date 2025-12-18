@@ -14,6 +14,15 @@ class CSSString extends PrimitiveValue {
 		parent::__construct($iLineNo);
 	}
 
+ /**
+ * Parse a CSS string (quoted or unquoted) from the given parser state and return it as a CSSString object.
+ * @example
+ * $oParserState = new ParserState("'foo bar'"); // example parser state initialized with a quoted string
+ * $result = CSSString::parse($oParserState);
+ * var_dump($result); // Sabberworm\CSS\Value\CSSString instance containing the string "foo bar"
+ * @param ParserState $oParserState - ParserState instance that provides the input stream and parsing helpers.
+ * @returns CSSString CSSString instance representing the parsed string.
+ */
 	public static function parse(ParserState $oParserState) {
 		$sBegin = $oParserState->peek();
 		$sQuote = null;

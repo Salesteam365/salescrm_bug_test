@@ -35,6 +35,17 @@ abstract class CSSList implements Renderable, Commentable {
 		$this->iLineNo = $iLineNo;
 	}
 
+ /**
+ * Parse a CSS source (or ParserState) and append parsed list items to the provided CSSList.
+ * @example
+ * $state = new \Sabberworm\CSS\ParserState('a { color: red; }');
+ * $list = new \Sabberworm\CSS\CSSList\Document();
+ * \Sabberworm\CSS\CSSList\CSSList::parseList($state, $list);
+ * // $list now contains parsed CSS list items, e.g. rules and comments
+ * @param ParserState|string $oParserState - A ParserState instance or a raw CSS string to parse.
+ * @param CSSList $oList - The CSSList (for example Document or RuleSet) to append parsed items to.
+ * @returns void Void. Parsed items are appended to $oList; nothing is returned.
+ */
 	public static function parseList(ParserState $oParserState, CSSList $oList) {
 		$bIsRoot = $oList instanceof Document;
 		if(is_string($oParserState)) {
@@ -68,6 +79,18 @@ abstract class CSSList implements Renderable, Commentable {
 		}
 	}
 
+ /**
+ * Parse the next list item from the parser state and return the parsed node.
+ * Handles at-rules (including special handling for @charset), closing '}' tokens and declaration blocks.
+ * @example
+ * $oParserState = new ParserState('@charset "UTF-8"; body { color: red; }');
+ * $oList = new Document();
+ * $result = Sabberworm\CSS\CSSList\CSSList::parseListItem($oParserState, $oList);
+ * var_dump($result); // e.g. instance of Sabberworm\CSS\Rule\Charset, Sabberworm\CSS\Rule\DeclarationBlock or NULL
+ * @param {{ParserState}} {{oParserState}} - The parser state to read tokens from.
+ * @param {{CSSList}} {{oList}} - The list (Document or other CSSList) being filled/validated.
+ * @returns {{mixed}} Return an at-rule object (e.g. Charset), a DeclarationBlock instance, or NULL when a closing brace ends a non-root list.
+ */
 	private static function parseListItem(ParserState $oParserState, CSSList $oList) {
 		$bIsRoot = $oList instanceof Document;
 		if ($oParserState->comes('@')) {
@@ -99,6 +122,16 @@ abstract class CSSList implements Renderable, Commentable {
 		}
 	}
 
+ /**
+ * Parse a single CSS at-rule (e.g., @import, @charset, @keyframes, @namespace or other block/at-rule) from the provided parser state and return the corresponding AST node.
+ * @example
+ * $css = '@import "styles.css" screen;';
+ * $oParserState = new ParserState($css);
+ * $result = CSSList::parseAtRule($oParserState);
+ * echo get_class($result); // e.g. 'Sabberworm\\CSS\\Import'
+ * @param {ParserState} $oParserState - Parser state positioned at an at-rule (the '@' is about to be consumed).
+ * @returns {Import|Charset|KeyFrame|CSSNamespace|AtRuleSet|AtRuleBlockList|null} Return the parsed at-rule node instance, or NULL when lenient parsing allows recovery from an otherwise invalid construct.
+ */
 	private static function parseAtRule(ParserState $oParserState) {
 		$oParserState->consume('@');
 		$sIdentifier = $oParserState->parseIdentifier();
@@ -284,6 +317,15 @@ abstract class CSSList implements Renderable, Commentable {
 		return $this->render(new \Sabberworm\CSS\OutputFormat());
 	}
 
+ /**
+ * Render the CSS list's contents using the provided OutputFormat, concatenating rendered child blocks with the correct spacing before, between and after blocks.
+ * @example
+ * $outputFormat = new \Sabberworm\CSS\OutputFormat();
+ * $result = $cssList->render($outputFormat);
+ * echo $result; // e.g. "h1 { color: red; }\nbody { margin: 0; }\n"
+ * @param \Sabberworm\CSS\OutputFormat $oOutputFormat - Output format instance that controls spacing and indentation for rendering.
+ * @returns string Rendered CSS for this list (empty string if nothing was rendered).
+ */
 	public function render(\Sabberworm\CSS\OutputFormat $oOutputFormat) {
 		$sResult = '';
 		$bIsFirst = true;
