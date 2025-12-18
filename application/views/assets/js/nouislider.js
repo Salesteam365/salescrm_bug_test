@@ -160,6 +160,15 @@
         lockedState = !lockedState;
         this.textContent = lockedState ? 'unlock' : 'lock';
     });
+    /**
+    * Update the other slider to preserve the locked offset when sliders are interlocked.
+    * @example
+    * crossUpdate(25, document.getElementById('slider-2'))
+    * undefined
+    * @param {number} value - New numeric value to apply to the paired slider.
+    * @param {HTMLElement} slider - The slider element that triggered the update.
+    * @returns {void} No return value.
+    **/
     function crossUpdate(value, slider) {
 
         // If the sliders aren't interlocked, don't
