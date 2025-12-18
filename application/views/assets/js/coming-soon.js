@@ -1,3 +1,11 @@
+/**
+* Update the countdown display for the fixed future date "Dec 19, 2023 11:30:00" by calculating remaining days, hours, minutes and seconds and writing HTML into the element with id "timer".
+* @example
+* updateTimer()
+* undefined
+* @param {{void}} {{none}} - No arguments.
+* @returns {{void}} Does not return a value; updates the DOM element with id "timer".
+**/
 function updateTimer() {
     future = Date.parse("Dec 19, 2023 11:30:00");
     now = new Date();
