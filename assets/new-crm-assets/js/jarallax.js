@@ -87,6 +87,15 @@
     var Jarallax = (function() {
         var instanceID = 0;
 
+        /**
+        * Create a Jarallax instance to enable parallax background behavior on a DOM element.
+        * @example
+        * new Jarallax(document.getElementById('hero'), { speed: 0.3, imgSrc: 'bg.jpg' })
+        * Jarallax instance
+        * @param {{Element|jQuery|String}} item - Element, CSS selector or jQuery object to attach parallax to.
+        * @param {{Object}} userOptions - Optional configuration to override defaults (speed [0.0-1.0], imgSrc, imgWidth, imgHeight, enableTransform, zIndex).
+        * @returns {{Jarallax}} Jarallax instance.
+        **/
         function Jarallax(item, userOptions) {
             var _this = this,
                 dataOptions;

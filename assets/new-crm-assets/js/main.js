@@ -732,6 +732,13 @@
 		]
 	});
 
+ /**
+ * Initialize responsive panel behavior: on viewports >=768px attach click handlers to .col-custom elements to toggle a single 'active' class; on smaller viewports ensure all .col-custom elements have the 'active' class.
+ * @example
+ * mediaSize()
+ * undefined
+ * @returns {void} Sets up event listeners and class toggling based on current viewport width.
+ */
 	function mediaSize() { 
 		/* Set the matchMedia */
 		if (window.matchMedia('(min-width: 768px)').matches) {
@@ -1285,6 +1292,13 @@ if ($('.tp-header-top-animation').length > 0) {
 
 
 	// 11. Mouse Custom Cursor
+ /**
+  * Initializes and manages a custom mouse cursor (inner and outer) that follows the pointer and toggles hover state on interactive elements.
+  * @example
+  * itCursor()
+  * undefined
+  * @returns {{void}} Does not return a value; sets up event handlers and cursor element visibility.
+  */
 	function itCursor() {
 		var myCursor = jQuery(".mouseCursor");
 		if (myCursor.length) {
