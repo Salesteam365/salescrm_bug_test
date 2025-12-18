@@ -24,6 +24,18 @@ abstract class RuleSet implements Renderable, Commentable {
 		$this->aComments = array();
 	}
 
+ /**
+ * Parse CSS rules from a ParserState into the given RuleSet until the closing '}' is reached. Supports skipping leading semicolons and optional lenient parsing to recover from invalid rules.
+ * @example
+ * $css = 'h1 { color: red; }';
+ * $parserState = new ParserState($css);
+ * $ruleSet = new RuleSet();
+ * RuleSet::parseRuleSet($parserState, $ruleSet);
+ * echo 'Parsed rules: ' . count($ruleSet->getRules()); // e.g. "Parsed rules: 1"
+ * @param ParserState $oParserState - ParserState instance positioned at the start of a ruleset.
+ * @param RuleSet $oRuleSet - RuleSet instance to populate with parsed Rule objects.
+ * @returns void Returns nothing; the provided $oRuleSet is modified in-place.
+ */
 	public static function parseRuleSet(ParserState $oParserState, RuleSet $oRuleSet) {
 		while ($oParserState->comes(';')) {
 			$oParserState->consume(';');
@@ -66,6 +78,20 @@ abstract class RuleSet implements Renderable, Commentable {
 		return $this->iLineNo;
 	}
 
+ /**
+  * Add a Rule to the RuleSet, inserting it at the end or before an optional sibling.
+  * @example
+  * $rule = new \Sabberworm\CSS\RuleSet\Rule('p { color: red; }'); // sample Rule instance
+  * $ruleSet = new \Sabberworm\CSS\RuleSet\RuleSet();
+  * $ruleSet->addRule($rule); // add at the end
+  * // or insert before an existing sibling:
+  * $sibling = new \Sabberworm\CSS\RuleSet\Rule('h1 { font-size: 20px; }');
+  * $ruleSet->addRule($rule, $sibling);
+  * echo 'Rule added'; // render some sample output value;
+  * @param \Sabberworm\CSS\RuleSet\Rule $oRule - The Rule object to add to the set.
+  * @param \Sabberworm\CSS\RuleSet\Rule|null $oSibling - Optional sibling Rule before which the new rule will be inserted; if null, the rule is appended.
+  * @returns void Does not return a value.
+  */
 	public function addRule(Rule $oRule, Rule $oSibling = null) {
 		$sRule = $oRule->getRule();
 		if(!isset($this->aRules[$sRule])) {
@@ -159,6 +185,11 @@ abstract class RuleSet implements Renderable, Commentable {
 		return $this->render(new \Sabberworm\CSS\OutputFormat());
 	}
 
+ /**
+ * Render the collected CSS rules into a string using the given OutputFormat.
+ * @example
+ * $oOutputFormat = new \Sabberworm\CSS\OutputFormat(); // configure formatting options as needed
+ * $ruleSet = /* instance of Sabberworm\CSS\RuleSet\RuleSet */
 	public function render(\Sabberworm\CSS\OutputFormat $oOutputFormat) {
 		$sResult = '';
 		$bIsFirst = true;

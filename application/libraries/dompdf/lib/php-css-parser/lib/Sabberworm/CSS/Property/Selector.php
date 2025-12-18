@@ -58,6 +58,14 @@ class Selector {
 		return $this->getSelector();
 	}
 
+ /**
+ * Calculate and return the CSS selector specificity (cached after first computation).
+ * @example
+ * $selector = new \Sabberworm\CSS\Property\Selector('.class#id:hover::before');
+ * $result = $selector->getSpecificity();
+ * echo $result; // 121
+ * @returns int Specificity as an integer computed as (a*1000 + b*100 + c*10 + d).
+ */
 	public function getSpecificity() {
 		if ($this->iSpecificity === null) {
 			$a = 0;

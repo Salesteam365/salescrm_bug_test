@@ -35,6 +35,18 @@ class DeclarationBlock extends RuleSet {
 	}
 
 
+ /**
+ * Set the selectors for this DeclarationBlock, normalizing input into an array of Selector objects.
+ * @example
+ * $block = new Sabberworm\CSS\RuleSet\DeclarationBlock();
+ * // Using a comma-separated string
+ * $block->setSelectors('.class1, #id2');
+ * // Using an array of selector strings or Selector instances
+ * $block->setSelectors(['.a', new Selector('#b')]);
+ * // After calling, $block->aSelectors contains an array of Selector objects representing the provided selectors.
+ * @param string|array $mSelector - A comma-separated selector string or an array of selectors (each item may be a string or a Selector instance).
+ * @returns void Sets $this->aSelectors to an array of Selector objects (converting string entries into Selector instances).
+ */
 	public function setSelectors($mSelector) {
 		if (is_array($mSelector)) {
 			$this->aSelectors = $mSelector;
@@ -49,6 +61,16 @@ class DeclarationBlock extends RuleSet {
 	}
 
 	// remove one of the selector of the block
+ /**
+ * Remove a selector from the declaration block.
+ * @example
+ * $block = new Sabberworm\CSS\RuleSet\DeclarationBlock();
+ * // assume the block contains a selector ".foo"
+ * $result = $block->removeSelector('.foo');
+ * echo var_export($result, true); // true
+ * @param {string|Selector} $mSelector - Selector to remove; either a selector string or a Selector instance.
+ * @returns {bool} True if a matching selector was found and removed, false otherwise.
+ */
 	public function removeSelector($mSelector) {
 		if($mSelector instanceof Selector) {
 			$mSelector = $mSelector->getSelector();
@@ -347,6 +369,29 @@ class DeclarationBlock extends RuleSet {
 		$this->removeRule('background');
 	}
 
+ /**
+ * Expand the "list-style" shorthand declaration into individual declarations:
+ * list-style-type, list-style-position and list-style-image. If no
+ * "list-style" rule is present the method does nothing. When the shorthand's
+ * value is the single token "inherit" each expanded property is set to
+ * "inherit". The method preserves the original rule's !important flag,
+ * recognizes URL values for list-style-image, recognizes known list-style
+ * types and positions, and uses the defaults "disc" (type), "outside" (position)
+ * and "none" (image) for any property not explicitly specified.
+ * @example
+ * $block = new DeclarationBlock();
+ * // shorthand value with a type token
+ * $rule = new Rule('list-style', 1);
+ * $rule->addValue('square');
+ * $block->addRule($rule);
+ * $block->expandListStyleShorthand();
+ * // After calling:
+ * // - list-style-type: square
+ * // - list-style-position: outside
+ * // - list-style-image: none
+ * @param void None - This method accepts no arguments; it operates on the current declaration block.
+ * @returns void Modifies the declaration block in-place by adding expanded rules and removing the original "list-style" rule.
+ */
 	public function expandListStyleShorthand() {
 		$aListProperties = array(
 			'list-style-type' => 'disc',
@@ -404,6 +449,17 @@ class DeclarationBlock extends RuleSet {
 		$this->removeRule('list-style');
 	}
 
+ /**
+ * Create a shorthand rule from provided longhand properties by collecting non-important values and removing the originals.
+ * @example
+ * $declarationBlock = new \Sabberworm\CSS\RuleSet\DeclarationBlock();
+ * // Suppose declaration block currently contains: margin-top: 10px; margin-right: 20px; margin-bottom: 10px; margin-left: 20px;
+ * $declarationBlock->createShorthandProperties(['margin-top','margin-right','margin-bottom','margin-left'], 'margin');
+ * // After call, a shorthand 'margin' rule is added with values ['10px','20px','10px','20px'] and the longhand rules removed.
+ * @param array $aProperties - Array of longhand property names to merge into the shorthand.
+ * @param string $sShorthand - The shorthand property name to create (e.g. 'margin').
+ * @returns void Modifies the DeclarationBlock in-place; no return value.
+ */
 	public function createShorthandProperties(array $aProperties, $sShorthand) {
 		$aRules = $this->getRulesAssoc();
 		$aNewValues = array();
@@ -610,6 +666,16 @@ class DeclarationBlock extends RuleSet {
 		return $this->render(new \Sabberworm\CSS\OutputFormat());
 	}
 
+ /**
+ * Render the declaration block as a CSS string using the provided OutputFormat.
+ * @example
+ * $oOutputFormat = new \Sabberworm\CSS\OutputFormat(); // configured output format
+ * $declarationBlock = new \Sabberworm\CSS\RuleSet\DeclarationBlock(['h1', 'h2']); // example block with selectors and declarations added separately
+ * $result = $declarationBlock->render($oOutputFormat);
+ * echo $result; // e.g. "h1, h2 { color: red; }"
+ * @param {\Sabberworm\CSS\OutputFormat} $oOutputFormat - Output format object that controls spacing, separators and braces when rendering.
+ * @returns {string} Rendered CSS declaration block as a string.
+ */
 	public function render(\Sabberworm\CSS\OutputFormat $oOutputFormat) {
 		if(count($this->aSelectors) === 0) {
 			// If all the selectors have been removed, this declaration block becomes invalid
