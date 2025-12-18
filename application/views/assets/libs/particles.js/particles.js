@@ -878,6 +878,18 @@ var pJS = function(tag_id, params){
       }
 
 
+      /**
+       * Update particle bubble property (size or opacity) over time during a bubble interaction.
+       * @example
+       * process(10, 20, 15, 20, 'size')
+       * undefined
+       * @param {number} bubble_param - Target bubble value for the property (size or opacity).
+       * @param {number} particles_param - Original particle property value before bubble effect.
+       * @param {number|undefined} p_obj_bubble - Current particle property value affected by bubble (optional).
+       * @param {number} p_obj - Current particle property value.
+       * @param {string} id - Property identifier, either 'size' or 'opacity'.
+       * @returns {void} Does not return a value; mutates particle temporary bubble properties.
+       */
       function process(bubble_param, particles_param, p_obj_bubble, p_obj, id){
 
         if(bubble_param != particles_param){
@@ -969,6 +981,15 @@ var pJS = function(tag_id, params){
 
         var force = -repulseRadius / d * 1;
 
+        /**
+        * Calculate and apply a radial force to a particle's velocity and handle canvas-edge bouncing.
+        * @example
+        * process()
+        * undefined
+        * @param {{Object}} {{p}} - Particle object whose velocity (vx, vy), position (x, y) and radius are read/updated.
+        * @param {{Object}} {{pJS}} - ParticlesJS instance providing configuration (move.out_mode) and canvas dimensions (canvas.w, canvas.h).
+        * @returns {{void}} Void, the function mutates the particle object in place.
+        **/
         function process(){
 
           var f = Math.atan2(dy,dx);
@@ -1446,6 +1467,14 @@ window.cancelRequestAnimFrame = ( function() {
     clearTimeout
 } )();
 
+/**
+* Convert a hex color string to an RGB object.
+* @example
+* hexToRgb('#03F')
+* { r: 0, g: 51, b: 255 }
+* @param {{String}} {{hex}} - Hex color string (3 or 6 hex digits, with or without leading '#').
+* @returns {{Object|null}} RGB object with numeric r, g, b properties, or null if the input is not a valid hex color.
+**/
 function hexToRgb(hex){
   // By Tim Down - http://stackoverflow.com/a/5624139/3493650
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
