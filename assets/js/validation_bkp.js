@@ -530,6 +530,14 @@ return value;
 }
 
 
+/**
+* Convert a number (or numeric string) to an Indian-format price string with commas and preserve any decimal part.
+* @example
+* numberToIndPrice(1234567.89)
+* 12,34,567.89
+* @param {{number|string}} {{x}} - Input number or numeric string to format.
+* @returns {{string}} Formatted number string with Indian-style commas preserving decimals.
+**/
 function numberToIndPrice(x){
 
 x=x.toString();
