@@ -38,6 +38,19 @@ abstract class CSSBlockList extends CSSList {
 		}
 	}
 
+ /**
+ * Collects all non-list values (or nested list components) from a CSS element into the provided accumulator.
+ * @example
+ * $result = [];
+ * // $oElement can be a CSSBlockList, RuleSet, Rule, ValueList, CSSFunction or a single value element
+ * $this->allValues($oElement, $result, 'color', true);
+ * var_export($result); // array('red', '#ffffff')
+ * @param mixed $oElement - The CSS element to traverse (e.g. CSSBlockList, RuleSet, Rule, ValueList, CSSFunction or a value object).
+ * @param array &$aResult - Accumulator (passed by reference) that will be populated with found value objects.
+ * @param string|null $sSearchString - Optional search string used to filter rules (default null).
+ * @param bool $bSearchInFunctionArguments - Whether to search inside function arguments (default false).
+ * @returns void Void; results are appended to $aResult by reference.
+ */
 	protected function allValues($oElement, &$aResult, $sSearchString = null, $bSearchInFunctionArguments = false) {
 		if ($oElement instanceof CSSBlockList) {
 			foreach ($oElement->getContents() as $oContent) {
@@ -61,6 +74,22 @@ abstract class CSSBlockList extends CSSList {
 		}
 	}
 
+ /**
+ * Collects selectors from all declaration blocks into the provided array, optionally filtering them by a specificity comparison expression.
+ * @example
+ * $selectors = array();
+ * // Collect all selectors
+ * $blockList->allSelectors($selectors);
+ * echo count($selectors); // render some sample output value, e.g. 10
+ *
+ * // Collect only selectors matching a specificity comparison (example expression)
+ * $filtered = array();
+ * $blockList->allSelectors($filtered, '>= 1');
+ * echo count($filtered); // render some sample output value, e.g. 3
+ * @param array &$aResult - Array passed by reference which will be appended with found selector objects.
+ * @param string|null $sSpecificitySearch - Optional comparison string used to filter selectors by specificity (e.g. '>= 1', '== 0'); when null all selectors are added.
+ * @returns void No return value; selectors are appended into the provided array by reference.
+ */
 	protected function allSelectors(&$aResult, $sSpecificitySearch = null) {
 		$aDeclarationBlocks = array();
 		$this->allDeclarationBlocks($aDeclarationBlocks);

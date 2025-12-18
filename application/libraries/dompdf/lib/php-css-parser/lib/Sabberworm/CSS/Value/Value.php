@@ -13,6 +13,15 @@ abstract class Value implements Renderable {
 		$this->iLineNo = $iLineNo;
 	}
 
+ /**
+ * Parse a sequence of primitive CSS values from the given ParserState and build list objects for specified delimiters.
+ * @example
+ * $result = Value::parseValue($parserState, array(','));
+ * echo get_class($result); // e.g. "Sabberworm\CSS\Value\RuleValueList" when multiple values separated by commas
+ * @param {ParserState} $oParserState - ParserState positioned at the start of the value(s) to parse.
+ * @param {array} $aListDelimiters - Optional array of string delimiters (e.g. array(',', '/')) used to group parsed primitives into RuleValueList instances; whitespace is treated as a delimiter when no explicit delimiter is found.
+ * @returns {Value|RuleValueList} Parsed result: a single Value (primitive) or a RuleValueList when multiple components are grouped by the provided delimiters.
+ */
 	public static function parseValue(ParserState $oParserState, $aListDelimiters = array()) {
 		$aStack = array();
 		$oParserState->consumeWhiteSpace();
@@ -62,6 +71,16 @@ abstract class Value implements Renderable {
 		return $aStack[0];
 	}
 
+ /**
+  * Parse an identifier or a function at the current parser position and return either the identifier string or a CSSFunction instance.
+  * @example
+  * $state = new ParserState('rgb(255,0,0)');
+  * $result = Sabberworm\CSS\Value\Value::parseIdentifierOrFunction($state, false);
+  * // $result is an instance of Sabberworm\CSS\Value\CSSFunction representing "rgb(255,0,0)"
+  * @param ParserState $oParserState - ParserState instance positioned at the start of an identifier or function to parse.
+  * @param bool $bIgnoreCase - Whether to parse the identifier in a case-insensitive manner (default: false).
+  * @returns string|CSSFunction Returns the parsed identifier as a string, or a CSSFunction object if a function was parsed.
+  */
 	public static function parseIdentifierOrFunction(ParserState $oParserState, $bIgnoreCase = false) {
 		$sResult = $oParserState->parseIdentifier($bIgnoreCase);
 
@@ -75,6 +94,15 @@ abstract class Value implements Renderable {
 		return $sResult;
 	}
 
+ /**
+ * Parse a single primitive CSS value (size, color, url, calc, string, identifier, unicode range, Microsoft filter, line-name, etc.) from the provided ParserState.
+ * @example
+ * $parserState = new Sabberworm\CSS\ParserState('10px');
+ * $result = Sabberworm\CSS\Value\Value::parsePrimitiveValue($parserState);
+ * echo get_class($result); // Sample output: "Sabberworm\CSS\Value\Size"
+ * @param {ParserState} $oParserState - The ParserState positioned at the start of a primitive CSS value.
+ * @returns {mixed} Parsed value object (e.g. Size, Color, URL, CalcFunction, CSSString, LineName) or null if no value could be parsed.
+ */
 	public static function parsePrimitiveValue(ParserState $oParserState) {
 		$oValue = null;
 		$oParserState->consumeWhiteSpace();
