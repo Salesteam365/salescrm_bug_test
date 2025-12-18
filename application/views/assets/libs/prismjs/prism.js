@@ -461,6 +461,17 @@ var Prism = (function (_self) {
 			},
 
 			// Traverse a language definition with Depth First Search
+   /**
+   * Perform a depth-first traversal of an object or array, calling a callback for each property.
+   * @example
+   * DFS({ a: 1, b: { c: 2 } }, function(key, value, type) { console.log(key, value, type); })
+   * undefined
+   * @param {{Object|Array}} {{o}} - The object or array to traverse.
+   * @param {{Function}} {{callback}} - Callback invoked for each property: callback.call(parent, key, value, type).
+   * @param {{String|null}} {{type}} - Optional initial type or key name to pass to the callback for the current level.
+   * @param {{Object}} {{visited}} - Internal map of visited objects (by id) to avoid infinite recursion on circular references.
+   * @returns {{void}} No return value; used for side effects only.
+   **/
 			DFS: function DFS(o, callback, type, visited) {
 				visited = visited || {};
 
