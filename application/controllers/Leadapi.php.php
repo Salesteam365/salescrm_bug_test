@@ -18,6 +18,17 @@ class Leadapi extends REST_Controller {
     }
 	
 	
+ /**
+ * Get the most recent lead record's assigned user for a company session, optionally filtered by user or lead id.
+ * @example
+ * $result = $this->assignedUser('admin@acme.com','Acme Inc','42','123');
+ * print_r($result); // Array ( [assigned_to] => 42 [id] => 123 [assigned_to_name] => John Doe )
+ * @param string $session_comp_email - Company session email used to filter leads.
+ * @param string $session_company - Company identifier used to filter leads.
+ * @param string $userAssign - (Optional) User ID to filter the assigned_to column.
+ * @param string $leadid - (Optional) Lead ID to filter for a specific lead.
+ * @returns array|null Returns associative array with keys 'assigned_to', 'id', 'assigned_to_name' for the latest matching lead, or null if no record found.
+ */
 	public function assignedUser($session_comp_email,$session_company,$userAssign='',$leadid='')
     {   
 		$this->db->from('lead');
@@ -48,6 +59,39 @@ class Leadapi extends REST_Controller {
     }
     
    
+    /**
+     * Handle POST request to create a new lead in Team365, assign it to an appropriate user (or fallback), send a notification email to the company admin, and return an HTTP 200 response.
+     * @example
+     * // Example HTTP request:
+     * // POST /leadapi?key=abc123
+     * $_GET['key'] = 'abc123';
+     * $_POST = [
+     *   'name' => 'John Doe',
+     *   'email' => 'john.doe@example.com',
+     *   'office_phone' => '0123456789',
+     *   'mobile' => '+911234567890',
+     *   'contact_name' => 'John Doe',
+     *   'org_name' => 'Example Co',
+     *   'product_name' => 'Product X',
+     *   'address' => '123 Example St',
+     *   'state' => 'StateName',
+     *   'city' => 'CityName'
+     * ];
+     * // In controller:
+     * $this->index_post();
+     * // Result: sends POST to https://api.team365.io/api/leads/add, emails admin (company email from key), and responds with HTTP 200 and message "Lead access successfully."
+     * @param {string} $key - Query parameter 'key' used to fetch admin/session details (e.g. 'abc123').
+     * @param {string} $name - Lead name from POST (e.g. 'John Doe').
+     * @param {string} $email - Lead email from POST (e.g. 'john.doe@example.com').
+     * @param {string} $office_phone - Lead office phone from POST (e.g. '0123456789').
+     * @param {string} $mobile - Lead mobile phone from POST (e.g. '+911234567890').
+     * @param {string} $contact_name - Contact person name from POST (e.g. 'John Doe').
+     * @param {string} $org_name - Organization name from POST (e.g. 'Example Co').
+     * @param {string} $product_name - Product name associated with the lead (e.g. 'Product X').
+     * @param {string} $address - Billing/address line from POST (e.g. '123 Example St').
+     * @param {string} $state - Billing/state from POST (e.g. 'StateName').
+     * @param {string} $city - Billing/city from POST (e.g. 'CityName').
+     * @returns {void} Sends an HTTP 200 response via REST_Controller with message array and does not return a PHP value. */
     public function index_post()
     {   
         $urlkey=$_GET['key'];
