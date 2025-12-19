@@ -15,6 +15,17 @@ class Webhooks extends CI_Controller
   }
   
   
+  /**
+  * Get the most recent lead assignment row for a company/email, optionally filtered by assignee or lead id.
+  * @example
+  * $result = $this->assignedUser('admin@acme.com', 'Acme Ltd', '5', '123');
+  * print_r($result); // e.g. Array ( ['assigned_to'] => '5', ['id'] => '123', ['assigned_to_name'] => 'John Doe' )
+  * @param {string} $session_comp_email - Company session email used to filter leads.
+  * @param {string} $session_company - Company session identifier used to filter leads.
+  * @param {string} $userAssign - (Optional) User ID to filter assigned_to column.
+  * @param {string|int} $leadid - (Optional) Lead ID to filter the lead record.
+  * @returns {array} Return associative array with keys 'assigned_to', 'id' and 'assigned_to_name' or an empty array if no record is found.
+  */
   public function assignedUser($session_comp_email,$session_company,$userAssign='',$leadid='')
     {   
 		$this->db->from('lead');
@@ -44,6 +55,23 @@ class Webhooks extends CI_Controller
 		return $query->row_array();
     }
   
+    /**
+    * Handle Facebook webhook verification and incoming leadgen submissions, fetch lead details from Facebook Graph API, forward lead to external API and send notification email.
+    * @example
+    * // Example 1: Verification request (GET)
+    * $_REQUEST['hub_challenge'] = 'CHALLENGE_TOKEN';
+    * $_REQUEST['hub_verify_token'] = 'abc123';
+    * $webhook = new Webhooks();
+    * $webhook->index();
+    * // echoes 'CHALLENGE_TOKEN'
+    *
+    * // Example 2: Incoming lead webhook (POST JSON payload posted to this endpoint)
+    * // The method will decode the POST JSON, request lead details from:
+    * // https://graph.facebook.com/v10.0/{leadgen_id}?access_token={fb_access_token}
+    * // then POST processed lead to external API and send an email notification.
+    * @param void none - No direct function arguments; uses HTTP request variables ($_REQUEST and php://input) to process verification and lead data.
+    * @returns void Nothing is returned. The method echoes the verification challenge when applicable, sends outbound HTTP requests, and triggers email sending.
+    */
     public function index()
     {
 
@@ -180,6 +208,17 @@ class Webhooks extends CI_Controller
     
         
 	}
+ /**
+  * Render Facebook JS SDK initialization, a "Login with Facebook" button, and client-side logic to:
+  * - open Facebook Login with leads_retrieval permission,
+  * - list Facebook Pages the user manages,
+  * - allow subscribing a page to the app's leadgen webhook using that page's access token.
+  *
+  * @example
+  * // In a controller (e.g. application/controllers/Webhooks.php)
+  * $this->my_plateform();
+  * // Result: Outputs HTML/JS similar to:
+  * // <script>/* FB.init({ appId: '2787703948108895', version: 'v10.0' }) */
 	public function my_plateform()
     {
      ?>
