@@ -137,6 +137,15 @@ abstract class PHPExcel_Chart_Properties
         );
     }
 
+    /**
+    * Get arrow size component ('w' or 'len') for a given line style selector.
+    * @example
+    * $result = $this->getLineStyleArrowSize(5, 'w');
+    * echo $result; // med
+    * @param {int} $array_selector - Numeric selector (1..9) selecting the predefined size group.
+    * @param {string} $array_kay_selector - Component key to retrieve ('w' for width or 'len' for length).
+    * @returns {string} Size identifier string ('sm', 'med' or 'lg').
+    */
     protected function getLineStyleArrowSize($array_selector, $array_kay_selector)
     {
         $sizes = array(
@@ -154,6 +163,27 @@ abstract class PHPExcel_Chart_Properties
         return $sizes[$array_selector][$array_kay_selector];
     }
 
+    /**
+    * Retrieve a predefined shadow preset map for a given preset identifier.
+    * @example
+    * $preset = $this->getShadowPresetsMap(5);
+    * print_r($preset);
+    * // Array
+    * // (
+    * //     [effect] => outerShdw
+    * //     [size] => Array
+    * //         (
+    * //             [sx] => 102000
+    * //             [sy] => 102000
+    * //         )
+    * //     [blur] => 63500
+    * //     [distance] => 38100
+    * //     [algn] => ctr
+    * //     [rotWithShape] => 0
+    * // )
+    * @param {int} $shadow_presets_option - Preset index to retrieve (allowed values: 1..23).
+    * @returns {array|null} Return associative array of shadow properties for the preset, or null if the preset index does not exist.
+    */
     protected function getShadowPresetsMap($shadow_presets_option)
     {
         $presets_options = array(
@@ -347,6 +377,16 @@ abstract class PHPExcel_Chart_Properties
         return $presets_options[$shadow_presets_option];
     }
 
+    /**
+    * Retrieve a value from a (possibly nested) properties array using a single key or an array of keys as a path.
+    * @example
+    * $properties = ['sheet' => ['title' => 'Sales', 'meta' => ['year' => 2020]]];
+    * $result = getArrayElementsValue($properties, ['sheet', 'title']);
+    * echo $result // Sales
+    * @param {array} $properties - Array of properties to traverse.
+    * @param {string|array} $elements - Single key (string) or array of keys representing the path to the desired value.
+    * @returns {mixed} The value found at the specified path in the properties array.
+    */
     protected function getArrayElementsValue($properties, $elements)
     {
         $reference = & $properties;
