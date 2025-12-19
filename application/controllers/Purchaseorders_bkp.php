@@ -2,6 +2,15 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Purchaseorders extends CI_Controller
 {
+  /**
+  * Constructor for the Purchaseorders_bkp controller — calls parent constructor and loads required helpers, models and libraries used by this controller.
+  * @example
+  * // In CodeIgniter the controller constructor is invoked automatically when controller is instantiated.
+  * $CI = new Purchaseorders_bkp(); // instantiation example
+  * // After construction: URL helper, models (Quotation, Salesorders, Reports, Purchaseorders, Login, Lead, Opportunity, Workflow) and libraries (upload, pdf, email_lib) are available via $this.
+  * @param void $none - No parameters.
+  * @returns void Constructor does not return a value.
+  */
   public function __construct()
   {
     parent::__construct();
@@ -17,6 +26,23 @@ class Purchaseorders extends CI_Controller
     $this->load->library('upload');
     $this->load->library(array('pdf','email_lib'));
   }
+  /**
+  * Index method for the Purchaseorders controller — loads the purchase orders page for authenticated users or redirects unauthenticated users to login.
+  * @example
+  * // When a user is logged in (session 'email' exists)
+  * $this->session->set_userdata('email', 'user@example.com');
+  * $this->Purchaseorders_bkp->index();
+  * // Renders the 'inventory/purchaseorders' view and provides sample data:
+  * // $data['branch'] => 'Main Branch'
+  * // $data['renewal_data'] => array(...)
+  * // $data['workflow_details'] => array(...)
+  * // When a user is not logged in (no session 'email')
+  * $this->session->unset_userdata('email');
+  * $this->Purchaseorders_bkp->index();
+  * // Redirects to 'login'
+  * @param void $none - No parameters required.
+  * @returns void Loads the purchaseorders view with data for authenticated users or performs a redirect to the login page for unauthenticated users.
+  */
   public function index()
   {
      
@@ -34,6 +60,18 @@ class Purchaseorders extends CI_Controller
     }
   }
   
+  /**
+  * Toggle the approval status of a purchase order based on POST input and current session permissions; sends notification emails when a purchase order is approved.
+  * @example
+  * $_POST['poid'] = 123;
+  * $_POST['povalue'] = 1;
+  * // Ensure session user is admin or has po_approval = '1'
+  * $result = $this->Purchaseorders_bkp->changeStatus();
+  * echo $result; // outputs: 1 (success), 0 (update failed) or 2 (unauthorized)
+  * @param int $poid - Purchase order ID provided via POST key 'poid' (e.g. 123).
+  * @param int $povalue - Approval flag provided via POST key 'povalue': 1 = approve, any other value = disapprove (e.g. 1).
+  * @returns int Echoed integer status code: 1 = update successful (and emails sent if approved), 0 = update failed, 2 = unauthorized (insufficient permissions).
+  */
   public function changeStatus(){
     if($this->session->userdata('type') == 'admin' || $this->session->userdata('po_approval')=='1')
     {
@@ -118,6 +156,20 @@ class Purchaseorders extends CI_Controller
   
   
   
+  /**
+  * Return a JSON payload of purchase orders formatted for DataTables (echoes output).
+  * @example
+  * // Prepare POST inputs (examples)
+  * $_POST['start'] = 0;
+  * $_POST['draw'] = 1;
+  * $_POST['actDate'] = '2025-12-01'; // optional
+  * // Call from controller context:
+  * $this->ajax_list();
+  * // Example echoed output (formatted):
+  * // {"draw":1,"recordsTotal":42,"recordsFiltered":10,"data":[["Supplier Co<div class=\"links\"><a ...>View</a>|<a ...>Update</a>|<a ...>Delete</a></div>","Customer Co","Supplier Name","Subject text","PO123","Owner Name","Approved By"], ...]}
+  * @param array $_POST - POST input used by the method (expects 'start' int, 'draw' int, optional 'actDate' string).
+  * @returns void Echoes a JSON-encoded array with keys: draw (int), recordsTotal (int), recordsFiltered (int), data (array of row arrays).
+  */
   public function ajax_list()
   {
     $list = $this->Purchaseorders->get_datatables();
@@ -203,6 +255,23 @@ class Purchaseorders extends CI_Controller
     //output to json format
     echo json_encode($output);
   }
+  /**
+  * Returns a JSON array of matching sales order IDs for an autocomplete field based on the 'term' GET parameter and current session context.
+  * @example
+  * // Simulate request and session context
+  * $_GET['term'] = 'SO123';
+  * $this->session->set_userdata('email', 'user@example.com');
+  * $this->session->set_userdata('company_name', 'Acme Ltd');
+  * $this->session->set_userdata('company_email', 'sales@acme.example');
+  * // Call the controller action (invoked via HTTP in normal use)
+  * $this->Purchaseorders_bkp->autocomplete_soid();
+  * // Example output when matches found:
+  * // [{"label":"SO12345"},{"label":"SO12346"}]
+  * // Example output when no matches:
+  * // [{"label":"No Salesorder Found"}]
+  * @param {string} $term - Search term obtained from $_GET['term'], e.g. "SO123".
+  * @returns {void} Outputs JSON-encoded array of objects with 'label' keys (matching saleorder_id values) or a single 'No Salesorder Found' entry.
+  */
   public function autocomplete_soid()
   {
     $sess_eml = $this->session->userdata('email');
@@ -243,6 +312,20 @@ class Purchaseorders extends CI_Controller
 	  }
   }
   
+  /**
+  * Retrieve sale order details and compute product lines that still require purchase orders; echoes a JSON response.
+  * @example
+  * // Example usage (controller receives POST request):
+  * $_POST = ['saleorder_id' => 45];
+  * // Within CodeIgniter, calling the controller action will echo the result:
+  * $this->Purchaseorders_bkp->get_SO_details();
+  * // Example output (success):
+  * // {"id":"1","opportunity_id":"10","org_name":"Acme Corp","product_name":"Widget A<br>Widget B","quantity":"2<br>1", ...}
+  * // Example output (error when PO already created):
+  * // {"error_msg":"<i class=\"fas fa-info-circle\" style=\"color:red;\"></i>&nbsp;&nbsp;PO already created of this SO."}
+  * @param {{array}} {{$postData}} - POST payload from $this->input->post(), expected to include 'saleorder_id' (int) identifying the sale order.
+  * @returns {{string}} JSON encoded string: on success a JSON object with sale order fields and remaining product-line strings (joined by "<br>"), on failure a JSON object containing 'error_msg'.
+  */
   public function get_SO_details()
   {
 	  
@@ -396,6 +479,16 @@ class Purchaseorders extends CI_Controller
     $val2 = $this->Purchaseorders->fetch_val_wotax($saleorder_id);
     echo json_encode($val2);
   }
+  /**
+   * Autocomplete vendor names for AJAX requests; retrieves matching vendors based on the GET 'term'
+   * and echoes a JSON-encoded array of suggestion objects with 'label' keys.
+   * @example
+   * // Example using file_get_contents to request the controller endpoint with a search term:
+   * $result = file_get_contents('https://example.com/purchaseorders_bkp/autocomplete_vendor?term=Acme');
+   * echo $result; // sample output: [{"label":"Acme Corporation"},{"label":"Acme Supplies"}]
+   * @param {string} $term - Search term provided via GET parameter 'term' used to match vendor names.
+   * @returns {void} Echoes a JSON-encoded array of vendor label suggestions (or [{"label":"No Vendor Found"}]) and does not return a value.
+   */
   public function autocomplete_vendor()
   {
     $sess_eml = $this->session->userdata('email');
@@ -956,6 +1049,29 @@ class Purchaseorders extends CI_Controller
     $data = $this->Purchaseorders->get_by_id($id);
     echo json_encode($data);
   }
+  /**
+  * Update an existing purchase order using POSTed form data, validate input, persist changes, update related reports and product profit details, and output a JSON status response.
+  * @example
+  * // Example HTTP call:
+  * // GET: ?id=123
+  * // POST (sample fields):
+  * // subject = "Office Supplies PO"
+  * // product_name[] = ["Paper","Ink"]
+  * // unit_price[] = ["100","250"]
+  * // total[] = ["200","500"]
+  * // initial_total = "700"
+  * // after_discount = "650"
+  * // sub_total = "650"
+  * // estimate_purchase_price[] = ["80","200"]
+  * // initial_est_purchase_price[] = ["160","400"]
+  * // total_est_purchase_price = "560"
+  * // profit_by_user = "90"
+  * $this->update();
+  * // Possible output on success:
+  * // {"status":true}
+  * @param {int} $id - Purchase order ID obtained from GET parameter 'id'.
+  * @returns {void} Echoes a JSON response: {"status":true} on successful update, {"status":false} on failure; may also echo an integer validation error code and terminate if validation fails.
+  */
   public function update()
   {
     $validation = $this->check_validation();
@@ -1106,6 +1222,14 @@ class Purchaseorders extends CI_Controller
 
     }
   }
+  /**
+   * Validate purchase order input fields using CodeIgniter's form_validation library.
+   * @example
+   * $result = $this->check_validation();
+   * echo $result // On failure sample output: {"st":202,"subject":"Subject is required","contact_name":"Contact Name is required","billing_country":"Billing Country is required",...}
+   * echo $result // On success sample output: 200
+   * @returns {int|string} Returns integer 200 when validation passes, or a JSON encoded string (st=>202 and per-field errors) when validation fails.
+   */
   public function check_validation()
   {
     $this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; margin-left: 10px;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -1157,6 +1281,15 @@ class Purchaseorders extends CI_Controller
     $data = $this->Login->getbranchVals($postData);
     echo json_encode($data);
   }
+  /**
+   * Generate and stream a Purchase Order PDF for a given purchase ID (from URI segment 3). If URI segment 4 is 'dn' the PDF will be forced as a download.
+   * @example
+   * // Via HTTP: GET /purchaseorders_bkp/view/123/dn
+   * // Or call from controller code:
+   * $this->Purchaseorders_bkp->view(); // with URI segment(3) = 123 and segment(4) = 'dn' will stream PURCHASE_123.pdf as a download
+   * @param void $none - No direct function parameters. Uses $this->uri->segment(3) for purchase ID (int) and optional $this->uri->segment(4) == 'dn' to force download.
+   * @returns void Streams the generated PDF to the browser (either inline or as attachment); does not return a PHP value.
+   */
   public function view()
   {
     //if(!empty($this->session->userdata('email')))
@@ -1214,6 +1347,15 @@ class Purchaseorders extends CI_Controller
     echo json_encode($data);
   }
   
+    /**
+    * Load and display the proforma invoice view for a given purchase order ID. If the user is not logged in, redirect to the login page.
+    * @example
+    * // Call from another controller or within application routing:
+    * $this->Purchaseorders_bkp->view_pi_po(123);
+    * // Or access via URL: /purchaseorders_bkp/view_pi_po/123
+    * @param int $id - Purchase order ID used to retrieve the purchase order record (e.g., 123).
+    * @returns void Loads the 'sales/proforma_view_invoicepo' view with the fetched purchase order data or redirects to 'login' if unauthenticated.
+    */
     public function view_pi_po($id)
     {
         if(!empty($this->session->userdata('email')))
@@ -1230,6 +1372,14 @@ class Purchaseorders extends CI_Controller
     
     }
     
+    /**
+    * Generate a PDF file for a purchase order, save it as assets/img/PURCHASE_<po_id>.pdf and return the file path.
+    * @example
+    * $result = $this->generate_pdf_attachment(123);
+    * echo $result // render some sample output value; // assets/img/PURCHASE_123.pdf
+    * @param {int|string} $po_id - Purchase order identifier used to render the PDF and form the filename.
+    * @returns {string} Return the relative path to the generated PDF file.
+    */
     public function generate_pdf_attachment($po_id)
     {
         
@@ -1256,6 +1406,29 @@ class Purchaseorders extends CI_Controller
     
     }
 	
+  /**
+  * Sends a purchase order email using values from POST, generates a PDF attachment for the given PO id, attempts to send the email (with optional CC) and echoes result.
+  * @example
+  * $_POST = [
+  *   'orgName' => 'Acme Corp',
+  *   'orgEmail' => 'billing@acme.test',
+  *   'ccEmail' => 'accounting@acme.test',
+  *   'subEmail' => 'Purchase Order #12345',
+  *   'descriptionTxt' => '<p>Thank you for your order.</p>',
+  *   'invoiceurl' => 'https://example.com/invoices/12345',
+  *   'po_id' => '12345'
+  * ];
+  * $this->send_email();
+  * // On success this method echoes "1", on failure it echoes "0" and exits.
+  * @param {string} $orgName - Organization name read from POST['orgName'].
+  * @param {string} $orgEmail - Recipient email read from POST['orgEmail'].
+  * @param {string} $ccEmail - CC email read from POST['ccEmail'] (optional).
+  * @param {string} $subEmail - Email subject or subtitle read from POST['subEmail'].
+  * @param {string} $descriptionTxt - HTML description/body read from POST['descriptionTxt'].
+  * @param {string} $invoiceurl - URL to the invoice/purchase order read from POST['invoiceurl'].
+  * @param {int|string} $po_id - Purchase order identifier read from POST['po_id']; used to generate the PDF attachment.
+  * @returns {void} Echoes "1" on successful send, "0" on failure; the method exits after output and removes the temporary PDF file.
+  */
 	 public function send_email(){
 	  
 	  $orgName		  = $this->input->post('orgName');
