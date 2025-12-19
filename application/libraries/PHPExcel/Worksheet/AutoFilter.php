@@ -569,6 +569,18 @@ class PHPExcel_Worksheet_AutoFilter
         return array('method' => 'filterTestInCustomDataSet', 'arguments' => array('filterRules' => $ruleValues, 'join' => PHPExcel_Worksheet_AutoFilter_Column::AUTOFILTER_COLUMN_JOIN_AND));
     }
 
+    /**
+    * Calculate the cutoff value for a Top/Bottom N autofilter rule on a worksheet column.
+    * @example
+    * $result = $this->calculateTopTenValue('B', 2, 100, PHPExcel_Worksheet_AutoFilter_Column_Rule::AUTOFILTER_COLUMN_RULE_TOPTEN_TOP, 10);
+    * echo $result; // e.g. 1250
+    * @param {string} $columnID - Column letter(s) identifying the worksheet column (e.g. 'A', 'B').
+    * @param {int} $startRow - Starting row index for the range (inclusive).
+    * @param {int} $endRow - Ending row index for the range (inclusive).
+    * @param {int} $ruleType - Rule type constant (use PHPExcel_Worksheet_AutoFilter_Column_Rule::AUTOFILTER_COLUMN_RULE_TOPTEN_TOP for top N; otherwise bottom N).
+    * @param {int} $ruleValue - The N value for the Top/Bottom rule (e.g. 10).
+    * @returns {mixed|null} The cutoff value (the Nth top or bottom value) from the specified range, or null if no values found.
+    */
     private function calculateTopTenValue($columnID, $startRow, $endRow, $ruleType, $ruleValue)
     {
         $range = $columnID.$startRow.':'.$columnID.$endRow;
