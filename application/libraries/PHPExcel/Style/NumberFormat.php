@@ -452,6 +452,17 @@ class PHPExcel_Style_NumberFormat extends PHPExcel_Style_Supervisor implements P
         return '\\' . implode('\\', str_split($matches[1]));
     }
 
+    /**
+    * Convert an Excel serialized date/time value into a formatted PHP date/time string (modifies $value and may normalize $format).
+    * @example
+    * $value = 41275.5;
+    * $format = 'yyyy-mm-dd hh:mm:ss';
+    * PHPExcel_Style_NumberFormat::formatAsDate($value, $format);
+    * echo $value; // e.g. "2013-01-15 12:00:00"
+    * @param {{mixed}} {{$value}} - Excel date/time value passed by reference; numeric Excel serial (or Excel datetime) that will be converted into a formatted date/time string.
+    * @param {{string}} {{$format}} - Excel date format code passed by reference; will be normalized, have locale/currency prefixes removed, and be translated to PHP DateTime format tokens.
+    * @returns {{void}} Returns nothing; $value is replaced with the resulting formatted date/time string.
+    */
     private static function formatAsDate(&$value, &$format)
     {
         // strip off first part containing e.g. [$-F800] or [$USD-409]
@@ -486,6 +497,17 @@ class PHPExcel_Style_NumberFormat extends PHPExcel_Style_Supervisor implements P
         $value = $dateObj->format($format);
     }
 
+    /**
+    * Format a numeric value as a percentage according to the provided format; both value and format are modified by reference.
+    * @example
+    * $value = 0.1234;
+    * $format = PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE;
+    * PHPExcel_Style_NumberFormat::formatAsPercentage($value, $format);
+    * echo $value; // "12%"
+    * @param {float|string} &$value - Value passed by reference; numeric input (e.g. 0.1234) will be converted to a percentage string (e.g. "12%") or formatted according to the adjusted format.
+    * @param {string} &$format - Format mask passed by reference; may be self::FORMAT_PERCENTAGE or a printf-style mask (e.g. '0.00%'), and this method may alter it to a valid sprintf format.
+    * @returns {void} Returns nothing; the formatted value and potentially updated format are returned via the reference parameters.
+    */
     private static function formatAsPercentage(&$value, &$format)
     {
         if ($format === self::FORMAT_PERCENTAGE) {
@@ -504,6 +526,17 @@ class PHPExcel_Style_NumberFormat extends PHPExcel_Style_Supervisor implements P
         }
     }
 
+    /**
+    * Convert a numeric value to a fractional string according to a fraction format and replace the original value by reference.
+    * @example
+    * $value = 2.75;
+    * $format = '# ?/?';
+    * PHPExcel_Style_NumberFormat::formatAsFraction($value, $format);
+    * echo $value; // "2 3/4"
+    * @param float|int|string &$value - Value to convert; will be replaced by the formatted fraction string (e.g. "2 3/4" or "11/4").
+    * @param string &$format - Fraction format pattern that controls whether output is mixed or improper (e.g. '# ?/?', '? ?/??').
+    * @returns void No return; $value is modified in-place with the fraction representation.
+    */
     private static function formatAsFraction(&$value, &$format)
     {
         $sign = ($value < 0) ? '-' : '';
@@ -529,6 +562,16 @@ class PHPExcel_Style_NumberFormat extends PHPExcel_Style_Supervisor implements P
         }
     }
 
+    /**
+    * Format a numeric value according to a mask containing zero-blocks and optional decimal part.
+    * @example
+    * $result = complexNumberFormatMask(1234567.89, '0,000,000.00');
+    * echo $result // render 1,234,567.89;
+    * @param {float|int|string} $number - Numeric value to format (can be negative; may be provided as string).
+    * @param {string} $mask - Format mask using groups of '0' for digit placeholders and optional '.' for decimals (e.g. '0,000.00').
+    * @param {int} $level - Internal recursion level (optional, default 0).
+    * @returns {string} Formatted number as a string.
+    */
     private static function complexNumberFormatMask($number, $mask, $level = 0)
     {
         $sign = ($number < 0.0);
