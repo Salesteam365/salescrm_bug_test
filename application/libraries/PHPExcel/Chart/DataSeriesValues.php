@@ -284,6 +284,16 @@ class PHPExcel_Chart_DataSeriesValues
         return $var !== null;
     }
 
+    /**
+    * Refreshes the data series values by evaluating the object's dataSource formula on the given worksheet; updates internal dataValues and pointCount.
+    * @example
+    * // Assume $dataSeries is an instance of PHPExcel_Chart_DataSeriesValues and $worksheet is a PHPExcel_Worksheet
+    * $dataSeries->refresh($worksheet, true);
+    * echo $dataSeries->pointCount; // e.g. 5
+    * @param PHPExcel_Worksheet $worksheet - Worksheet used as the context for evaluating the dataSource formula.
+    * @param bool $flatten - Whether to flatten the evaluated result into a one-dimensional array (true) or keep multi-dimensional ranges (false).
+    * @returns void Updates the object's dataValues and pointCount; does not return a value.
+    */
     public function refresh(PHPExcel_Worksheet $worksheet, $flatten = true)
     {
         if ($this->dataSource !== null) {
