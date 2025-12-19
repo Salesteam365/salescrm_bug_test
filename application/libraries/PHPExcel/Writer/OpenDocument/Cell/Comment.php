@@ -36,6 +36,18 @@
  */
 class PHPExcel_Writer_OpenDocument_Cell_Comment
 {
+    /**
+    * Write an OpenDocument annotation (cell comment) into the provided XML writer for a given cell.
+    * @example
+    * $objWriter = new PHPExcel_Shared_XMLWriter(PHPExcel_Shared_XMLWriter::STORAGE_MEMORY);
+    * $worksheet = $spreadsheet->getActiveSheet();
+    * $cell = $worksheet->getCell('B2'); // assume B2 has a comment
+    * $result = PHPExcel_Writer_OpenDocument_Cell_Comment::write($objWriter, $cell);
+    * var_dump($result); // NULL (no return value) — the annotation is written to $objWriter output
+    * @param PHPExcel_Shared_XMLWriter $objWriter - XML writer used to emit the annotation elements.
+    * @param PHPExcel_Cell $cell - Cell instance that may contain a comment to be written.
+    * @returns void No return value; writes annotation elements to the provided XML writer when a comment exists.
+    */
     public static function write(PHPExcel_Shared_XMLWriter $objWriter, PHPExcel_Cell $cell)
     {
         $comments = $cell->getWorksheet()->getComments();
