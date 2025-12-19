@@ -3,6 +3,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Customreports extends CI_Controller {
 
+    /**
+    * Initializes the Customreports controller: verifies admin session and loads required helpers, models and libraries.
+    * @example
+    * // Example when the current session user is an admin:
+    * $this->session->set_userdata('type', 'admin');
+    * $controller = new Customreports();
+    * // Result: helpers, models (Invoice_model, vendors_model, Organization_model, Salesorders_model, Contact_model, Login_model, Reports_model, customreports_model, Activities_model) and the excel library are loaded; no redirect occurs.
+    * // Example when the current session user is not an admin:
+    * $this->session->set_userdata('type', 'user');
+    * $controller = new Customreports();
+    * // Result: user is redirected to 'home'.
+    * @param {void} $none - No parameters required for the constructor.
+    * @returns {void} No return value; controller initialization side-effects are performed (loads resources or redirects).
+    */
     public function __construct()
 	{
 		parent::__construct();
@@ -28,6 +42,27 @@ class Customreports extends CI_Controller {
    }
 
 
+   /**
+    * Return filtered aggregated data for custom reports based on POST filters and echoes a JSON response.
+    * @example
+    * // Example POST (via curl)
+    * // curl -X POST -d 'module=salesorder&user=all&xaxis=months&yaxis=initial_total&aggr=totalsalessum&from_date=2025-01-01&to_date=2025-12-31&limit=DESC10' http://example.com/customreports/filtereddata
+    * // Example expected JSON output (sample)
+    * // [{"grp":"2025-01","saleorder_owner":"alice@example.com","subtotal":"12345.67"}, {"grp":"2025-02","saleorder_owner":"bob@example.com","subtotal":"9876.54"}]
+    * @param string $module - (POST) Module/table name to query (e.g. 'salesorder', 'lead', 'organization', 'quote', 'purchaseorder').
+    * @param string $user - (POST) 'all' or user identifier/email to filter by session user (e.g. 'all' or 'john@example.com').
+    * @param string|null $org - (POST) Organization name to filter results by (optional).
+    * @param string $xaxis - (POST) X-axis/grouping key: 'user','organization','product','months','years','days','saleorder_id','purchaseorder_id','quote_id','fyear', etc.
+    * @param int|string $fbycol - (POST) Column index/key used for an additional filter (index into the module table fields).
+    * @param string|null $field - (POST) Value to filter the fbycol column by (optional).
+    * @param int|string $yaxis - (POST) Y-axis column index/key (index into the module table fields) used for aggregation.
+    * @param string $aggr - (POST) Aggregation type: 'totalsalessum', 'totalcount', 'totalprofitsum', etc.
+    * @param string|null $from_date - (POST) Start date for date range filter in 'YYYY-MM-DD' format (optional).
+    * @param string|null $to_date - (POST) End date for date range filter in 'YYYY-MM-DD' format (optional).
+    * @param string|null $limit - (POST) Optional limit string combining non-digits and digits (e.g. 'DESC10' where 'DESC' is ordering/alpha part and '10' is numeric limit).
+    * @param array|null $columns - (POST) Optional array of column indexes to include as table columns in the response.
+    * @returns void Echoes a JSON-encoded array/object of filtered results (aggregated rows with keys like grp, owner/subtotal and optional 'table' flag). 
+    */
    public function filtereddata() {
    $istable = 'false';
       $session_comp_email = $this->session->userdata('company_email');
@@ -194,6 +229,15 @@ class Customreports extends CI_Controller {
         // print_r($data);
         echo json_encode($data['filtereddata']);
 }
+/**
+* Retrieve and echo JSON-encoded, filtered column names for a database table specified via POST 'module'.
+* @example
+* $_POST['module'] = 'users';
+* $result = $this->get_column_names();
+* // Echoed output (example): ["username","email","created_at"]
+* @param string $module - Module/table name expected via POST input (e.g., 'users').
+* @returns string Echoes a JSON encoded array of filtered column names, or an error message ('No column names found.' or 'Invalid request.').
+*/
 public function get_column_names() {
     $module = $this->input->post('module');
     if($module != '') {
@@ -217,6 +261,15 @@ public function get_column_names() {
 }
 
 // Function to format array items
+/**
+* Format an array of snake_case strings into CamelCase (capitalize each word and remove underscores).
+* @example
+* $items = ['first_name', 'last_name', 'user_id'];
+* $result = $this->formatArrayItems($items);
+* print_r($result); // Array ( [0] => FirstName [1] => LastName [2] => UserId )
+* @param {array} $array - Array of strings in snake_case to be formatted.
+* @returns {array} Array of formatted strings in CamelCase.
+*/
 private function formatArrayItems($array) {
     $formattedArray = array();
     foreach ($array as $item) {
@@ -229,6 +282,15 @@ private function formatArrayItems($array) {
     }
     return $formattedArray;
 }
+/**
+* Convert an array of CamelCase strings into lowercase strings with underscores between words.
+* @example
+* $items = ['HelloWorld', 'MyItem'];
+* $result = $this->reverseFormatArrayItems($items);
+* echo json_encode($result); // ["hello_world","my_item"]
+* @param {array} $array - Array of strings to format (e.g. ['HelloWorld','MyItem']).
+* @returns {array} Formatted array with underscores inserted before capitals and all characters lowercased (e.g. ['hello_world','my_item']).
+*/
 private function reverseFormatArrayItems($array) {
     $reversedArray = array();
     foreach ($array as $item) {
@@ -242,6 +304,16 @@ private function reverseFormatArrayItems($array) {
     return $reversedArray;
 }
 
+/**
+* Fetch column data for a requested module/field (uses POST 'module' and 'field') and echoes JSON with dataset and field name.
+* @example
+* // POST payload: module = 'users', field = 2
+* $result = $this->getfield_data(); // invoked in controller context (method reads POST and echoes JSON)
+* echo $result // {"dataset":[{"email":"alice@example.com"},{"email":"bob@example.com"}],"fields":"email"}
+* @param {string} $module - Module (table) name supplied via POST (e.g. 'users').
+* @param {int} $field - Numeric index of the column in the module's field list supplied via POST (e.g. 2).
+* @returns {string} JSON encoded string containing 'dataset' (array of rows) and 'fields' (column name).
+*/
 public function getfield_data(){
     
     $session_comp_email = $this->session->userdata('company_email');
@@ -282,6 +354,18 @@ public function getfield_data(){
 
 
 
+   /**
+   * Generate and echo matched table keywords from the posted 'text' using approximate string similarity.
+   * @example
+   * // Simulate POST input and call from controller
+   * $_POST['text'] = 'create invoices for client';
+   * $controller = new Customreports();
+   * $controller->generateQuery();
+   * // Example output:
+   * // Word: invoices, Similarity: 1.00, Matching tablekeyword: invoices
+   * @param string $text - Posted text input retrieved via $this->input->post('text'), e.g. 'create invoices for client'.
+   * @returns void Echoes matched words, their similarity (0-1 formatted), and the matching table keyword; does not return a value.
+   */
    public function generateQuery() {
     $text=$this->input->post('text');
     $texts = explode(' ',$text);
