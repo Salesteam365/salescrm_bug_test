@@ -23,6 +23,15 @@ class SurfaceGmagick implements SurfaceInterface
     /** @var Style */
     private $style;
 
+    /**
+     * Construct a SurfaceGmagick instance with the specified width and height and initialize the Gmagick drawing canvas.
+     * @example
+     * $surface = new \Svg\Surface\SurfaceGmagick(800, 600);
+     * echo get_class($surface->canvas); // GmagickDraw
+     * @param {int} $w - Width of the surface in pixels.
+     * @param {int} $h - Height of the surface in pixels.
+     * @returns {void} Constructor does not return a value; it initializes internal properties.
+     */
     public function __construct($w, $h)
     {
         if (self::DEBUG) {
@@ -36,6 +45,14 @@ class SurfaceGmagick implements SurfaceInterface
         $this->canvas = $canvas;
     }
 
+    /**
+    * Render the SVG surface to an image and return the raw image data.
+    * @example
+    * $result = $this->out();
+    * // $result contains raw image bytes (e.g. PNG/GIF/etc.) or false on failure
+    * echo strlen($result); // render some sample output value; e.g. 10234
+    * @returns {string|false} Raw image data as a string on success, or false on failure.
+    */
     function out()
     {
         if (self::DEBUG) {
@@ -128,6 +145,22 @@ class SurfaceGmagick implements SurfaceInterface
         // TODO: Implement drawImage() method.
     }
 
+    /**
+    * Draws an image onto the Gmagick surface, handling data URIs (including base64) and fitting the image into the specified box.
+    * @example
+    * $this->drawImage('data:image/svg+xml;base64,PHN2ZyB4bWxucz0i...', 10, 150, 100, 50);
+    * // Draws the decoded SVG onto the canvas at x=10 and adjusted y position; no return value.
+    * @param {string} $image - Path to an image file or a data URI (e.g. "data:image/png;base64,...").
+    * @param {float|int} $sx - X coordinate where the image should be placed on the surface.
+    * @param {float|int} $sy - Y coordinate where the image should be placed on the surface (internally adjusted by subtracting $sh).
+    * @param {float|int|null} $sw - Width of the source/box to fit the image into (optional).
+    * @param {float|int|null} $sh - Height of the source/box to fit the image into (optional).
+    * @param {float|int|null} $dx - Destination X coordinate (not used by this implementation, optional).
+    * @param {float|int|null} $dy - Destination Y coordinate (not used by this implementation, optional).
+    * @param {float|int|null} $dw - Destination width (not used by this implementation, optional).
+    * @param {float|int|null} $dh - Destination height (not used by this implementation, optional).
+    * @returns {void} Void; the image is rendered directly onto the surface and nothing is returned.
+    */
     public function drawImage($image, $sx, $sy, $sw = null, $sh = null, $dx = null, $dy = null, $dw = null, $dh = null)
     {
         if (self::DEBUG) echo __FUNCTION__ . "\n";
@@ -249,6 +282,23 @@ class SurfaceGmagick implements SurfaceInterface
         return $this->style;
     }
 
+    /**
+    * Apply the given Style to the Gmagick drawing surface (sets stroke color, stroke width, linecap, linejoin, and font).
+    * @example
+    * $style = new Style();
+    * $style->stroke = [255, 0, 0]; // red stroke RGB
+    * $style->fill = [0, 255, 0]; // green fill RGB (fill application commented out in this implementation)
+    * $style->strokeWidth = 2;
+    * $style->strokeLinecap = 'round';
+    * $style->strokeLinejoin = 'miter';
+    * $style->fontFamily = 'Arial';
+    * $style->fontStyle = 'normal';
+    * $style->fontSize = 12;
+    * $surface->setStyle($style);
+    * // No return value; the canvas graphics options and font are updated.
+    * @param Style $style - Style object containing stroke, fill, strokeWidth, strokeLinecap, strokeLinejoin, fontFamily, fontStyle and fontSize.
+    * @returns void No return value; updates the internal canvas (graphics options and font) based on the provided style.
+    */
     public function setStyle(Style $style)
     {
         if (self::DEBUG) echo __FUNCTION__ . "\n";
@@ -283,6 +333,15 @@ class SurfaceGmagick implements SurfaceInterface
         $canvas->setfont($font, $style->fontSize);
     }
 
+    /****
+    * Map a CSS font-family (including generic keywords) to a concrete font name and load it from the canvas.
+    * @example
+    * $font = $this->getFont('sans-serif', 'normal');
+    * var_dump($font); // e.g. resource|object returned by canvas->load_font (font handle)
+    * @param {string} $family - Font family name or CSS generic family (e.g. 'serif', 'sans-serif', 'fantasy', 'cursive', 'monospance').
+    * @param {string} $style - Font style/options string passed to the canvas loader (e.g. 'normal', 'bold', 'italic').
+    * @returns {mixed} The font resource/object returned by canvas->load_font, or null on failure.
+    */
     private function getFont($family, $style)
     {
         $map = array(
