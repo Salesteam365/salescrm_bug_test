@@ -52,6 +52,19 @@ define('SQRT2PI', 2.5066282746310005024157652848110452530069867406099);
  */
 class PHPExcel_Calculation_Statistical
 {
+    /**
+    * Ensure two series are normalized for trend calculations: convert scalars to arrays, flatten nested arrays, remove boolean, string and null entries in parallel, and reindex the resulting arrays (modifies inputs by reference).
+    * @example
+    * $series1 = array(1, 2, 'x', null, 4);
+    * $series2 = array(10, 'a', 30, 40, true);
+    * $result = PHPExcel_Calculation_Statistical::checkTrendArrays($series1, $series2);
+    * var_dump($series1); // array(1,2,4)
+    * var_dump($series2); // array(10,30,40)
+    * echo $result // true
+    * @param array|mixed &$array1 - First series (array or scalar). Passed by reference and normalized to a numeric array containing only valid numeric entries.
+    * @param array|mixed &$array2 - Second series (array or scalar). Passed by reference and normalized to a numeric array containing only valid numeric entries.
+    * @returns bool Returns true after both arrays have been normalized and filtered.
+    */
     private static function checkTrendArrays(&$array1, &$array2)
     {
         if (!is_array($array1)) {
@@ -258,6 +271,14 @@ class PHPExcel_Calculation_Statistical
     private static $logGammaCacheResult = 0.0;
     private static $logGammaCacheX      = 0.0;
 
+    /**
+    * Compute the natural logarithm of the Gamma function ln(Gamma(x)) for a given x (uses rational approximations and Stirling-type expansion for large x; caches last result).
+    * @example
+    * $result = PHPExcel_Calculation_Statistical::logGamma(5.0);
+    * echo $result // 3.1780538303479
+    * @param {float} $x - Input value at which to evaluate ln(Gamma(x)). Expected 0 < x <= LOG_GAMMA_X_MAX_VALUE; very small positive x handled via -log(x).
+    * @returns {float} Natural logarithm of the Gamma function at x, or MAX_VALUE for out-of-range/invalid arguments.
+    */
     private static function logGamma($x)
     {
         // Log Gamma related constants
@@ -435,6 +456,15 @@ class PHPExcel_Calculation_Statistical
     //
     //    Private implementation of the incomplete Gamma function
     //
+    /**
+     * Compute the lower incomplete gamma function γ(a, x) using a truncated series expansion.
+     * @example
+     * $result = self::incompleteGamma(1.0, 1.0);
+     * echo $result; // 0.6321205588 (approx)
+     * @param float $a - Shape parameter (a > 0).
+     * @param float $x - Upper limit of integration / argument (x >= 0).
+     * @returns float Return approximate value of the lower incomplete gamma γ(a, x).
+     */
     private static function incompleteGamma($a, $x)
     {
         static $max = 32;
@@ -453,6 +483,14 @@ class PHPExcel_Calculation_Statistical
     //
     //    Private implementation of the Gamma function
     //
+    /**
+    * Computes the Gamma function for a given (positive) real number using the Lanczos approximation.
+    * @example
+    * $result = self::gamma(5);
+    * echo $result // 24
+    * @param float $data - Input value (positive, non-zero) for which to compute the Gamma function; for integer n, Gamma(n) = (n-1)!. (Note: this implementation returns 0 for an input of 0.0.)
+    * @returns float Computed Gamma function value for the given input.
+    */
     private static function gamma($data)
     {
         if ($data == 0.0) {
@@ -563,6 +601,15 @@ class PHPExcel_Calculation_Statistical
     }
 
 
+    /**
+     * Approximation of the inverse standard normal cumulative distribution function (quantile).
+     * Implements Moro's algorithm for converting a probability to the corresponding z-score.
+     * @example
+     * $result = PHPExcel_Calculation_Statistical::inverseNcdf2(0.975);
+     * echo $result; // 1.95996398454005 (approx)
+     * @param {float} $prob - Probability in the open interval (0, 1) for which the inverse CDF is required.
+     * @returns {float} Corresponding z-score (inverse standard normal CDF) for the given probability.
+     */
     private static function inverseNcdf2($prob)
     {
         //    Approximation of inverse standard normal CDF developed by
@@ -607,6 +654,14 @@ class PHPExcel_Calculation_Statistical
     }    //    function inverseNcdf2()
 
 
+    /**
+    * Compute the inverse standard normal cumulative distribution (quantile) for a given lower-tail probability.
+    * @example
+    * $result = self::inverseNcdf3(0.975);
+    * echo $result; // 1.95996398454005 (approx)
+    * @param {float} $p - Lower-tail probability (0 < p < 1). Example values: 0.5 => 0, 0.975 => ~1.95996.
+    * @returns {float} The z-value (standard normal deviate) such that P(Z <= z) = p (approximate, accurate to about 1e-16).
+    */
     private static function inverseNcdf3($p)
     {
         //    ALGORITHM AS241 APPL. STATIST. (1988) VOL. 37, NO. 3.
@@ -2467,6 +2522,14 @@ class PHPExcel_Calculation_Statistical
     //    Special variant of array_count_values that isn't limited to strings and integers,
     //        but can work with floating point numbers as values
     //
+    /**
+    * Calculate the statistical mode (most frequent value) from an array of values; if all values occur only once returns PHPExcel_Calculation_Functions::NA(). When multiple values share the highest frequency the smallest numeric value is returned.
+    * @example
+    * $result = PHPExcel_Calculation_Statistical::modeCalc(array(1, 2, 2, 3));
+    * echo $result; // 2
+    * @param {array} $data - Array of values to evaluate for the mode.
+    * @returns {mixed} The most frequent value from the array, or PHPExcel_Calculation_Functions::NA() if no mode exists.
+    */
     private static function modeCalc($data)
     {
         $frequencyArray = array();
