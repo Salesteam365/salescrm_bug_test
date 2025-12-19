@@ -9,6 +9,15 @@ class Proforma_invoice extends CI_Controller
     $this->load->model('Login_model', 'Login');
     $this->load->library('email_lib');
   }
+  /**
+  * Display the Proforma Invoice list view for an authenticated user with the required module and permissions; otherwise redirect to login, permission or home.
+  * @example
+  * // From another controller or a unit test:
+  * $this->Proforma_invoice->index();
+  * // Or by visiting: https://example.com/proforma_invoice  (will render 'sales/proforma-invoice-list' for authorized users)
+  * @param {void} none - This method does not accept any parameters.
+  * @returns {void} Loads the 'sales/proforma-invoice-list' view or redirects the client; does not return a value.
+  */
   public function index()
   {
     if (!empty($this->session->userdata('email'))) {
@@ -29,6 +38,16 @@ class Proforma_invoice extends CI_Controller
     }
   }
 
+  /**
+  * View Proforma Invoice detail page: checks session and permissions, decodes GET parameters, loads PI data and renders the detail view or redirects as appropriate.
+  * @example
+  * // Example HTTP GET (controller URL): /proforma_invoice/view_pi?pi=MTIz&cnp=Q04xMjM=&ceml=dXNlckBleGFtcGxlLmNvbQ==
+  * // Decoded values: pi = base64_decode('MTIz') => '123', cnp = base64_decode('Q04xMjM=') => 'CN123', ceml = base64_decode('dXNlckBleGFtcGxlLmNvbQ==') => 'user@example.com'
+  * $this->Proforma_invoice->view_pi();
+  * // Behavior: loads 'sales/view-proforma-detail' when a matching PI record exists; otherwise redirects to 'home', 'permission', or 'login' depending on checks.
+  * @param {{void}} {{None}} - No direct function parameters; input is read from GET params 'pi', 'cnp', 'ceml' (base64 encoded).
+  * @returns {{void}} Executes view rendering or performs redirects; does not return a value.
+  */
   public function view_pi()
   {
     if (!empty($this->session->userdata('email'))) {
@@ -61,6 +80,23 @@ class Proforma_invoice extends CI_Controller
     }
   }
 
+  /**
+  * Send a proforma invoice email using POSTed form data, attach a generated PDF and echo the result.
+  * @example
+  * // After submitting a form with the fields shown below, call the controller method:
+  * $result = $this->proforma_invoice->send_email();
+  * echo $result; // outputs '1' on success, '0' on failure (method echoes and exits)
+  * @param {string} orgName - Organization or recipient name (POST key: 'orgName'), e.g. "Acme Corp".
+  * @param {string} orgEmail - Recipient email address (POST key: 'orgEmail'), e.g. "billing@acme.com".
+  * @param {string} ccEmail - CC email address (POST key: 'ccEmail'), optional, e.g. "accounts@acme.com".
+  * @param {string} subEmail - Email subject (POST key: 'subEmail'), e.g. "Your Proforma Invoice #PI-123".
+  * @param {string} descriptionTxt - Additional HTML description/body content (POST key: 'descriptionTxt').
+  * @param {string} invoiceurl - URL to view the proforma invoice (POST key: 'invoiceurl'), e.g. "https://example.com/invoice/PI-123".
+  * @param {string} piid - Proforma invoice ID used to generate the PDF attachment (POST key: 'piid'), e.g. "PI-123".
+  * @param {string} compeml - Company email used when generating the PDF (POST key: 'compeml'), e.g. "noreply@company.com".
+  * @param {string} compname - Company name used when generating the PDF (POST key: 'compname'), e.g. "Example LLC".
+  * @returns {string} Echoes '1' on successful send and '0' on failure; the method echoes the value and calls exit.
+  */
   public function send_email()
   {
 
@@ -186,6 +222,13 @@ class Proforma_invoice extends CI_Controller
 
 
 
+  /**
+  * Generate and echo a JSON response for DataTables containing a list of proforma invoices with permission-based action links.
+  * @example
+  * $result = $this->ajax_list();
+  * echo $result // render sample output: {"draw":1,"recordsTotal":42,"recordsFiltered":42,"data":[["PI-0001","Acme Corp","Website","₹1,00,000","<text style='color:green;'>Active</text>","2 days ago","<div class='row'>...</div>"]]}
+  * @param array $_POST - DataTables request parameters (e.g., 'draw', 'start', 'length', 'search', 'order') supplied via POST.
+  * @returns void Echoes a JSON-encoded array containing keys: draw, recordsTotal, recordsFiltered, and data (rows for DataTables). */
   public function ajax_list()
   {
 
@@ -269,6 +312,15 @@ class Proforma_invoice extends CI_Controller
     echo json_encode($output);
   }
 
+  /**
+  * Create and display the "Add Proforma Invoice" page or redirect based on session and permissions.
+  * @example
+  * $controller = new Proforma_invoice();
+  * $controller->create_newProforma();
+  * // Loads view 'sales/add-proforma-invoice' with data (branch, org, GST, record) or redirects to 'login', 'permission' or 'home' depending on session/permissions.
+  * @param void none - This controller method accepts no parameters.
+  * @returns void No direct return; renders a view or issues a redirect.
+  */
   public function create_newProforma()
   {
     if (!empty($this->session->userdata('email'))) {
@@ -318,6 +370,26 @@ class Proforma_invoice extends CI_Controller
     echo json_encode(array("status" => TRUE));
   }
 
+  /**
+  * Add a new proforma invoice from POSTed form data and uploaded files. Validates input, handles signature and attachment uploads, builds invoice data array, saves it via Performainvoice->create_pi(), and echoes a JSON response indicating success or error.
+  * @example
+  * $this->add_invoiceDetails();
+  * // Typically invoked as an HTTP POST with form fields, for example:
+  * // invoice_no=PI-1001
+  * // invoice_date=2025-12-19
+  * // invoice_dueDate=2025-12-26
+  * // items[]=Product A, items[]=Product B
+  * // quantity[]=2, quantity[]=1
+  * // unit_price[]=500, unit_price[]=300
+  * // final_total=1300
+  * // files: upload_signature (image), attachment (pdf)
+  * // Possible echoed outputs:
+  * // {"status":true,"st":200}
+  * // {"status":false}
+  * // or upload error: {"error_uploadsignature":"<p>Error message</p>","st":"error_fileupload"}
+  * @param {void} $none - No direct function arguments; the method reads input from $_POST and $_FILES and session data.
+  * @returns {void} Echoes JSON response (and may terminate execution). On success echoes status true with 'st' => 200, on failure echoes status false or file upload error details.
+  */
   public function add_invoiceDetails()
   {
 
@@ -490,6 +562,23 @@ class Proforma_invoice extends CI_Controller
   }
 
 
+  /**
+  * Update proforma invoice details using POSTed form data and uploaded files. Validates input, processes signature and attachment uploads, normalizes numeric fields, aggregates array fields into HTML line breaks, updates the database record, and echoes a JSON response.
+  * @example
+  * // Call via HTTP POST to controller endpoint Proforma_invoice/update_invoiceDetails with form-data:
+  * // invoice_date=2025-12-01
+  * // invoice_dueDate=2025-12-31
+  * // items[]=Product A, items[]=Product B
+  * // quantity[]=2, quantity[]=1
+  * // unit_price[]=1,000, unit_price[]=500
+  * // total[]=2,000, total[]=500
+  * // final_total=2,500
+  * // upload_signature (file) and attachment (file) optionally included
+  * // Sample successful output:
+  * // echo '{"status":true,"st":200}';
+  * @param {void} none - No direct function arguments; reads input from $_POST and uploaded files in $_FILES.
+  * @returns {void} Echoes JSON indicating result: on success {"status":true,"st":200}, on failure {"status":false}, or echoes validation/upload error details and exits.
+  */
   public function update_invoiceDetails()
   {
     $validation = $this->check_validation();
@@ -647,6 +736,15 @@ class Proforma_invoice extends CI_Controller
   }
 
 
+  /**
+   * Validate proforma invoice input and return either success code or JSON-encoded validation errors.
+   * @example
+   * $result = $this->check_validation();
+   * echo $result; // On success: 200
+   * // On validation failure (example for create where invoice_no is missing):
+   * // {"st":202,"invoice_no":"Invoice Number is required","invoice_date":"Invoice Date is required","items":"Iitems is required","quantity":"Quantity is required","unit_price":"Unit Price is required","billedby":"BusinessBy is required","billedto":"BusinessTo is required"}
+   * @returns {int|string} Returns 200 on successful validation, or a JSON-encoded string containing 'st' => 202 and form error messages for each invalid field.
+   */
   public function check_validation()
   {
     $this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; margin-left: 10px;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -672,6 +770,15 @@ class Proforma_invoice extends CI_Controller
       return 200;
     }
   }
+  /**
+  * Save a base64-encoded signature image (data URI) to the server assets/pi_images folder and return the generated filename.
+  * @example
+  * $signatureData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...'; // truncated sample base64 data URI
+  * $result = $this->uploadSignature($signatureData);
+  * echo $result; // e.g. "605e2f8a5b3c4.png"
+  * @param {string} $signature_image - Base64-encoded image data URI (e.g. "data:image/png;base64,...").
+  * @returns {string} Generated filename of the saved image (uniqid + extension).
+  */
   public function uploadSignature($signature_image)
   {
     $folderPath = "./assets/pi_images/";
@@ -688,6 +795,44 @@ class Proforma_invoice extends CI_Controller
     file_put_contents($file, $image_base64);
     return $signature_img = $uniqid . '.' . $image_type;
   }
+  /**
+  * Update an existing branch record using POSTed form data and respond with JSON status.
+  * @example
+  * // Sample POST payload sent to Proforma_invoice/update_branch controller
+  * $_POST = array(
+  *   'branch_id'    => 12,
+  *   'branch_name'  => 'Main Branch',
+  *   'branch_email' => 'branch@example.com',
+  *   'comp_name'    => 'Example Company Pvt Ltd',
+  *   'branch_phone' => '+911234567890',
+  *   'branch_gstin' => '27ABCDE1234F1Z5',
+  *   'branch_cin'   => 'U12345MH2010PTC123456',
+  *   'branch_pan'   => 'ABCDE1234F',
+  *   'country_br'   => 'India',
+  *   'state_br'     => 'Maharashtra',
+  *   'city_br'      => 'Mumbai',
+  *   'zipcode_br'   => '400001',
+  *   'address_br'   => '123 Example Street',
+  *   'show_email'   => '1'
+  * );
+  * // Controller invocation will echo:
+  * // {"status":true}
+  * @param int $branch_id - ID of the branch to update.
+  * @param string $branch_name - Branch name.
+  * @param string $branch_email - Branch contact email.
+  * @param string $comp_name - Company name associated with the branch.
+  * @param string $branch_phone - Contact phone number for the branch.
+  * @param string $branch_gstin - GSTIN number for the branch.
+  * @param string $branch_cin - Company Identification Number (CIN) for the branch.
+  * @param string $branch_pan - PAN number for the branch.
+  * @param string $country_br - Country name for the branch address.
+  * @param string $state_br - State name for the branch address.
+  * @param string $city_br - City name for the branch address.
+  * @param string|int $zipcode_br - Postal / ZIP code for the branch address.
+  * @param string $address_br - Full street address for the branch.
+  * @param string|int $show_email - Flag (e.g. '1' or '0') indicating whether to show the branch email.
+  * @returns string JSON encoded status object echoed to the client (e.g. {"status":true}).
+  */
   public function update_branch()
   {
     $data = array(
@@ -1439,6 +1584,17 @@ class Proforma_invoice extends CI_Controller
       echo json_encode(array("st" => "add"));
     }
   }
+  /**
+  * Change bank payment enable/disable status using POST parameters bankdetails_id and bank_status.
+  * @example
+  * $_POST['bankdetails_id'] = 123;
+  * $_POST['bank_status'] = 1;
+  * $this->changebankstatus();
+  * // Outputs: {"st":200} on success or {"st":201} on failure.
+  * @param {int} bankdetails_id - Bank details record ID (from POST).
+  * @param {int} bank_status - Enable payment flag (from POST): 1 to enable, 0 to disable.
+  * @returns {void} Echoes JSON with status code 200 on success or 201 on failure.
+  */
   public function changebankstatus()
   {
     $bankdetails_id = $this->input->post('bankdetails_id');
@@ -1455,6 +1611,27 @@ class Proforma_invoice extends CI_Controller
   }
 
 
+  /**
+  * Create a bank detail record from POSTed form data and echo a JSON success/failure response.
+  * @example
+  * // Sample POST data (sent to the controller endpoint):
+  * // bank_name = "Example Bank"
+  * // account_no = "1234567890"
+  * // acc_holder_name = "John Doe"
+  * // ifsc_code = "EXAMP0001"
+  * // account_type = "Savings"
+  * // mobile_no = "9876543210"
+  * // upi_id = "john@upi"
+  * // terms_conditionbnk[] = ["Term 1", "Term 2"]
+  * // bank_country = "India"
+  * $this->create_bankDetails();
+  * // Possible output on success:
+  * // {"status":true,"st":200}
+  * // Possible output on failure:
+  * // {"status":false}
+  * @param void $none - No direct parameters; the method reads input from $this->input->post().
+  * @returns void Echoes a JSON response indicating success (status true with st=200) or failure (status false).
+  */
   public function create_bankDetails()
   {
 
@@ -1492,6 +1669,41 @@ class Proforma_invoice extends CI_Controller
       }
     }
   }
+  /**
+   * Update bank details for the current session/company.
+   *
+   * Validates incoming bank-related POST data, concatenates any selected
+   * terms/conditions into a single string, prepares an array of bank detail
+   * fields (including session email/company data), and attempts to update the
+   * corresponding record via Performainvoice->update_bank_detail(). The method
+   * echoes validation codes or a JSON-encoded response and terminates execution
+   * on validation failure.
+   *
+   * @example
+   * // Sample POST data that should be provided to this controller method:
+   * $post_data = [
+   *   'bank_name'            => 'State Bank of India',
+   *   'account_no'           => '123456789012',
+   *   'acc_holder_name'      => 'John Doe',
+   *   'ifsc_code'            => 'SBIN0001234',
+   *   'account_type'         => 'Savings',
+   *   'mobile_no'            => '9876543210',
+   *   'upi_id'               => 'johndoe@upi',
+   *   'terms_conditionbnk'   => ['Term A', 'Term B'], // multi-select -> joined with "<br>"
+   *   'bank_country'         => 'India',
+   *   'account_details_id'   => 5
+   * ];
+   * // Invocation (from within CodeIgniter controller context)
+   * $this->input->post($post_data); // pseudo: ensure POST values are available
+   * $this->update_bankDetails();
+   * // Possible echoed outputs:
+   * // On success: {"status":true,"st":200}
+   * // On failure: {"status":false}
+   * // On validation failure: (numeric validation code echoed)
+   *
+   * @param array $post_data - Associative array of expected POST fields (see example).
+   * @returns void Echoes JSON response or validation code; does not return a value.
+   */
   public function update_bankDetails()
   {
 
@@ -1530,6 +1742,17 @@ class Proforma_invoice extends CI_Controller
       }
     }
   }
+  /**
+  * Validate bank-related POST fields and return either HTTP 200 on success or a JSON-encoded array of validation errors.
+  * @example
+  * // Call from within the controller (no arguments)
+  * $result = $this->check_validation_bank();
+  * echo $result; // e.g. 200
+  * // Or when validation fails:
+  * // echo $result; // e.g. '{"st":202,"bank_country":"Bank Country is required","bank_name":"Bank Name is required","acc_holder_name":"Account Holder Name is required","account_no":"Acoount Number is required","ifsc_code":"IFSC Code is required","mobile_no":"Phone no is required"}'
+  * @param void $none - No direct parameters; uses POST fields: bank_country, bank_name, acc_holder_name, account_no, ifsc_code, mobile_no and optional check_upi/upi_id.
+  * @returns int|string 200 on successful validation, otherwise a JSON-encoded string containing 'st' => 202 and per-field error messages.
+  */
   public function check_validation_bank()
   {
     //print_r($this->input->post());
@@ -1562,6 +1785,16 @@ class Proforma_invoice extends CI_Controller
     }
   }
 
+  /**
+  * Generate a Proforma Invoice PDF for a given product/invoice and save it to the assets/img directory.
+  * @example
+  * $result = $this->generate_pdf_attachment_old(123, 'CN-PREFIX-001', 'user@example.com');
+  * echo $result // assets/img/proforma_invoice_123.pdf
+  * @param {int} $product_id - ID of the product / proforma invoice record to generate the PDF for.
+  * @param {string} $cnp - Company/contract number or identifier used to locate the proforma invoice.
+  * @param {string} $ceml - Email address (session or owner email) used to retrieve owner/company details.
+  * @returns {string} Return the relative filesystem path to the generated PDF file (e.g. "assets/img/proforma_invoice_123.pdf").
+  */
   public function generate_pdf_attachment_old($product_id, $cnp, $ceml)
   {
     $row = $this->Performainvoice->get_pi_byId($product_id, $cnp, $ceml);
