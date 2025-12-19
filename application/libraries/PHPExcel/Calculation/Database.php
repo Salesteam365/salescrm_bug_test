@@ -142,6 +142,22 @@ class PHPExcel_Calculation_Database
     }
 
 
+    /**
+    * Return the values of a single column from rows that match the provided criteria.
+    * @example
+    * $database = [
+    *     ['name' => 'John', 'age' => 30, 'city' => 'NY'],
+    *     ['name' => 'Jane', 'age' => 25, 'city' => 'LA'],
+    *     ['name' => 'John', 'age' => 40, 'city' => 'SF'],
+    * ];
+    * $criteria = [['name' => 'John']]; // match rows where name is John
+    * $result = PHPExcel_Calculation_Database::getFilteredColumn($database, 'age', $criteria);
+    * echo implode(',', $result); // render some sample output value: 30,40
+    * @param {array} $database - Array of associative arrays (rows) to be filtered.
+    * @param {string|int} $field - Column key or index to extract from matching rows.
+    * @param {array} $criteria - Criteria array used to filter the database.
+    * @returns {array} Array of values from the specified column for rows that match the criteria.
+    */
     private static function getFilteredColumn($database, $field, $criteria)
     {
         //    reduce the database to a set of rows that match all the criteria
