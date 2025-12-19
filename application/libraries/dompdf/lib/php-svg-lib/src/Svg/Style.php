@@ -41,6 +41,16 @@ class Style
     public $fontStyle = 'normal';
     public $textAnchor = 'start';
 
+    /**
+    * Return mapping of SVG/CSS style properties to internal property names and their value types.
+    * @example
+    * $styleObj = new Svg\Style();
+    * $map = $styleObj->getStyleMap();
+    * echo $map['color'][0]; // 'color'
+    * echo $map['stroke-width'][1]; // Svg\Style::TYPE_NUMBER
+    * @param void $none - No arguments.
+    * @returns array Associative array mapping style names to [propertyName, valueType].
+    */
     protected function getStyleMap()
     {
         return array(
@@ -84,6 +94,16 @@ class Style
         }
     }
 
+    /**
+     * Inherit style properties from the parent group of the given tag.
+     * @example
+     * $style = new \Svg\Style();
+     * // $tag is an instance of \Svg\AbstractTag whose parent group has style values set
+     * $style->inherit($tag);
+     * // After calling inherit, properties like $style->fill may be populated, e.g. 'red'
+     * @param {{AbstractTag}} {{$tag}} - The tag whose parent group's style will be applied to this style object.
+     * @returns {{void}} No return value; this method updates the current Style instance in place.
+     */
     public function inherit(AbstractTag $tag) {
         $group = $tag->getParentGroup();
         if ($group) {
@@ -97,6 +117,18 @@ class Style
         }
     }
 
+    /**
+    * Populate this Style object with CSS rules extracted from the document's stylesheets that match the provided tag (by tag name) or the tag's classes.
+    * @example
+    * // $tag is an instance of the library's AbstractTag representing an SVG element,
+    * // and $style is an instance of the Style class containing this method.
+    * $tag = /* instance of AbstractTag * / $tag;
+    * $result = $style->fromStyleSheets($tag, ['class' => 'btn primary']);
+    * echo $result; // no direct output (method returns void), but $style is now populated with matching CSS rules (e.g. 'fill' => '#ff0000')
+    * @param AbstractTag $tag - The SVG tag whose tagName and optional class attribute are used to find matching stylesheet rules.
+    * @param array $attributes - Attributes for the tag; expects a 'class' key with space-separated class names when present.
+    * @returns void No return value; styles are filled into the current Style object via side effects.
+    */
     public function fromStyleSheets(AbstractTag $tag, $attributes) {
         $class = isset($attributes["class"]) ? preg_split('/\s+/', trim($attributes["class"])) : null;
 
@@ -143,6 +175,16 @@ class Style
         $this->fillStyles($styles);
     }
 
+    /**
+    * Populate object style properties from an associative styles array using the internal style map.
+    * @example
+    * $styles = ['fill' => '#ff0000', 'opacity' => '0.5', 'stroke-width' => '2'];
+    * $style = new \Svg\Style();
+    * $style->fillStyles($styles);
+    * echo $style->fill; // '#ff0000'
+    * @param array $styles - Associative array of style names to values (e.g. ['fill' => '#ff0000', 'opacity' => '0.5']).
+    * @returns void No return value; the instance properties are updated in-place based on the style map (colors are parsed and numeric values are cast to float).
+    */
     protected function fillStyles($styles)
     {
         foreach ($this->getStyleMap() as $from => $spec) {
@@ -169,6 +211,22 @@ class Style
         }
     }
 
+    /**
+    * Parse a CSS/SVG color string and return an RGB triplet, a gradient id, the literal "none", or null on failure.
+    * @example
+    * $result = \Svg\Style::parseColor('#ff0000');
+    * // returns array(255.0, 0.0, 0.0)
+    * $result = \Svg\Style::parseColor('rgb(255,0,0)');
+    * // returns array(255.0, 0.0, 0.0)
+    * $result = \Svg\Style::parseColor('hsl(0,100%,50%)');
+    * // returns array(255.0, 0.0, 0.0)
+    * $result = \Svg\Style::parseColor('none');
+    * // returns 'none'
+    * $result = \Svg\Style::parseColor('url(#myGradient)');
+    * // returns 'myGradient'
+    * @param {string} $color - Input color string (hex like "#rrggbb" or "#rgb", named color, "rgb(...)", "hsl(...)", "none", or gradient url("...")).
+    * @returns {string|array|null} Return an array of three numeric RGB values (0-255) for color inputs, the string 'none' for 'none', a gradient id string for url(...), or null if parsing fails.
+    */
     static function parseColor($color)
     {
         $color = strtolower(trim($color));
@@ -282,6 +340,17 @@ class Style
         return null;
     }
 
+    /**
+    * Parse an RGB-style color string and return its numeric triplet.
+    * @example
+    * $result = \Svg\Style::getTriplet('rgb(255, 0, 127)');
+    * print_r($result); // Array ( [0] => 255 [1] => 0 [2] => 127 )
+    * $result = \Svg\Style::getTriplet('rgb(50%, 0%, 25%)', true);
+    * print_r($result); // Array ( [0] => 0.5 [1] => 0 [2] => 0.25 )
+    * @param string $color - Color string containing three comma-separated components inside parentheses (e.g. "rgb(255, 0, 127)" or "rgb(50%, 0%, 25%)").
+    * @param bool $percent - When true, return components normalized to the 0..1 range (floats). When false (default), return components in the 0..255 range (integers); percentage inputs will be converted to 0..255.
+    * @returns array|null Returns an array with three numeric values (indexes 0..2) on success, or null if the input is invalid.
+    */
     static function getTriplet($color, $percent = false) {
         $i = strpos($color, "(");
         $j = strpos($color, ")");
@@ -318,6 +387,14 @@ class Style
         return $triplet;
     }
 
+    /**
+     * Parse a hexadecimal color string into an RGB integer array.
+     * @example
+     * $result = parseHexColor('#FF00CC');
+     * print_r($result); // Array ( [0] => 255 [1] => 0 [2] => 204 )
+     * @param {string} $hex - Hex color string in 3- or 6-digit format starting with '#', e.g. '#FFF' or '#FFFFFF'.
+     * @returns {int[]} Array with three integers [red, green, blue], each in the range 0-255.
+     */
     static function parseHexColor($hex)
     {
         $c = array(0, 0, 0);
