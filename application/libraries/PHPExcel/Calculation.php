@@ -2386,6 +2386,18 @@ class PHPExcel_Calculation
 
 
 
+    /**
+    * Replace occurrences of a separator character in a formula with another separator, ignoring separators that appear inside braces.
+    * @example
+    * $inBraces = false;
+    * $result = PHPExcel_Calculation::translateSeparator(',', ';', 'SUM(A1,B1,{1,2,3})', $inBraces);
+    * echo $result; // outputs "SUM(A1;B1,{1,2,3})"
+    * @param string $fromSeparator - The separator character to replace (e.g. ",").
+    * @param string $toSeparator - The separator character to insert (e.g. ";").
+    * @param string $formula - The formula string in which separators will be translated.
+    * @param bool &$inBraces - Reference boolean that indicates whether the parser is currently inside braces; will be updated by the function.
+    * @returns string The formula with separators translated outside of braces.
+    */
     public static function translateSeparator($fromSeparator, $toSeparator, $formula, &$inBraces)
     {
         $strlen = mb_strlen($formula);
@@ -2407,6 +2419,25 @@ class PHPExcel_Calculation
         return $formula;
     }
 
+    /**
+    * Translate Excel formula function names and argument separators from one locale to another.
+    * @example
+    * // Translate English function names and comma separators to French equivalents and semicolon separators
+    * $result = PHPExcel_Calculation::translateFormula(
+    *     ['/SUM/i', '/AVERAGE/i'],           // $from (regex or array of regex)
+    *     ['SOMME', 'MOYENNE'],               // $to (string or array of replacements)
+    *     'SUM(A1,B1) + AVERAGE(C1,"SUM(D1,E1)")', // $formula (sample formula containing quoted string)
+    *     ',',                                // $fromSeparator (e.g. comma)
+    *     ';'                                 // $toSeparator (e.g. semicolon)
+    * );
+    * echo $result; // render some sample output value: SOMME(A1;B1) + MOYENNE(C1,"SUM(D1,E1)")
+    * @param {string|array} $from - Regular expression or array of expressions to match source function names.
+    * @param {string|array} $to - Replacement string or array of replacements for target function names.
+    * @param {string} $formula - The formula string to be translated.
+    * @param {string} $fromSeparator - The argument separator used in the source locale (e.g. ',').
+    * @param {string} $toSeparator - The argument separator to use in the target locale (e.g. ';').
+    * @returns {string} Translated formula string with function names and separators converted.
+    */
     private static function translateFormula($from, $to, $formula, $fromSeparator, $toSeparator)
     {
         //    Convert any Excel function names to the required language
@@ -2441,6 +2472,15 @@ class PHPExcel_Calculation
     private static $functionReplaceFromExcel = null;
     private static $functionReplaceToLocale  = null;
 
+    /**
+    * Translate an Excel formula string to the current locale (replace function names, boolean literals and argument separators).
+    * @example
+    * $calc = new PHPExcel_Calculation();
+    * $result = $calc->_translateFormulaToLocale('=SUM(A1,B1)');
+    * echo $result // e.g. "=SOMME(A1;B1)" (function names and "," arg separator translated to locale equivalents)
+    * @param {string} $formula - Formula string in Excel notation to be translated to the current locale.
+    * @returns {string} Translated formula string using locale-specific function names, boolean constants and argument separator.
+    */
     public function _translateFormulaToLocale($formula)
     {
         if (self::$functionReplaceFromExcel === null) {
@@ -2471,6 +2511,14 @@ class PHPExcel_Calculation
     private static $functionReplaceFromLocale = null;
     private static $functionReplaceToExcel    = null;
 
+    /**
+    * Translate a localized Excel formula into English (standard Excel function and boolean names).
+    * @example
+    * $result = $this->_translateFormulaToEnglish('SOMMA(A1:A3)');
+    * echo $result // SUM(A1:A3)
+    * @param string $formula - The formula string that may contain locale-specific function or boolean names.
+    * @returns string The translated formula using English/Excel function and boolean names.
+    */
     public function _translateFormulaToEnglish($formula)
     {
         if (self::$functionReplaceFromLocale === null) {
@@ -2497,6 +2545,14 @@ class PHPExcel_Calculation
     }
 
 
+    /**
+    * Translate an English function name to the current locale equivalent if a translation exists, preserving a trailing opening parenthesis.
+    * @example
+    * $result = PHPExcel_Calculation::localeFunc('SUM(');
+    * echo $result; // e.g. 'SOMME(' when locale is fr_fr and 'SUM' => 'SOMME' is defined in mappings
+    * @param {string} $function - The function name to localize; may include a trailing '('.
+    * @returns {string} The localized function name, with a trailing '(' re-appended if it was present in the input.
+    */
     public static function localeFunc($function)
     {
         if (self::$localeLanguage !== 'en_us') {
@@ -2725,6 +2781,18 @@ class PHPExcel_Calculation
     }
 
 
+    /**
+     * Check the calculation cache for a given cell reference and, if present, assign the cached value to the provided variable.
+     * @example
+     * $cellReference = 'A1';
+     * $cellValue = null;
+     * $result = $this->getValueFromCache($cellReference, $cellValue);
+     * var_dump($result);    // bool(true) if cached, otherwise bool(false)
+     * var_dump($cellValue); // mixed: cached value (e.g. 123.45 or 'Hello') if true, otherwise null
+     * @param {string} $cellReference - Cell reference to look up in the calculation cache (e.g. 'A1').
+     * @param {mixed} &$cellValue - Reference to a variable that will receive the cached value if found.
+     * @returns {bool} True if a cached value was found and assigned to $cellValue, false otherwise.
+     */
     public function getValueFromCache($cellReference, &$cellValue)
     {
         // Is calculation cacheing enabled?
@@ -3043,6 +3111,14 @@ class PHPExcel_Calculation
     }
 
 
+    /**
+    * Convert Excel-style matrix references ("{{...}}") into nested MKMATRIX() calls, handling quoted strings and validating matching braces.
+    * @example
+    * $result = $this->convertMatrixReferences('SUM({{1,2;3,4}})');
+    * echo $result // SUM(MKMATRIX(MKMATRIX(1,2),MKMATRIX(3,4)));
+    * @param {string} $formula - Formula string that may contain Excel matrix references using "{{" and "}}".
+    * @returns {string} Modified formula with matrix references converted to MKMATRIX() calls, or an error string if mismatched braces are detected.
+    */
     private function convertMatrixReferences($formula)
     {
         static $matrixReplaceFrom = array('{', ';', '}');
@@ -3133,6 +3209,17 @@ class PHPExcel_Calculation
     );
 
     // Convert infix to postfix notation
+    /**
+     * Parse an Excel formula string into a tokenised postfix (RPN) representation.
+     * @example
+     * $formula = 'SUM(A1:A10)';
+     * $calc = new PHPExcel_Calculation();
+     * $result = $calc->_parseFormula($formula, null);
+     * var_export($result); // e.g. array(array('type'=>'Cell Reference','value'=>'A1','reference'=>'A1'), array('type'=>'Cell Reference','value'=>'A10','reference'=>'A10'), array('type'=>'Binary Operator','value'=>':'), array('type'=>'Function','value'=>'SUM'));
+     * @param {string} $formula - Formula to parse (trimmed; matrix references will be converted first). Example: "A1+B2" or "SUM(A1:A10)".
+     * @param {PHPExcel_Cell|null} $pCell - Optional PHPExcel_Cell used to provide worksheet context for resolving ranges/highest row/column; pass null if not available.
+     * @returns {array|false} Return an array of tokens representing the parsed formula in postfix order, or false on conversion failure.
+     */
     private function _parseFormula($formula, PHPExcel_Cell $pCell = null)
     {
         if (($formula = $this->convertMatrixReferences(trim($formula))) === false) {
@@ -3490,6 +3577,19 @@ class PHPExcel_Calculation
     }
 
 
+    /**
+    * Ensure an A1-style reference is populated in the operand data when the operand is a 2D array and return the operand value.
+    * @example
+    * $operandData = [
+    *     'value' => ['1' => ['A' => 10, 'B' => 20]],
+    *     'reference' => null
+    * ];
+    * $result = self::dataTestReference($operandData);
+    * echo $operandData['reference']; // "A1"
+    * print_r($result); // Array ( [1] => Array ( [A] => 10 [B] => 20 ) )
+    * @param array &$operandData - Operand data array containing 'value' (the operand, typically a 2D array) and 'reference' (nullable A1 reference string).
+    * @returns mixed Return the operand value stored in $operandData['value'].
+    */
     private static function dataTestReference(&$operandData)
     {
         $operand = $operandData['value'];
@@ -3506,6 +3606,22 @@ class PHPExcel_Calculation
     }
 
     // evaluate postfix notation
+    /**
+     * Evaluate a stack of calculation tokens and return the resulting value.
+     * @example
+     * $tokens = [
+     *     ['value' => '1'],
+     *     ['value' => '+'],
+     *     ['value' => '2']
+     * ];
+     * // In a class context:
+     * $result = $this->processTokenStack($tokens, 'A1', null);
+     * echo $result; // 3
+     * @param array|false $tokens - Token list produced by the formula tokenizer (each token is an array with at least a 'value' key), or false to abort processing.
+     * @param mixed|null $cellID - Optional current cell identifier used for pass-by-reference functions (e.g. 'A1'); may be null.
+     * @param PHPExcel_Cell|null $pCell - Optional PHPExcel_Cell object providing worksheet context for resolving references; may be null.
+     * @returns mixed Evaluation result: a scalar, string (including error codes like '#REF!'), an array (matrix or range values), or false on invalid input.
+     */
     private function processTokenStack($tokens, $cellID = null, PHPExcel_Cell $pCell = null)
     {
         if ($tokens == false) {
@@ -3921,6 +4037,20 @@ class PHPExcel_Calculation
     }
 
 
+    /**
+     * Validate and normalize an operand so it can be used in a binary operation.
+     * @example
+     * $calc  = new PHPExcel_Calculation(); // or use $this from within the Calculation class
+     * $operand = '"123"'; // internally wrapped Excel string representing the text "123"
+     * $stack = new PHPExcel_Calculation_Stack(); // evaluation stack instance
+     * $result = $calc->validateBinaryOperand('A1', $operand, $stack);
+     * var_dump($result); // bool(true)
+     * // after call $operand === 123 (converted to numeric)
+     * @param string $cellID - Cell reference identifier, e.g. 'A1'.
+     * @param mixed &$operand - Operand passed by reference; may be scalar, array, string, numeric, boolean or an Excel error token; the method may unwrap quoted strings, convert fractions, or leave/replace with an error.
+     * @param object $stack - Evaluation stack object used to push errors (e.g. PHPExcel_Calculation_Stack).
+     * @returns bool Return true if the operand is valid for mathematical binary operations; false if it is an Excel error or non-numeric text (an appropriate error will be pushed onto $stack).
+     */
     private function validateBinaryOperand($cellID, &$operand, &$stack)
     {
         if (is_array($operand)) {
@@ -3958,6 +4088,20 @@ class PHPExcel_Calculation
     }
 
 
+    /**
+    * Execute a binary comparison operation between two operands and push the resulting value(s) onto the evaluation stack.
+    * @example
+    * $stack = new PHPExcel_Calculation_Stack(); // example stack object
+    * $result = $this->executeBinaryComparisonOperation('A1', 5, 3, '>', $stack);
+    * var_dump($result); // bool(true)
+    * @param {string} $cellID - Cell coordinate or identifier used for context (e.g. 'A1').
+    * @param {mixed} $operand1 - First operand; may be a scalar (int|float|string) or an array (matrix).
+    * @param {mixed} $operand2 - Second operand; may be a scalar (int|float|string) or an array (matrix).
+    * @param {string} $operation - Comparison operator: '>', '<', '=', '>=', '<=', '<>'.
+    * @param {PHPExcel_Calculation_Stack} &$stack - Reference to the evaluation stack to push the result(s) onto.
+    * @param {bool} $recursingArrays - Flag indicating whether the method call is recursing through array operands (default false).
+    * @returns {bool} True on successful evaluation (the result is pushed onto the provided stack).
+    */
     private function executeBinaryComparisonOperation($cellID, $operand1, $operand2, $operation, &$stack, $recursingArrays = false)
     {
         //    If we're dealing with matrix operations, we want a matrix result
@@ -4092,6 +4236,21 @@ class PHPExcel_Calculation
         return strcmp($inversedStr1, $inversedStr2);
     }
 
+    /**
+    * Execute a numeric or matrix binary operation: validates operands, performs scalar or JAMA matrix operations, logs the result and pushes the result or error onto the calculation stack.
+    * @example
+    * $stack = new PHPExcel_Calculation_Stack();
+    * $calc = new PHPExcel_Calculation();
+    * $success = $calc->executeNumericBinaryOperation('A1', 2, 3, '+', null, $stack);
+    * echo $success ? 'true' : 'false'; // true and value 5 is pushed onto the stack
+    * @param {{string}} {{cellID}} - Cell reference identifier used for error reporting (e.g. 'A1').
+    * @param {{mixed}} {{operand1}} - First operand: number, numeric string, error value, or matrix (PHP array).
+    * @param {{mixed}} {{operand2}} - Second operand: number, numeric string, error value, or matrix (PHP array).
+    * @param {{string}} {{operation}} - Binary operation to perform: '+', '-', '*', '/', '^'.
+    * @param {{string|null}} {{matrixFunction}} - Name of the JAMA matrix method to call for matrix operations (e.g. 'plus', 'minus', 'times'); null for scalar operations.
+    * @param {{PHPExcel_Calculation_Stack}} {{&$stack}} - Calculation stack (passed by reference) where results or errors are pushed.
+    * @returns {{bool}} True on success (result pushed to stack), false on error (error pushed to stack or logged).
+    */
     private function executeNumericBinaryOperation($cellID, $operand1, $operand2, $operation, $matrixFunction, &$stack)
     {
         //    Validate the two operands
