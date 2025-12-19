@@ -231,6 +231,15 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         return $worksheetInfo;
     }
 
+    /**
+    * Cast a cell-like object's value to boolean, treating '0' as false and '1' as true.
+    * @example
+    * $cell = (object) ['v' => '1'];
+    * $result = self::castToBoolean($cell);
+    * echo $result ? 'true' : 'false'; // renders true
+    * @param object $c - Cell object (e.g. SimpleXMLElement or stdClass) with property 'v' containing the value.
+    * @returns bool Boolean representation of the cell value ('1' => true, '0' => false, otherwise (bool)$c->v).
+    */
     private static function castToBoolean($c)
     {
 //        echo 'Initial Cast to Boolean', PHP_EOL;
@@ -257,6 +266,32 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         return isset($c->v) ? (string) $c->v : null;
     }
 
+    /**
+     * Set a cell as a formula, initialize its formula value and calculated value, and handle shared formula mapping/adjustment.
+     * @example
+     * // Example (called from within the reader class context)
+     * $c = simplexml_load_string('<c r="B2"><f t="shared" si="0">SUM(A1:A3)</f></c>');
+     * $r = 'B2';
+     * $cellDataType = null;
+     * $value = null;
+     * $calculatedValue = null;
+     * $sharedFormulas = array();
+     * $castBaseType = 'castToNumeric'; // name of a casting method used as self::$castBaseType
+     * // $this->castToFormula($c, $r, $cellDataType, $value, $calculatedValue, $sharedFormulas, $castBaseType);
+     * // After call:
+     * // $cellDataType === 'f'
+     * // $value === '=SUM(A1:A3)' (or adjusted formula for shared instances)
+     * // $calculatedValue === (result of self::castToNumeric($c))  e.g. 6
+     * // $sharedFormulas may contain an entry for shared index '0' => ['master' => 'B2', 'formula' => '=SUM(A1:A3)']
+     * @param SimpleXMLElement|object $c - Cell XML node (SimpleXMLElement) containing <f> formula element.
+     * @param string $r - Cell reference (e.g. 'A1', 'B2').
+     * @param string &$cellDataType - (by reference) Will be set to 'f' to mark the cell as a formula.
+     * @param string &$value - (by reference) Will be set to the formula string (prefixed with '='), adjusted for shared formulas when required.
+     * @param mixed &$calculatedValue - (by reference) Will be set to the calculated/casted value via self::$castBaseType($c).
+     * @param array &$sharedFormulas - (by reference) Array used to store or lookup shared formula master and formula strings indexed by shared index.
+     * @param string $castBaseType - Name of the static cast method (used as self::$castBaseType) to compute $calculatedValue from $c.
+     * @returns void No direct return; updates provided by-reference arguments ($cellDataType, $value, $calculatedValue, $sharedFormulas).
+     */
     private function castToFormula($c, $r, &$cellDataType, &$value, &$calculatedValue, &$sharedFormulas, $castBaseType)
     {
 //        echo 'Formula', PHP_EOL;
@@ -299,6 +334,17 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
     }
 
 
+    /**
+    * Retrieve file contents from a ZipArchive, handling root-relative paths and case-insensitive filenames.
+    * @example
+    * $archive = new ZipArchive();
+    * $archive->open('sample.xlsx');
+    * $result = $this->getFromZipArchive($archive, 'xl/workbook.xml');
+    * echo substr($result, 0, 48); // render some sample output value (e.g. '<?xml version="1.0" encoding="UTF-8"?>')
+    * @param {ZipArchive} $archive - Open ZipArchive instance representing the XLSX package.
+    * @param {string} $fileName - Internal path/filename in the archive to retrieve (root-relative paths accepted).
+    * @returns {string|false} File contents as a string on success, or false if the file is not found.
+    */
     private function getFromZipArchive($archive, $fileName = '')
     {
         // Root-relative paths
@@ -1736,6 +1782,15 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         return $excel;
     }
 
+    /**
+    * Read and normalize a color definition from Excel XML and return an ARGB hex string.
+    * @example
+    * $result = PHPExcel_Reader_Excel2007::readColor(['rgb' => 'FF112233'], false);
+    * echo $result // FF112233
+    * @param array $color - Associative array describing the color (possible keys: 'rgb', 'indexed', 'theme', 'tint').
+    * @param bool $background - Whether this color is used as a background (true will return default 'FFFFFFFF' if no color found).
+    * @returns string ARGB color string (8 hex characters, e.g. 'FF112233').
+    */
     private static function readColor($color, $background = false)
     {
         if (isset($color["rgb"])) {
@@ -1759,6 +1814,19 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         return 'FF000000';
     }
 
+    /**
+    * Populate a PHPExcel_Style object from a SimpleXMLElement style definition (reads font, fill, border, alignment, protection and top-level settings).
+    * @example
+    * $docStyle = new PHPExcel_Style();
+    * $styleXml = '<style><font><name val="Calibri"/><sz val="11"/></font></style>';
+    * $style = simplexml_load_string($styleXml);
+    * // inside the reader context (method is static/private in the class)
+    * self::readStyle($docStyle, $style);
+    * echo $docStyle->getFont()->getName(); // render sample output value: Calibri
+    * @param PHPExcel_Style $docStyle - PHPExcel_Style object to populate with values from the XML style.
+    * @param SimpleXMLElement $style - SimpleXML element representing the <style> node from styles.xml.
+    * @returns void Return nothing; $docStyle is modified in-place.
+    */
     private static function readStyle($docStyle, $style)
     {
         // format code
@@ -1901,6 +1969,15 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         }
     }
 
+    /**
+     * Parse an inline rich text XML element into a PHPExcel_RichText object.
+     * @example
+     * $xml = simplexml_load_string('<t>Hello World</t>');
+     * $result = $this->parseRichText($xml);
+     * echo $result->getPlainText(); // outputs "Hello World"
+     * @param \SimpleXMLElement|null $is - Inline XML element (t for plain text or r runs) to parse.
+     * @returns \PHPExcel_RichText Return a PHPExcel_RichText object containing the parsed text and formatting.
+     */
     private function parseRichText($is = null)
     {
         $value = new PHPExcel_RichText();
@@ -1959,6 +2036,18 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         return $value;
     }
 
+    /**
+    * Read ribbon (custom UI) XML and its related images from the given Zip archive and inject them into the provided PHPExcel instance.
+    * @example
+    * $reader = new PHPExcel_Reader_Excel2007();
+    * // $zip is an already opened ZipArchive for the .xlsx file
+    * $reader->readRibbon($excel, 'customUI/customUI.xml', $zip);
+    * // After calling, $excel will contain the ribbon XML and any ribbon images (accessible via the reader/writer API)
+    * @param {PHPExcel} $excel - PHPExcel object to populate with ribbon XML data and binary images.
+    * @param {string} $customUITarget - Path inside the archive to the custom UI XML (e.g., 'customUI/customUI.xml').
+    * @param {ZipArchive} $zip - Open ZipArchive instance for the XLSX package.
+    * @returns {void} Void — ribbon data and binary objects are set directly on the provided PHPExcel object.
+    */
     private function readRibbon($excel, $customUITarget, $zip)
     {
         $baseDir = dirname($customUITarget);
@@ -2007,6 +2096,15 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         return preg_replace('~[^/]+/\.\./~', '', dirname($base) . "/$add");
     }
 
+    /**
+    * Convert an inline CSS style string into an associative array of CSS properties and values, converting length units (px, pt, in, cm) to pixel values.
+    * @example
+    * $style = 'font-size:12pt;color:#FF0000;margin-left:1in;padding:5px;';
+    * $result = PHPExcel_Reader_Excel2007::toCSSArray($style);
+    * print_r($result); // Array ( [font-size] => 16 [color] => #FF0000 [margin-left] => 96 [padding] => 5 )
+    * @param string $style - CSS style string (e.g. 'font-size:12pt;color:#000000;').
+    * @returns array Associative array of CSS properties with values (lengths converted to pixel numeric values where applicable).
+    */
     private static function toCSSArray($style)
     {
         $style = str_replace(array("\r","\n"), "", $style);
