@@ -63,6 +63,16 @@ class PHPExcel_Chart_Renderer_jpgraph
     private static $plotMark = 0;
 
 
+    /**
+    * Apply a marker type (or hide it) and set marker/fill/line colors for a series plot, returning the modified plot.
+    * @example
+    * $seriesPlot = new LinePlot([1,2,3]); // sample series plot
+    * $result = $this->formatPointMarker($seriesPlot, 'circle');
+    * var_dump($result); // returns the modified plot object with marker type 'circle' and colors applied
+    * @param {object} $seriesPlot - Series plot object (JPGraph plot instance) to modify.
+    * @param {string|null} $markerID - Marker identifier (e.g. 'circle', 'square'); use 'none' to hide markers or null to auto-select the next default marker.
+    * @returns {object} Modified series plot instance with marker and color settings applied.
+    */
     private function formatPointMarker($seriesPlot, $markerID)
     {
         $plotMarkKeys = array_keys(self::$markSet);
@@ -91,6 +101,18 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Format dataset labels for a given plot group: applies any number/date format from the chart and joins multi-part labels (newline by default, space for 'bar' rotation).
+    * @example
+    * $datasetLabels = ['1000', ['First','Quarter'], 2500];
+    * $result = $this->formatDataSetLabels(0, $datasetLabels, 3, '');
+    * echo print_r($result, true) // Example output: Array ( [0] => 1000 [1] => "Quarter\nFirst" [2] => 2500 );
+    * @param {int} $groupID - Plot group index (0-based).
+    * @param {array} $datasetLabels - Array of labels; each label can be a scalar or an array of parts.
+    * @param {int} $labelCount - Expected number of labels.
+    * @param {string} $rotation - Rotation mode; 'bar' joins parts with a space, otherwise parts are reversed and joined with a newline. Default: ''.
+    * @returns {array} Formatted dataset labels array.
+    */
     private function formatDataSetLabels($groupID, $datasetLabels, $labelCount, $rotation = '')
     {
         $datasetLabelFormatCode = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotCategoryByIndex(0)->getFormatCode();
@@ -121,6 +143,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Calculate the per-data-point sum of all series in a given plot group (used when converting series values to percentages).
+    * @example
+    * $result = $this->percentageSumCalculation(0, 3);
+    * print_r($result); // e.g. Array ( [0] => 120 [1] => 200 [2] => 150 )
+    * @param {int} $groupID - Index of the plot group in the chart to aggregate (e.g. 0).
+    * @param {int} $seriesCount - Number of series in the specified plot group to include in the sum (e.g. 3).
+    * @returns {array} Array of summed numeric values keyed by data point index.
+    */
     private function percentageSumCalculation($groupID, $seriesCount)
     {
         //    Adjust our values to a percentage value across all series in the group
@@ -153,6 +184,20 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Get a plain caption string from a caption element (handles null, string, or array).
+    * @example
+    * // Example with a string caption element
+    * $captionElement = new SomeCaptionElement('My caption');
+    * $result = $this->getCaption($captionElement);
+    * echo $result; // renders "My caption"
+    * // Example with an array caption element
+    * $captionElement = new SomeCaptionElement(['Part1', 'Part2']);
+    * $result = $this->getCaption($captionElement);
+    * echo $result; // renders "Part1Part2"
+    * @param {object|null} $captionElement - Caption element that implements getCaption(), or null.
+    * @returns {string|null} Return caption as a plain string (arrays are imploded) or null if none.
+    */
     private function getCaption($captionElement)
     {
         //    Read any caption
@@ -178,6 +223,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+     * Render and position the chart legend on the internal JPGraph graph instance according to the chart's legend settings (or hide it if no legend is configured).
+     * @example
+     * // Example usage (method is private and typically called internally by the renderer):
+     * $renderer->renderLegend();
+     * // If the chart legend position is 'r' (right), the legend will be placed at approximately x=0.01, y=0.5 and arranged in 1 column.
+     * @param void $none - This method accepts no parameters.
+     * @returns void This method does not return a value; it updates the renderer's internal graph legend state.
+     */
     private function renderLegend()
     {
         $legend = $this->chart->getLegend();
@@ -210,6 +264,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render the cartesian plot area and configure the internal Graph (scale, axis titles and rotation).
+    * @example
+    * $renderer = new PHPExcel_Chart_Renderer_jpgraph(); // example renderer instance
+    * $renderer->renderCartesianPlotArea('textlin');
+    * // Configures $renderer->graph with a 'textlin' scale, axis titles and rotation as needed.
+    * @param {string} $type - Scale type for the graph (default 'textlin'), e.g. 'textlin' or 'int'.
+    * @returns {void} No return value; updates the internal Graph instance and axis/title settings.
+    */
     private function renderCartesianPlotArea($type = 'textlin')
     {
         $this->graph = new Graph(self::$width, self::$height);
@@ -265,6 +328,17 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a line plot group onto the internal jpgraph instance (supports filled/combination and 2d/3d).
+    * @example
+    * $result = $renderer->renderPlotLine(0, true, false, '2d');
+    * echo $result // null (method performs rendering and does not return a value);
+    * @param {int} $groupID - Index of the plot group to render.
+    * @param {bool} $filled - Whether to render the series as filled (area) instead of plain lines.
+    * @param {bool} $combination - Whether the series is part of a combination chart (align as bar center).
+    * @param {string} $dimensions - Plot dimensions ('2d' or '3d'), default is '2d'.
+    * @returns {void} Does not return a value; the plot(s) are added directly to the graph instance.
+    */
     private function renderPlotLine($groupID, $filled = false, $combination = false, $dimensions = '2d')
     {
         $grouping = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotGrouping();
@@ -329,6 +403,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a bar plot group into the internal jpGraph Graph instance.
+    * @example
+    * $this->renderPlotBar(0, '3d');
+    * // Renders bar plots for plot group index 0 into the internal Graph object (3D bars).
+    * @param {int} $groupID - Index of the plot group to render (zero-based).
+    * @param {string} $dimensions - '2d' or '3d' to control rendering dimensions (default '2d').
+    * @returns {void} Does not return a value; the generated plots are added to $this->graph.
+    */
     private function renderPlotBar($groupID, $dimensions = '2d')
     {
         $rotation = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotDirection();
@@ -415,6 +498,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a scatter (or bubble) plot for a given plot group onto the internal graph.
+    * @example
+    * $this->renderPlotScatter(0, true);
+    * // Renders plot group 0 as a bubble scatter plot onto $this->graph (no direct output).
+    * @param {int} $groupID - Index of the plot group to render (e.g. 0).
+    * @param {bool} $bubble - Whether to render the series as bubbles (true) or as normal markers (false).
+    * @returns {void} Adds the generated scatter/bubble series to the internal graph; does not return a value.
+    */
     private function renderPlotScatter($groupID, $bubble)
     {
         $grouping = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotGrouping();
@@ -461,6 +553,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+     * Render radar plot series for the specified plot group onto the internal JPGraph Graph instance.
+     * This method reads series X/Y values, labels and markers from the chart's plot group, creates RadarPlot
+     * objects (one per series), configures colours, markers and legends, and adds them to $this->graph.
+     * @example
+     * $renderer->renderPlotRadar(0);
+     * // After calling, $renderer->graph contains the radar series and can be output, e.g. $renderer->graph->Stroke();
+     * @param {int} $groupID - Index of the plot group within the chart's plot area to render (e.g. 0).
+     * @returns {void} No return value; the method updates the internal graph by adding RadarPlot series.*/
     private function renderPlotRadar($groupID)
     {
         $radarStyle = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotStyle();
@@ -500,6 +601,14 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a contour plot for the specified plot group and add it to the internal graph.
+    * @example
+    * $renderer->renderPlotContour(0);
+    * // Adds a contour plot for plot group 0 to the renderer's graph
+    * @param {int} $groupID - Index of the plot group to render as a contour plot.
+    * @returns {void} Does not return a value; the contour plot is added to the internal graph.
+    */
     private function renderPlotContour($groupID)
     {
         $contourStyle = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotStyle();
@@ -521,6 +630,15 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a StockPlot for the specified plot group onto the internal jpgraph Graph.
+    * @example
+    * // Example usage (renderer is instance of the jpgraph chart renderer):
+    * $renderer->renderPlotStock(0); // render the first plot group
+    * // The method mutates $renderer->graph by adding a StockPlot; nothing is returned.
+    * @param int $groupID - Index of the plot group in the chart's plot area to render (e.g. 0).
+    * @returns void Renders the stock plot onto the internal graph object; no return value.
+    */
     private function renderPlotStock($groupID)
     {
         $seriesCount = $this->chart->getPlotArea()->getPlotGroupByIndex($groupID)->getPlotSeriesCount();
@@ -597,6 +715,14 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a scatter chart by loading required JPGraph modules, configuring a 'linlin' Cartesian plot area, and rendering scatter plots for each data group.
+    * @example
+    * // Render a scatter chart for 3 data groups
+    * $renderer->renderScatterChart(3);
+    * @param {int} $groupCount - Number of data groups to render in the scatter chart (e.g. 3).
+    * @returns {void} No return value; the chart is rendered/output as part of the current chart context.
+    */
     private function renderScatterChart($groupCount)
     {
         require_once(PHPExcel_Settings::getChartRendererPath().'jpgraph_scatter.php');
@@ -623,6 +749,17 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render pie (or doughnut) chart plots and add them to the internal graph object.
+    * @example
+    * $result = $this->renderPieChart(3, '3d', true, false);
+    * echo $result // renders chart to internal graph object (no return value);
+    * @param int $groupCount - Number of plot groups to process (used to determine loop iterations when multiplePlots is true).
+    * @param string $dimensions - Chart dimensions: '2d' (default) or '3d' to use 3D pie rendering.
+    * @param bool $doughnut - Whether to render doughnut-style pies (true) or full pies (false).
+    * @param bool $multiplePlots - If true, render multiple series per group; otherwise only the first series is rendered.
+    * @returns void No value is returned; pie/doughnut plots are created and added to $this->graph.
+    */
     private function renderPieChart($groupCount, $dimensions = '2d', $doughnut = false, $multiplePlots = false)
     {
         require_once(PHPExcel_Settings::getChartRendererPath().'jpgraph_pie.php');
@@ -736,6 +873,16 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render a combination (mixed) chart for the current PHPExcel chart using JPGraph.
+    * @example
+    * $result = $this->renderCombinationChart(3, null, '/tmp/chart.png');
+    * echo $result // true (chart rendered and saved to /tmp/chart.png)
+    * @param {int} $groupCount - Number of plot groups to render.
+    * @param {?string} $dimensions - Optional dimensions override, e.g. '3d' or null to use default per group.
+    * @param {string} $outputDestination - Destination for the rendered image (file path, stream like 'php://output', or null for direct output).
+    * @returns {bool} True on success, false on failure.
+    */
     private function renderCombinationChart($groupCount, $dimensions, $outputDestination)
     {
         require_once(PHPExcel_Settings::getChartRendererPath().'jpgraph_line.php');
@@ -787,6 +934,16 @@ class PHPExcel_Chart_Renderer_jpgraph
     }
 
 
+    /**
+    * Render the chart using the appropriate JPGraph renderer based on the chart type.
+    * @example
+    * $renderer = new PHPExcel_Chart_Renderer_jpgraph($chart);
+    * // write to a PNG file
+    * $success = $renderer->render('php://output');
+    * echo $success ? 'Rendered successfully' : 'Render failed';
+    * @param string|null $outputDestination - Destination for the rendered output (filename, stream URI like 'php://output', or null to output directly to standard output).
+    * @returns bool True on success, false if the chart type is not implemented or rendering failed.
+    */
     public function render($outputDestination)
     {
         self::$plotColour = 0;
