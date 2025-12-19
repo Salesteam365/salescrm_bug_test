@@ -38,6 +38,16 @@ class PHPExcel_Calculation_TextData
 {
     private static $invalidChars;
 
+    /**
+    * Convert a UTF-8 encoded character (up to 6 bytes) to its Unicode code point (ordinal).
+    * @example
+    * $result = PHPExcel_Calculation_TextData::unicodeToOrd("\xE2\x82\xAC");
+    * echo $result // 8364
+    * $result = PHPExcel_Calculation_TextData::unicodeToOrd("A");
+    * echo $result // 65
+    * @param {string} $c - UTF-8 byte sequence (single character) to convert.
+    * @returns {int|mixed} Unicode code point as an integer, or a PHPExcel error value on invalid/unsupported input.
+    */
     private static function unicodeToOrd($c)
     {
         if (ord($c{0}) >=0 && ord($c{0}) <= 127) {
