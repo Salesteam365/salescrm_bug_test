@@ -545,6 +545,15 @@ class PHPExcel_Writer_HTML extends PHPExcel_Writer_Abstract implements PHPExcel_
         return $html;
     }
 
+    /**
+    * Extend rows to include any charts or images and generate corresponding HTML table rows.
+    * @example
+    * $result = $this->extendRowsForChartsAndImages($worksheet, 5);
+    * echo $result // render '<tr><td>...image/chart html...</td></tr>' (HTML fragment for rows 5..N);
+    * @param {PHPExcel_Worksheet} $pSheet - Worksheet to scan for drawings and charts.
+    * @param {int} $row - Starting row number to extend from.
+    * @returns {string} HTML fragment containing the generated table rows for images and charts.
+    */
     private function extendRowsForChartsAndImages(PHPExcel_Worksheet $pSheet, $row)
     {
         $rowMax = $row;
@@ -1586,6 +1595,18 @@ class PHPExcel_Writer_HTML extends PHPExcel_Writer_Abstract implements PHPExcel_
         $this->spansAreCalculated = true;
     }
 
+    /**
+    * Build a CSS <style> block that sets @page and body margin properties from the worksheet's page margins.
+    * @example
+    * $html = $this->setMargins($sheet);
+    * echo $html; // render sample output:
+    *             // <style>
+    *             // @page { margin-left:0.75in; margin-right:0.75in; margin-top:1.00in; margin-bottom:1.00in; }
+    *             // body { margin-left:0.75in; margin-right:0.75in; margin-top:1.00in; margin-bottom:1.00in; }
+    *             // </style>
+    * @param {PHPExcel_Worksheet} $pSheet - Worksheet to read page margins from.
+    * @returns {string} Return a string containing a <style> block with @page and body margin rules (values formatted in inches).
+    */
     private function setMargins(PHPExcel_Worksheet $pSheet)
     {
         $htmlPage = '@page { ';
