@@ -56,6 +56,14 @@ function IND_money_format($num){
 
 
 
+/**
+* Returns a human-readable relative time string (e.g., "2 days ago") for a given timestamp.
+* @example
+* $result = time_elapsed_string('2025-12-18 10:00:00');
+* echo $result // render some sample output value; // e.g., "3 days ago"
+* @param {string} $timestamp - A date/time string parsable by strtotime (e.g., '2025-12-18 10:00:00').
+* @returns {string} Human-readable elapsed time (e.g., "Just Now", "one minute ago", "yesterday", "2 weeks ago").
+*/
 function time_elapsed_string($timestamp) {
     date_default_timezone_set("Asia/Kolkata");         
   $time_ago        = strtotime($timestamp);
@@ -150,6 +158,14 @@ function time_elapsed_string($timestamp) {
 
 
 
+/**
+* Convert a numeric amount into words in Indian currency format (Rupees and Paise) in title case.
+* @example
+* $result = AmountInWords(1234.56);
+* echo $result; // One Thousand Two Hundred Thirty Four Rupees And Fifty Six Paise
+* @param {{float}} $amount - Amount in rupees (integer part) and paise (decimal part up to 2 places).
+* @returns {{string}} String representation of the amount in words, including "Rupees" and optional "Paise".
+*/
 function AmountInWords(float $amount)
 {
    $amount_after_decimal = round($amount - ($num = floor($amount)), 2) * 100;
@@ -191,6 +207,24 @@ function AmountInWords(float $amount)
 
 
 
+/**
+* Generate and echo a nested HTML unordered list (<ul>/<li>) representing the roles tree starting from the given role id.
+* @example
+* // Example: render tree starting from root (id 0)
+* getTreeView(0);
+* // Sample output snippet:
+* // <ul>
+* //   <li> <span class='treeSpan'>Admin   <button class='btnid' data-id='1'>...</button>
+* //   <button class='addRol' data-pid='1'>...</button></span>
+* //     <ul>
+* //       <li> <span class='treeSpan'>Manager ...
+* //       </li>
+* //     </ul>
+* //   </li>
+* // </ul>
+* @param {int} $id - Parent role ID to build the tree from (use 0 or root id to build full tree).
+* @returns {void} Echoes HTML output directly; no value is returned.
+*/
 function getTreeView($id)
 {
     $CI = & get_instance();
@@ -218,6 +252,40 @@ function getTreeView($id)
 
 
 
+    /**
+     * Create an opportunity record from provided POST-like data, update related lead status, and add a notification.
+     * @example
+     * $post = array(
+     *   'owner' => 'John Doe',
+     *   'org_name' => 'Acme Inc',
+     *   'subject' => 'New Website',
+     *   'contact_name' => 'Jane Smith',
+     *   'product_name' => array('Website Design'),
+     *   'quantity' => array('1'),
+     *   'unit_price' => array('2000'),
+     *   'total' => array('2000'),
+     *   'percent' => array('0'),
+     *   'initial_total' => '2000',
+     *   'discount' => '0',
+     *   'total_percent' => '2000',
+     *   'lead_id' => 1,
+     *   'expclose_date' => '2025-12-31',
+     *   'pipeline' => 'Sales',
+     *   'stage' => 'Qualification',
+     *   'lead_source' => 'Website',
+     *   'probability' => '50',
+     *   'industry' => 'Software',
+     *   'type' => 'New Business',
+     *   'employees' => '25',
+     *   'weighted_revenue' => '1000',
+     *   'email' => 'jane@acme.com',
+     *   'mobile' => '1234567890'
+     * );
+     * $result = create_opportunity($post);
+     * echo $result; // render sample output value, e.g. "OPP/2025/101"
+     * @param {array} $post - Associative array of opportunity data (owner, org_name, subject, product arrays, pricing fields, optional lead and metadata).
+     * @returns {string} Generated opportunity identifier (e.g. "OPP/2025/101").
+     */
     function create_opportunity($post)
     {  
 	
@@ -323,6 +391,27 @@ function getTreeView($id)
   
   
   
+    /**
+    * Creates a quotation record from posted form data, links it to an opportunity, updates lead/opportunity status and adds a notification, returning the generated quote identifier.
+    * @example
+    * $post = array(
+    *   'owner' => 'John Doe',
+    *   'subject' => 'Website Development',
+    *   'org_name' => 'Acme Inc',
+    *   'product_name' => array('Design','Development'),
+    *   'unit_price' => array('1,000','2,000'),
+    *   'quantity' => array('1','2'),
+    *   'initial_total' => '3,000',
+    *   'after_discount' => '2,700',
+    *   'sub_total' => '2,700',
+    *   'terms_condition' => array('Net 30','No refunds')
+    * );
+    * $result = create_quote($post, 42);
+    * echo $result; // QUT/2025/142
+    * @param {{array}} {{$post}} - Associative array of posted quotation data (form fields like owner, subject, product_name[], unit_price[], quantity[], discount, terms_condition[], etc.).
+    * @param {{int}} {{$opportunity_id}} - Numeric ID of the related opportunity (e.g. 42).
+    * @returns {{string}} Generated quote identifier string in the format "QUT/{year}/{number}" (e.g. "QUT/2025/142").
+    */
     function create_quote($post,$opportunity_id)
     {  
 	    $CI = & get_instance();
@@ -420,6 +509,17 @@ function getTreeView($id)
     
     }
     
+    /**
+    * Create a subdomain on the local cPanel instance via socket and HTTP request.
+    * @example
+    * $result = create_subdomain('blog','cpaneluser','cpanelpass','example.com');
+    * echo $result // Created subdomain GET /frontend/x3/subdomain/doadddomain.html?rootdomain=example.com&domain=blog&dir=public_html/subdomains/blog ...
+    * @param {{string}} {{$subDomain}} - Subdomain name to create (e.g. 'blog').
+    * @param {{string}} {{$cPanelUser}} - cPanel username for Basic auth.
+    * @param {{string}} {{$cPanelPass}} - cPanel password for Basic auth.
+    * @param {{string}} {{$rootDomain}} - Root domain under which to create the subdomain (e.g. 'example.com').
+    * @returns {{string}} Returns a status string on success (starts with 'Created subdomain ...') or 'Socket error' on failure.
+    */
     function create_subdomain($subDomain,$cPanelUser,$cPanelPass,$rootDomain) {
  
 //  $buildRequest = "/frontend/x3/subdomain/doadddomain.html?rootdomain=" . $rootDomain . "&domain=" . $subDomain;
