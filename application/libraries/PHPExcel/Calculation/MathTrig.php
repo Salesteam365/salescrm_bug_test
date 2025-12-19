@@ -39,6 +39,14 @@ class PHPExcel_Calculation_MathTrig
     //
     //    Private method to return an array of the factors of the input value
     //
+    /**
+    * Return the integer factors (prime factorization) of the given positive integer as an array sorted in descending order.
+    * @example
+    * $result = PHPExcel_Calculation_MathTrig::factors(12);
+    * echo implode(',', $result); // 3,2,2
+    * @param int $value - Positive integer to factorize.
+    * @returns array Return array of integer factors (prime factors) sorted in descending order; for a prime input returns an array with that prime as the single element.
+    */
     private static function factors($value)
     {
         $startVal = floor(sqrt($value));
@@ -930,6 +938,15 @@ class PHPExcel_Calculation_MathTrig
     }
 
 
+    /**
+    * Convert a numeric value to its Roman numeral representation (Excel ROMAN function).
+    * @example
+    * $result = ROMAN(1990, 0);
+    * echo $result // MCMXC
+    * @param mixed $aValue - Numeric value to convert (must be numeric, >= 0 and < 4000). Zero returns an empty string.
+    * @param int|null $style - Optional integer style (default 0). Null is treated as 0; value is coerced to integer.
+    * @returns mixed Return a string containing the Roman numeral for the given value, an empty string for 0, or PHPExcel_Calculation_Functions::VALUE() (an Excel error value) if the input is non-numeric or out of range.
+    */
     public static function ROMAN($aValue, $style = 0)
     {
         $aValue    = PHPExcel_Calculation_Functions::flattenSingleValue($aValue);
