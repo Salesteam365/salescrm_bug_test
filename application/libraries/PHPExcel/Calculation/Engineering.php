@@ -954,6 +954,14 @@ class PHPExcel_Calculation_Engineering
     }
 
 
+    /**
+    * Compute the modified Bessel function of the second kind (K0) for a given real argument.
+    * @example
+    * $result = PHPExcel_Calculation_Engineering::besselK0(1.5);
+    * echo $result; // 0.13 (approximate)
+    * @param {float} $fNum - Real positive argument at which to evaluate K0 (should be > 0).
+    * @returns {float} Resulting K0 value as a floating-point number.
+    */
     private static function besselK0($fNum)
     {
         if ($fNum <= 2) {
@@ -972,6 +980,14 @@ class PHPExcel_Calculation_Engineering
     }
 
 
+    /**
+    * Compute the modified Bessel function of the second kind, order 1 (K1) for a real positive argument.
+    * @example
+    * $result = PHPExcel_Calculation_Engineering::besselK1(1.0);
+    * echo $result // 0.6019072301972346
+    * @param {float} $fNum - Positive real value at which to evaluate K1(x).
+    * @returns {float} Approximated K1($fNum) value.
+    */
     private static function besselK1($fNum)
     {
         if ($fNum <= 2) {
@@ -1040,6 +1056,14 @@ class PHPExcel_Calculation_Engineering
     }
 
 
+    /**
+    * Computes the Bessel function of the second kind of order 0 (Y0) for a given real number.
+    * @example
+    * $result = PHPExcel_Calculation_Engineering::besselY0(5.0);
+    * echo $result // float (Bessel Y0 value for 5.0)
+    * @param {float} $fNum - Input value (positive real) at which to evaluate the Y0 Bessel function.
+    * @returns {float} The Bessel Y0 value evaluated at $fNum.
+    */
     private static function besselY0($fNum)
     {
         if ($fNum < 8.0) {
@@ -1059,6 +1083,14 @@ class PHPExcel_Calculation_Engineering
     }
 
 
+    /**
+    * Calculate the Bessel function of the second kind of order one (Y1) for a given value.
+    * @example
+    * $result = PHPExcel_Calculation_Engineering::besselY1(1.0);
+    * echo $result // -0.7812128213002887
+    * @param {float} {$fNum} - The input value x at which to evaluate Y1(x). Uses a rational approximation for x < 8 and an asymptotic form for x >= 8.
+    * @returns {float} The computed Y1(x) value.
+    */
     private static function besselY1($fNum)
     {
         if ($fNum < 8.0) {
@@ -2361,6 +2393,14 @@ class PHPExcel_Calculation_Engineering
     //
     private static $twoSqrtPi = 1.128379167095512574;
 
+    /**
+     * Compute the Gaussian error function erf(x).
+     * @example
+     * $result = PHPExcel_Calculation_Engineering::erfVal(1.0);
+     * echo $result; // 0.8427007929
+     * @param {float} $x - Value to evaluate the error function for.
+     * @returns {float} The computed error function erf(x) as a floating point number.
+     */
     public static function erfVal($x)
     {
         if (abs($x) > 2.2) {
@@ -2424,6 +2464,14 @@ class PHPExcel_Calculation_Engineering
     //
     private static $oneSqrtPi = 0.564189583547756287;
 
+    /**
+    * Calculate the complementary error function erfc(x). Uses erf for small |x| and a continued-fraction expansion for large |x| to ensure numerical stability.
+    * @example
+    * $result = PHPExcel_Calculation_Engineering::erfcVal(1.0);
+    * echo $result // 0.157299207050285 (approx);
+    * @param {float} $x - Input real value for which the complementary error function is evaluated.
+    * @returns {float} Complementary error function value erfc(x) as a floating-point number.
+    */
     private static function erfcVal($x)
     {
         if (abs($x) < 2.2) {
