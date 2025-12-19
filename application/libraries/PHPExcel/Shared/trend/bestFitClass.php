@@ -304,6 +304,33 @@ class PHPExcel_Best_Fit
         return $this->yBestFitValues;
     }
 
+    /**
+     * Calculate goodness-of-fit and related regression statistics for the current dataset.
+     * This method computes residuals, total/regression sums of squares, covariance, correlation,
+     * standard error for slope and intercept, F statistic, and populates class properties such as
+     * SSResiduals, DFResiduals, stdevOfResiduals, goodnessOfFit, SSRegression, covariance, correlation,
+     * slopeSE, intersectSE, f and yBestFitValues for each xValue.
+     * @example
+     * $sumX  = 10.0;
+     * $sumY  = 20.0;
+     * $sumX2 = 30.0;
+     * $sumY2 = 90.0;
+     * $sumXY = 60.0;
+     * $meanX = 2.0;
+     * $meanY = 4.0;
+     * $const = 1; // include intercept in model
+     * $bestFit->calculateGoodnessOfFit($sumX, $sumY, $sumX2, $sumY2, $sumXY, $meanX, $meanY, $const);
+     * echo $bestFit->goodnessOfFit; // render some sample output value; e.g. 0.95
+     * @param float $sumX  - Sum of all x values.
+     * @param float $sumY  - Sum of all y values.
+     * @param float $sumX2 - Sum of squares of x values (sum(x^2)).
+     * @param float $sumY2 - Sum of squares of y values (sum(y^2)).
+     * @param float $sumXY - Sum of products of x and y values (sum(x*y)).
+     * @param float $meanX - Mean of x values.
+     * @param float $meanY - Mean of y values.
+     * @param int   $const - Indicator whether model includes constant/intercept (1 = include, 0 = no intercept).
+     * @returns void Return nothing; class properties are populated with computed statistics.
+     */
     protected function calculateGoodnessOfFit($sumX, $sumY, $sumX2, $sumY2, $sumXY, $meanX, $meanY, $const)
     {
         $SSres = $SScov = $SScor = $SStot = $SSsex = 0.0;
@@ -358,6 +385,21 @@ class PHPExcel_Best_Fit
         }
     }
 
+    /**
+    * Compute a least-squares linear fit (calculates slope and intercept) for the supplied x and y data.
+    * @example
+    * $y = [2, 4, 6];
+    * $x = [1, 2, 3];
+    * $obj = new BestFitClass(); // instance containing leastSquareFit and properties used
+    * $obj->valueCount = count($y);
+    * $obj->leastSquareFit($y, $x, true);
+    * echo $obj->slope; // 2
+    * echo $obj->intersect; // 0
+    * @param {array} $yValues - Array of numeric y values to fit.
+    * @param {array} $xValues - Array of numeric x values to fit.
+    * @param {bool|int} $const - If true, include an intercept in the fit; if false, force intercept to 0.
+    * @returns {void} No return value; sets $this->slope and $this->intersect and updates goodness-of-fit metrics.
+    */
     protected function leastSquareFit($yValues, $xValues, $const)
     {
         // calculate sums
