@@ -3194,6 +3194,16 @@ class HTML5_TreeBuilder {
         }
     }
 
+    /**
+    * Insert a new DOMElement for the provided token and optionally append it to the current parent and stack.
+    * @example
+    * $token = ['name' => 'div', 'attr' => [['name' => 'class', 'value' => 'example'], ['name' => 'data-id', 'value' => '123']]];
+    * $result = $treeBuilder->insertElement($token, true);
+    * echo $result->tagName; // outputs "div"
+    * @param {array} $token - Token array with 'name' (string) and optional 'attr' (array of attribute arrays with 'name' and 'value').
+    * @param {bool} $append - Whether to append the created element to the real parent and push it onto the stack. Defaults to true.
+    * @returns {\DOMElement} The created DOMElement instance.
+    */
     private function insertElement($token, $append = true) {
         $el = $this->dom->createElementNS(self::NS_HTML, $token['name']);
 
