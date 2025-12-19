@@ -23,6 +23,14 @@
 		content.element.addEventListener('touchend', handleEvent.bind(content));
 	};
 
+ /**
+ * Cancel any active dragging on the supplied content by removing drag event listeners and stopping any running animation/interval.
+ * @example
+ * cancelDragging(content)
+ * undefined
+ * @param {Object} content - Content object containing intervalId and element (DOM node) used for dragging.
+ * @returns {void} Does not return a value.
+ */
 	function cancelDragging(content) {
 		//remove event listeners
 		if(content.intervalId) {
@@ -36,6 +44,14 @@
 		content.element.removeEventListener('touchend', handleEvent.bind(content));
 	};
 
+ /**
+ * Handle mouse and touch events to start, continue, or end a drag on the element.
+ * @example
+ * handleEvent(event)
+ * undefined
+ * @param {Event} event - Mouse or touch event that triggered the handler.
+ * @returns {void} Does not return a value.
+ **/
 	function handleEvent(event) {
 		switch(event.type) {
 			case 'mousedown':
@@ -63,6 +79,15 @@
 		emitSwipeEvents(content, 'dragStart', content.delta);
 	};
 
+ /**
+ * Handle the end of a drag/touch interaction, detect horizontal/vertical swipe gestures, emit corresponding swipe and drag-end events, and clear dragging state.
+ * @example
+ * endDrag(content, event)
+ * undefined
+ * @param {{Object}} {{content}} - State object for the draggable content (expects properties like delta: [x,y] and dragging).
+ * @param {{Event}} {{event}} - The mouse or touch event that ended the interaction.
+ * @returns {{void}} Void return; actions are performed via emitted events and state updates.
+ **/
 	function endDrag(content, event) {
 		cancelDragging(content);
 		// credits: https://css-tricks.com/simple-swipe-with-vanilla-javascript/
