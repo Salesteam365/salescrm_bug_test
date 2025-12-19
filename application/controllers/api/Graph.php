@@ -124,6 +124,28 @@ class Graph extends REST_Controller {
 	
 	
 	
+/**
+ * Retrieve grouped purchase order profit totals per owner for a company, filtered by user and date/month/year.
+ * @example
+ * // Example POST (sent to the REST endpoint mapped to poprofit_post):
+ * // session_company = "Acme Ltd"
+ * // session_comp_email = "finance@acme.example"
+ * // sess_eml = "sales.user@acme.example"           // optional: restrict to a specific user
+ * // searchDate = "This Week"                        // optional: "This Week", "last month", or a date "2025-12-01"
+ * // profitYear = 2025                               // optional: filter by year
+ * // profitMoth = 12                                 // optional: filter by month (1-12)
+ * $result = $this->poprofit_post();
+ * echo json_encode($result); // Example response: [{"owner":"John Doe","profit_by_user_po":"1234.56"}, {"owner":"Jane Smith","profit_by_user_po":"789.00"}]
+ * @param {string|int} id - Optional POST id value (if provided by client).
+ * @param {string} sess_eml - Optional POST email of the session user to filter results (e.g. "user@example.com").
+ * @param {string} session_company - Required company name associated with the session (e.g. "Acme Ltd").
+ * @param {string} session_comp_email - Required company email associated with the session (e.g. "finance@acme.example").
+ * @param {string} [searchUser] - Optional POST field to filter by a specific user email (same format as sess_eml).
+ * @param {string} [searchDate] - Optional date filter; accepts "This Week", "last month", or a start date string (e.g. "2025-12-01").
+ * @param {int} [profitYear] - Optional year to filter results (e.g. 2025).
+ * @param {int} [profitMoth] - Optional month to filter results (1-12).
+ * @returns {array|string} JSON array of grouped profits per owner on success, or a message string like "No data available." or "Company name and company email required." on failure.
+ */
 public function poprofit_post(){
 	    
 	$id                = $this->post('id');
