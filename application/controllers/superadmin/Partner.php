@@ -11,6 +11,19 @@ class Partner extends CI_Controller
 		$this->load->library('email_lib');
 	}
 	
+ /**
+  * Load partner list view for superadmin when authenticated; otherwise redirect to login.
+  * @example
+  * $this->index();
+  * // If a superadmin session exists, renders 'superadmin/partner' with $data['all_partner']
+  * // e.g. $data['all_partner'] = [
+  * //   ['id' => 1, 'name' => 'Partner A'],
+  * //   ['id' => 2, 'name' => 'Partner B']
+  * // ];
+  * // Otherwise redirects to 'superadmin/login'
+  * @param {void} none - This method accepts no parameters.
+  * @returns {void} No return value; the method either renders a view or performs a redirect.
+  */
 	public function index()
   	{
 	    if(!empty($this->session->userdata('loggedsuperadmin_in')))
@@ -25,6 +38,17 @@ class Partner extends CI_Controller
 	    }
 	}
 	
+/**
+* Display partner details for a given partner and organization (accessible to superadmin only).
+* @example
+* $_GET['ptr'] = 123;
+* $_GET['org'] = 45;
+* $this->partner_detail();
+* // Renders the 'superadmin/partner_detail' view with partner data or redirects to 'superadmin/login' if not authenticated.
+* @param {int|string} $ptr - Partner user id provided via GET parameter 'ptr'.
+* @param {int|string} $org - Organization id provided via GET parameter 'org'.
+* @returns {void} Loads a view with partner data or redirects; does not return a value.
+*/
 public function partner_detail()
 {
 	    if(!empty($this->session->userdata('loggedsuperadmin_in')))
@@ -41,6 +65,22 @@ public function partner_detail()
 	    }
 }
 
+/**
+* Activate partner account by creating an admin user from the partner record, updating partner status, sending notification emails to the partner and admin, and echoing a JSON status response. If the current session is not authenticated as superadmin the method redirects to the superadmin login.
+* @example
+* // Example POST to controller (via browser or curl). Sample POST values:
+* // prtnrid = 123, comp_name = 'Example Co', password = 'Secret123', country = 'US', state = 'CA', city = 'San Francisco'
+* $this->activate_partner();
+* // Example JSON success output:
+* echo '{"msg_succ":"<i class=\"far fa-check-circle\" style=\"color:green;\"></i> Successfully activated this partner"}';
+* @param int $prtnrid - Partner id (expected in POST as 'prtnrid').
+* @param string $comp_name - Company name (expected in POST as 'comp_name').
+* @param string $password - Plain text password (expected in POST as 'password'); will be MD5-hashed before storing.
+* @param string $country - Country (expected in POST as 'country').
+* @param string $state - State (expected in POST as 'state').
+* @param string $city - City (expected in POST as 'city').
+* @returns void Echoes a JSON encoded array containing either 'msg_succ' on successful activation or 'msg' on error; may perform a redirect to 'superadmin/login' if the session is not authenticated.
+*/
 public function activate_partner()
 {
 	    if(!empty($this->session->userdata('loggedsuperadmin_in')))
@@ -416,6 +456,15 @@ $messageBody='
 	    }
 }
 
+/**
+* Create a new standard partner (user) from POST data and current admin session, persist it via Login_model, and echo a JSON success response.
+* @example
+* $this->create();
+* // Echoed output on success:
+* // {"status":true}
+* @param {void} { } - No parameters; input is read from $this->input->post(...) and $this->session->userdata(...).
+* @returns {void} Echoes JSON response indicating success or prints a validation HTTP code and halts execution.
+*/
 public function create()
   	{
 
