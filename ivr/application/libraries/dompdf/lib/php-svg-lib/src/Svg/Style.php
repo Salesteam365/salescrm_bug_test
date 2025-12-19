@@ -41,6 +41,16 @@ class Style
     public $fontStyle = 'normal';
     public $textAnchor = 'start';
 
+    /**
+    * Returns the mapping of SVG presentation attribute names to the library's internal style property names and value type constants.
+    * @example
+    * $map = $this->getStyleMap();
+    * // Sample entries from the returned map:
+    * // $map['fill'] => array('fill', self::TYPE_COLOR);
+    * // $map['stroke-opacity'] => array('strokeOpacity', self::TYPE_NUMBER);
+    * print_r($map); // displays the full associative array mapping SVG attributes to [propertyName, valueType]
+    * @returns {array} Associative array mapping SVG style attribute (string) => [internalPropertyName (string), valueType (int constant)].
+    */
     protected function getStyleMap()
     {
         return array(
@@ -84,6 +94,17 @@ class Style
         }
     }
 
+    /**
+    * Copy non-null style properties from the given tag's parent group's style into this Style instance.
+    * @example
+    * // Suppose the parent group's style is ['fill' => '#ff0000', 'stroke' => null, 'opacity' => 0.5]
+    * $tag = new AbstractTag();
+    * $style = new Style();
+    * $style->inherit($tag);
+    * echo $style->fill; // outputs: '#ff0000'
+    * @param AbstractTag $tag - Tag whose parent group's style properties will be inherited.
+    * @returns void No return value; the current Style object is modified in place.
+    */
     public function inherit(AbstractTag $tag) {
         $group = $tag->getParentGroup();
         if ($group) {
@@ -97,6 +118,17 @@ class Style
         }
     }
 
+    /**
+    * Populate this Style object from the document's stylesheets by matching CSS declarations for the given tag name or the tag's class attribute.
+    * @example
+    * $style = new \Svg\Style();
+    * $tag = $svgDocument->getElementById('my-rect'); // AbstractTag with tagName 'rect' and a Document that contains stylesheets
+    * $style->fromStyleSheets($tag, ['class' => 'highlight featured']);
+    * // After call the style object may contain matched rules, e.g. ['fill' => '#ff0000', 'stroke-width' => '2']
+    * @param AbstractTag $tag - Tag whose document's stylesheets will be searched for matching selectors (by tag name or class).
+    * @param array $attributes - Associative attributes array for the tag; may include 'class' => 'foo bar' (space-separated class names) or be null/empty.
+    * @returns void No return value; the Style object's internal styles are filled from matched stylesheet declarations.
+    */
     public function fromStyleSheets(AbstractTag $tag, $attributes) {
         $class = isset($attributes["class"]) ? preg_split('/\s+/', trim($attributes["class"])) : null;
 
@@ -143,6 +175,19 @@ class Style
         $this->fillStyles($styles);
     }
 
+    /**
+     * Populate the instance's style properties from an associative styles array.
+     * @example
+     * $style = new \Svg\Style();
+     * $style->fillStyles([
+     *     'fill'      => '#ff0000', // color string will be parsed via parseColor()
+     *     'opacity'   => '0.5',     // numeric string will be cast to float
+     *     'display'   => 'none'     // other values are assigned as-is
+     * ]);
+     * // After calling, matching mapped properties on $style will be set (e.g. $style->fill, $style->opacity)
+     * @param array $styles - Associative array of style names to values.
+     * @returns void No return value; mapped properties on $this are set directly.
+     */
     protected function fillStyles($styles)
     {
         foreach ($this->getStyleMap() as $from => $spec) {
@@ -169,6 +214,23 @@ class Style
         }
     }
 
+    /**
+     * Parse a CSS/SVG color string and return a usable representation.
+     * Supports named SVG colors, hex colors (#rgb, #rrggbb, etc.), rgb()/rgba(), hsl()/hsla(), the literal "none", and gradient references like url(#id).
+     * @example
+     * $result = Style::parseColor('#ff0000');
+     * var_export($result); // array(255.0, 0.0, 0.0)
+     * $result = Style::parseColor('none');
+     * var_export($result); // 'none'
+     * $result = Style::parseColor('rgb(10, 20, 30)');
+     * var_export($result); // array(10.0, 20.0, 30.0)
+     * $result = Style::parseColor('hsl(120, 100%, 50%)');
+     * var_export($result); // array(0.0, 255.0, 0.0)
+     * $result = Style::parseColor('url(#grad1)');
+     * var_export($result); // 'grad1'
+     * @param {string} $color - Color string to parse (named color, #hex, rgb()/rgba(), hsl()/hsla(), 'none', or url(#id)).
+     * @returns {array|float[]|string|null} Parsed color as an RGB array (values in 0–255), the string 'none', a gradient id string, or null on parse failure.
+     */
     static function parseColor($color)
     {
         $color = strtolower(trim($color));
@@ -282,6 +344,18 @@ class Style
         return null;
     }
 
+    /**
+    * Extract an RGB triplet from an "rgb(...)" string, optionally normalized to 0..1.
+    * @example
+    * $result = getTriplet('rgb(255, 128, 0)', false);
+    * print_r($result); // Array ( [0] => 255 [1] => 128 [2] => 0 )
+    * @example
+    * $result = getTriplet('rgb(100%, 50%, 0%)', true);
+    * print_r($result); // Array ( [0] => 1 [1] => 0.5 [2] => 0 )
+    * @param {string} $color - Color string in "rgb(r,g,b)" or "rgb(r%, g%, b%)" format.
+    * @param {bool} $percent - If true return normalized components (0..1); if false return 0..255 integers (percent values converted to 0..255).
+    * @returns {array|null} Array with three numeric components on success, or null on invalid input.
+    */
     static function getTriplet($color, $percent = false) {
         $i = strpos($color, "(");
         $j = strpos($color, ")");
@@ -318,6 +392,14 @@ class Style
         return $triplet;
     }
 
+    /**
+    * Parse a hex color string (3- or 6-digit, prefixed with '#') and return its RGB components as integers.
+    * @example
+    * $result = Style::parseHexColor('#1a2b3c');
+    * echo implode(',', $result); // '26,43,60'
+    * @param {string} $hex - Hex color string beginning with '#' in either 3-digit (e.g. '#abc') or 6-digit (e.g. '#aabbcc') form.
+    * @returns {int[]} Returns an array of three integers [red, green, blue], each in the range 0..255.
+    */
     static function parseHexColor($hex)
     {
         $c = array(0, 0, 0);
