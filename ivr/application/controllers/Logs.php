@@ -3,6 +3,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Logs extends CI_Controller {
     
+ /**
+ * Load logs and user list from the MyOperator API and render the 'logs' view.
+ * @example
+ * $logsController = new Logs();
+ * $logsController->index();
+ * // After execution the view 'logs' receives $result where:
+ * // $result['loglist'][0]->id  => 'log123'      (sample value)
+ * // $result['userList'][0]->phone => '9876543210' (sample value)
+ * @param void $none - No arguments required.
+ * @returns void Loads the 'logs' view with decoded JSON in $result['loglist'] and $result['userList'].
+ */
 	public function index()
 	{
 	      $curl_handle = curl_init();
