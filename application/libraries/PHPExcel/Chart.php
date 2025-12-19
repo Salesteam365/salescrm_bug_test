@@ -653,6 +653,14 @@ class PHPExcel_Chart
         }
     }
 
+    /**
+    * Render the chart using the configured PHPExcel chart renderer library.
+    * @example
+    * $result = $chart->render('/path/to/output.png');
+    * echo $result; // true on success (or renderer-specific return value)
+    * @param string|null $outputDestination - Destination where the rendered chart will be written (file path, 'php://output' to send directly, or null to let renderer return image/data).
+    * @returns mixed|false Return value from the underlying chart renderer on success; returns false if no chart renderer is configured.
+    */
     public function render($outputDestination = null)
     {
         $libraryName = PHPExcel_Settings::getChartRendererName();
