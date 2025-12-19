@@ -17,6 +17,15 @@ class Cron extends CI_Controller
   
   
   
+  /**
+  * Check and deactivate accounts whose trial or paid license has expired.
+  * @example
+  * // Called by the Cron controller to evaluate accounts and deactivate expired ones.
+  * $this->_check_trial();
+  * // Example side-effect: if a trial for admin@example.com expired today, that admin and its users (company@example.com) will be deactivated.
+  * @param void $none - No parameters required.
+  * @returns void Performs account checks and deactivations as side-effects; does not return a value.
+  */
   private function _check_trial()
     {
 		$data = $this->login_model->get_adminemail();
@@ -45,6 +54,15 @@ class Cron extends CI_Controller
 		}
 	}
   
+  /**
+  * Send reminder and expiration emails for admin accounts whose trial or paid subscriptions are about to end or have expired.
+  * @example
+  * // Called from the Cron controller (no arguments). Example run triggered by a cron job:
+  * $this->_trial_end();
+  * // Result: Sends reminder/expiration emails to admin emails (e.g. admin@example.com) when remaining days are 10,8,6,4,2 or 0.
+  * @param {void} none - This method does not accept any arguments.
+  * @returns {void} No return value; emails are sent via $this->email_lib->send_email().
+  */
   private function _trial_end()
 	{
 	    // TRIAL END EMAIL
@@ -338,6 +356,15 @@ class Cron extends CI_Controller
 	    }
 	}
 	// Renewal Mail Function...
+    /**
+    * Sends renewal alert emails for sales orders to configured admin(s) for each company when the workflow "Mail nofification for renewal" is enabled.
+    * @example
+    * // From within the Cron controller (no parameters)
+    * $this->_renewal_so();
+    * // Side effect: sends an HTML email (example recipient: 'admin@example.com') with subject:
+    * // 'Renwal alerts for your sales order - team365 | CRM' and a table listing SO Subject, SO ID, Customer Name, Contact Name, SO Owner, Renewal Date and Days Left.
+    * @param void No parameters.
+    * @returns void No return value; the function performs side-effects (queries DB models and sends emails). */
     private function _renewal_so()
 	{
 		
@@ -478,6 +505,17 @@ class Cron extends CI_Controller
 	    }
 		
 	}
+ /**
+ * Send renewal alert emails for sales orders to standard users of each company who have opted in.
+ * Iterates companies from CronModel->get_adminemail(), checks workflow permissions and per-user permission
+ * "Receive Renewal Mail", builds an HTML table of upcoming renewals with days left, and sends an HTML email
+ * (subject: "Renwal alerts for your sales order - team365 | CRM") to each eligible standard user's email.
+ * @example
+ * // Typical usage invoked by a cron job or controller (no return value):
+ * $this->Cron->_renewal_so_user();
+ * // Side effect: sends email to users such as "jane.doe@example.com" with a table of SOs and "X Days" left.
+ * @returns {void} No return value; performs side-effects by sending emails when renewals are found.
+ */
 	private function _renewal_so_user()
 	{
 		$data 		= $this->CronModel->get_adminemail();
@@ -620,6 +658,21 @@ class Cron extends CI_Controller
 	}
 	
 	
+ /**
+  * Send renewal reminder emails for sales orders to customers based on admin/company workflow settings.
+  * Iterates over configured admin/company records, checks whether the "Mail notification for renewal" workflow is enabled,
+  * collects sales orders that are up for renewal, builds an HTML notification containing SO details and days left,
+  * and sends the generated email to the customer's standard email via the email_lib.
+  * @example
+  * // Called from within the Cron controller (private method used internally)
+  * // Example execution (no return value). Sample company values that may be processed:
+  * // company_email: "admin@acme.com", company_name: "Acme Corp"
+  * // A sample customer email that may receive the notification: "customer@example.com"
+  * $this->_renewal_so_customer();
+  * // Result: HTML renewal reminder emails are sent to matching customer emails (no value returned).
+  * @param {void} none - This method does not accept any parameters.
+  * @returns {void} No return value; emails are sent as a side effect.
+  */
 	private function _renewal_so_customer()
 	{
 		$data 		= $this->CronModel->get_adminemail();
