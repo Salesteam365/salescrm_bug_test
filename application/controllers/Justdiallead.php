@@ -18,6 +18,17 @@ class Justdiallead extends REST_Controller {
     }
 	
 	
+ /**
+ * Retrieve the most recent lead record filtered by session company email and company, optionally narrowed by assigned user or lead id.
+ * @example
+ * $result = $this->assignedUser('sales@example.com', 'Acme Corp', '17', '256');
+ * print_r($result); // sample output: Array ( [assigned_to] => 17 [id] => 256 [assigned_to_name] => John Doe )
+ * @param string $session_comp_email - Session company email to filter leads.
+ * @param string $session_company - Session company identifier/name to filter leads.
+ * @param string|int $userAssign - Optional. User identifier to filter assigned_to (defaults to '').
+ * @param string|int $leadid - Optional. Lead identifier to filter id (defaults to '').
+ * @returns array Return associative array of the latest matching lead row (keys: assigned_to, id, assigned_to_name) or an empty array if no match.
+ */
 	public function assignedUser($session_comp_email,$session_company,$userAssign='',$leadid='')
     {   
 		$this->db->from('lead');
@@ -48,6 +59,19 @@ class Justdiallead extends REST_Controller {
     }
     
    
+    /**
+    * Process an incoming JustDial/Google Ads lead POST: parse JSON payload, prepare lead data, assign to a user, forward the lead to the external team365 API, send a notification email to the company admin, and return an HTTP response.
+    * @example
+    * // Example usage in a CodeIgniter test or controller context:
+    * $_GET['key'] = 'abc123'; // URL key for admin lookup
+    * $json = '{"lead_id":123,"form_id":"form_1","google_key":"GKEY","user_column_data":[{"column_name":"Full Name","string_value":"Jane Doe"},{"column_name":"User Phone","string_value":"9876543210"},{"column_name":"User Email","string_value":"jane@example.com"}]}';
+    * // In CodeIgniter you can simulate raw input:
+    * $this->input->raw_input_stream = $json;
+    * $this->Justdiallead->index_post();
+    * // The method sends an HTTP 200 response with message: "Lead access successfully."
+    * @param {array} $request - Incoming request data read from $_GET['key'] and JSON body (expects lead_id:int, form_id:string, google_key:string, user_column_data:array of {column_name:string,string_value:string}).
+    * @returns {void} Sends an HTTP 200 response with a success message on successful processing (uses $this->response([...], REST_Controller::HTTP_OK)).
+    */
     public function index_post()
     {   
         $urlkey=$_GET['key'];
