@@ -497,6 +497,15 @@ class PHPExcel_DocumentProperties
         }
     }
 
+    /**
+     * Convert a property value to the appropriate PHP type based on the given property type.
+     * @example
+     * $result = DocumentProperties::convertProperty('2020-01-01', 'date');
+     * echo $result; // 1577836800
+     * @param mixed $propertyValue - The raw property value to convert (string|int|float|bool|null).
+     * @param string $propertyType - The property type identifier (e.g. 'i4','ui4','r8','decimal','lpstr','date','filetime','bool', etc).
+     * @returns mixed The converted property value (int|float|string|bool|null|timestamp).
+     */
     public static function convertProperty($propertyValue, $propertyType)
     {
         switch ($propertyType) {
@@ -556,6 +565,14 @@ class PHPExcel_DocumentProperties
         return $propertyValue;
     }
 
+    /**
+    * Convert a raw property type code (OLE/metadata) into the corresponding PROPERTY_TYPE_* class constant.
+    * @example
+    * $result = DocumentProperties::convertPropertyType('i4');
+    * echo $result; // DocumentProperties::PROPERTY_TYPE_INTEGER
+    * @param {string} $propertyType - The raw property type code (e.g. 'i4', 'r8', 'lpwstr', 'bool').
+    * @returns {int} Returns one of the DocumentProperties::PROPERTY_TYPE_* constants indicating the normalized type.
+    */
     public static function convertPropertyType($propertyType)
     {
         switch ($propertyType) {
