@@ -127,6 +127,16 @@ class PHPExcel_Calculation_DateTime
     }
 
 
+    /**
+     * Adjust a PHP DateTime (converted from an Excel serial date) by a given number of months,
+     * preserving sensible end-of-month behavior when the target month has fewer days.
+     * @example
+     * $result = self::adjustDateByMonths(40544, 1);
+     * echo $result->format('Y-m-d'); // e.g. "2011-01-31"
+     * @param {int|float} $dateValue - Excel serialized date value (integer or float) to convert to a PHP DateTime (default 0).
+     * @param {int} $adjustmentMonths - Number of months to add (positive) or subtract (negative) (default 0).
+     * @returns {DateTime} Adjusted PHP DateTime object.
+     */
     private static function adjustDateByMonths($dateValue = 0, $adjustmentMonths = 0)
     {
         // Execute function
