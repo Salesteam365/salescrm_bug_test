@@ -315,6 +315,18 @@ class PHPExcel_Calculation_Functions
     }
 
 
+    /**
+    * Normalize and format a condition expression for use in Excel IF formulas.
+    * @example
+    * $result = PHPExcel_Calculation_Functions::ifCondition('text');
+    * echo $result // ="TEXT"
+    * $result = PHPExcel_Calculation_Functions::ifCondition('>=100');
+    * echo $result // >=100
+    * $result = PHPExcel_Calculation_Functions::ifCondition('');
+    * echo $result // =""
+    * @param mixed $condition - Condition expression (string or numeric) to normalize.
+    * @returns string Normalized condition string suitable for Excel formulas (e.g. '="TEXT"', '>=100', '=""').
+    */
     public static function ifCondition($condition)
     {
         $condition    = PHPExcel_Calculation_Functions::flattenSingleValue($condition);
@@ -734,6 +746,16 @@ if (!function_exists('atanh')) {
 //
 if ((!function_exists('mb_str_replace')) &&
     (function_exists('mb_substr')) && (function_exists('mb_strlen')) && (function_exists('mb_strpos'))) {
+    /**
+    * Multibyte-safe replacement function similar to str_replace: replaces all occurrences of the search string(s) with the replacement string(s) in a UTF-8 aware way. Handles both strings and arrays for search, replace and subject; if subject is an array its keys/structure are preserved.
+    * @example
+    * $result = mb_str_replace(array('é', 'ö'), array('e', 'o'), 'café côté');
+    * echo $result // outputs 'cafe cote';
+    * @param {string|array} $search - String or array of strings to search for (multibyte/UTF-8 aware).
+    * @param {string|array} $replace - Replacement string or array of replacements.
+    * @param {string|array} $subject - Subject string or array of strings to perform replacements on; if array, returns an array with the same keys.
+    * @returns {string|array} Resulting string or array with replacements applied (same type/structure as $subject).
+    */
     function mb_str_replace($search, $replace, $subject)
     {
         if (is_array($subject)) {
