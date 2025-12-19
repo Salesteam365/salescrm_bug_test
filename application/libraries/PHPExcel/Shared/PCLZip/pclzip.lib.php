@@ -212,6 +212,14 @@ class PclZip
     //     Note that no real action is taken, if the archive does not exist it is not
     //     created. Use create() for that.
     // --------------------------------------------------------------------------------
+    /**
+    * Constructs a PclZip instance: verifies zlib availability and initializes internal properties (zip name, file descriptor, magic quotes status).
+    * @example
+    * $zip = new PclZip('archive.zip');
+    * echo $zip->zipname; // renders 'archive.zip'
+    * @param {string} $p_zipname - Zip filename to associate with this instance.
+    * @returns {void} Returns nothing; the object is initialized.
+    */
     public function __construct($p_zipname)
     {
 
@@ -267,6 +275,20 @@ class PclZip
     //     The list of the added files, with a status of the add action.
     //     (see PclZip::listContent() for list entry format)
     // --------------------------------------------------------------------------------
+    /**
+    * Create a ZIP archive by adding a list of files or file-description entries.
+    * @example
+    * $archive = new PclZip('archive.zip');
+    * // Using an array of filenames
+    * $result = $archive->create(array('file1.txt', 'dir/subfile.txt'));
+    * echo print_r($result, true); // e.g. Array ( [0] => 1 [1] => 2 )
+    * // Using a separator-delimited string
+    * $result = $archive->create('file1.txt' . PCLZIP_SEPARATOR . 'file2.txt');
+    * // With options (constants) after the file list
+    * $result = $archive->create(array('file1.txt'), PCLZIP_OPT_ADD_PATH, 'folder/', PCLZIP_OPT_REMOVE_PATH, 'root/');
+    * @param {array|string} $p_filelist - Array of filenames, array of file-description arrays (each entry may contain keys like PCLZIP_ATT_FILE_NAME, PCLZIP_ATT_FILE_CONTENT, etc.), or a separator-delimited string of filenames.
+    * @returns {mixed} Array of result entries on success (details for each added file) or integer 0 on error.
+    */
     public function create($p_filelist)
     {
         $v_result=1;
@@ -433,6 +455,15 @@ class PclZip
     //     The list of the added files, with a status of the add action.
     //     (see PclZip::listContent() for list entry format)
     // --------------------------------------------------------------------------------
+    /**
+    * Add files or file descriptors to the archive. Accepts a string (files separated by PCLZIP_SEPARATOR), an array of filenames, or an array of file descriptor arrays. Additional PCLZIP option arguments may be supplied after $p_filelist (historic and new option syntaxes supported).
+    * @example
+    * $zip = new PclZip('archive.zip');
+    * $result = $zip->add(array('file1.txt', 'subdir')); 
+    * print_r($result); // e.g. Array of added file descriptor arrays on success, or 0 on failure
+    * @param {{mixed}} {{$p_filelist}} - List of files to add: a string with PCLZIP_SEPARATOR, an array of filenames, or an array of file descriptor arrays (each descriptor can include keys like PCLZIP_ATT_FILE_NAME, PCLZIP_ATT_FILE_CONTENT, etc.).
+    * @returns {{array|int}} Returns an array of added file result descriptors on success, or 0 on error.
+    */
     public function add($p_filelist)
     {
         $v_result=1;
@@ -607,6 +638,36 @@ class PclZip
     //     0 on an unrecoverable failure,
     //     The list of the files in the archive.
     // --------------------------------------------------------------------------------
+    /**
+     * Retrieve a list of entries contained in the current ZIP archive.
+     * @example
+     * $list = $this->listContent();
+     * print_r($list);
+     * // Example output:
+     * // Array
+     * // (
+     * //     [0] => Array
+     * //         (
+     * //             [filename] => 'document.txt'
+     * //             [stored_filename] => 'document.txt'
+     * //             [size] => 1234
+     * //             [mtime] => 1609459200
+     * //             [crc] => 1234567890
+     * //             [index] => 0
+     * //         )
+     * //     [1] => Array
+     * //         (
+     * //             [filename] => 'images/photo.jpg'
+     * //             [stored_filename] => 'images/photo.jpg'
+     * //             [size] => 54321
+     * //             [mtime] => 1609459200
+     * //             [crc] => 987654321
+     * //             [index] => 1
+     * //         )
+     * // )
+     * @param void $unused - This method does not accept any parameters.
+     * @returns array|int Returns an array of file entry information on success, or 0 on failure.
+     */
     public function listContent()
     {
         $v_result=1;
@@ -663,6 +724,20 @@ class PclZip
     //     The list of the extracted files, with a status of the action.
     //     (see PclZip::listContent() for list entry format)
     // --------------------------------------------------------------------------------
+    /**
+    * Extract files from the archive. Supports the options-based signature using PCLZIP_OPT_* constants or the legacy signature extract($path, $remove_path = "").
+    * @example
+    * // Using options-based signature
+    * $result = $zip->extract(PCLZIP_OPT_PATH, '/tmp/extracted/', PCLZIP_OPT_REMOVE_PATH, 'remove/');
+    * print_r($result); // e.g. Array of extracted file info arrays
+    * // Legacy signature
+    * $result = $zip->extract('/tmp/extracted/', 'remove/');
+    * print_r($result); // e.g. Array of extracted file info arrays
+    * @param int $options - Optional first argument containing an options constant (PCLZIP_OPT_*) followed by option/value pairs.
+    * @param string $path - Legacy first argument: destination path where files will be extracted.
+    * @param string $remove_path - Legacy second argument: path prefix to remove from archived filenames when extracting.
+    * @returns array|int Returns an array of extracted file information on success, or 0 on error.
+    */
     public function extract()
     {
         $v_result=1;
@@ -814,6 +889,17 @@ class PclZip
     //     (see PclZip::listContent() for list entry format)
     // --------------------------------------------------------------------------------
     //function extractByIndex($p_index, options...)
+    /**
+    * Extract files from the archive by a single index or a set of indexes.
+    * @example
+    * $archive = new PclZip('/path/to/archive.zip');
+    * $result = $archive->extractByIndex(3);
+    * // Or extract multiple entries:
+    * $result = $archive->extractByIndex(array(1,3,5));
+    * print_r($result); // e.g. Array ( [0] => Array ( 'filename' => 'doc.txt', 'status' => 'ok', ... ) )
+    * @param {int|array} $p_index - Index (int) or array of indexes to extract.
+    * @returns {array|int} Array of extracted file information on success, or 0 on error.
+    */
     public function extractByIndex($p_index)
     {
         $v_result=1;
@@ -957,6 +1043,18 @@ class PclZip
     //     The list of the files which are still present in the archive.
     //     (see PclZip::listContent() for list entry format)
     // --------------------------------------------------------------------------------
+    /**
+    * Delete entries from the archive matching provided rules/options.
+    * @example
+    * $zip = new PclZip('/path/to/archive.zip');
+    * // Delete a single file by name
+    * $result = $zip->delete(PCLZIP_OPT_BY_NAME, 'folder/file.txt');
+    * // Delete multiple files by index
+    * // $result = $zip->delete(PCLZIP_OPT_BY_INDEX, 0, PCLZIP_OPT_BY_INDEX, 2);
+    * print_r($result); // render array of deleted entries on success or 0 on failure
+    * @param mixed $options - Optional variable list of rules/options. Supported options include PCLZIP_OPT_BY_NAME (string or array), PCLZIP_OPT_BY_EREG (string pattern), PCLZIP_OPT_BY_PREG (preg pattern), PCLZIP_OPT_BY_INDEX (int or array).
+    * @returns array|int Returns an array of deleted entries on success, or 0 on failure.
+    */
     public function delete()
     {
         $v_result=1;
@@ -1041,6 +1139,15 @@ class PclZip
     //     0 on failure,
     //     An array with the archive properties.
     // --------------------------------------------------------------------------------
+    /**
+    * Get properties of the ZIP archive (comment, number of entries and status).
+    * @example
+    * $zip = new PclZip('my_archive.zip');
+    * $result = $zip->properties();
+    * print_r($result); // Array ( [comment] => 'Archive comment' [nb] => 3 [status] => 'ok' )
+    * @param void $none - No arguments.
+    * @returns array Return associative array with keys: 'comment' (string), 'nb' (int), 'status' (string, e.g. 'ok' or 'not_exist').
+    */
     public function properties()
     {
 
@@ -1111,6 +1218,15 @@ class PclZip
     //     1 on success.
     //     0 or a negative value on error (error code).
     // --------------------------------------------------------------------------------
+    /**
+    * Duplicate a ZIP archive given either a filename or a PclZip object.
+    * @example
+    * $pclZip = new PclZip('archive.zip');
+    * $result = $pclZip->duplicate('archive.zip');
+    * echo $result; // 1
+    * @param string|PclZip $p_archive - Filename of the ZIP archive to duplicate or a PclZip object.
+    * @returns int 1 on success or a negative error code constant on failure (e.g. PCLZIP_ERR_MISSING_FILE, PCLZIP_ERR_INVALID_PARAMETER).
+    */
     public function duplicate($p_archive)
     {
         $v_result = 1;
@@ -1160,6 +1276,16 @@ class PclZip
     //     1 on success,
     //     0 or negative values on error (see below).
     // --------------------------------------------------------------------------------
+    /**
+    * Merge another archive into this archive. Accepts either a filename (string) or an existing PclZip object.
+    * @example
+    * $zip = new PclZip('master.zip');
+    * // Merge from filename
+    * $result = $zip->merge('to_add.zip');
+    * echo $result; // 1 on success, 0 or an error code on failure
+    * @param {string|PclZip} $p_archive_to_add - Filename of the archive to add or a PclZip object.
+    * @returns {int} Return 1 on success, 0 or a PCLZIP error code on failure.
+    */
     public function merge($p_archive_to_add)
     {
         $v_result = 1;
@@ -1217,6 +1343,16 @@ class PclZip
     // Description :
     // Parameters :
     // --------------------------------------------------------------------------------
+    /**
+     * Get the human-readable name for the current PCLZip error code.
+     * @example
+     * $zip = new PclZip('archive.zip');
+     * // If $zip->error_code === PCLZIP_ERR_INVALID_ZIP (for example 5)
+     * $result = $zip->errorName(true);
+     * echo $result; // outputs: "PCLZIP_ERR_INVALID_ZIP (5)"
+     * @param {bool} $p_with_code - Whether to include the numeric error code in parentheses. Default false.
+     * @returns {string} Human-readable error name, optionally appended with the numeric error code.
+     */
     public function errorName($p_with_code = false)
     {
         $v_name = array(
@@ -1262,6 +1398,19 @@ class PclZip
     // Description :
     // Parameters :
     // --------------------------------------------------------------------------------
+    /**
+    * Return error information for the current PclZip archive.
+    * @example
+    * $zip = new PclZip('archive.zip');
+    * // short error info (default)
+    * $result = $zip->errorInfo();
+    * echo $result; // e.g. "Unable to open file [code 4]"
+    * // full error info including error name
+    * $result = $zip->errorInfo(true);
+    * echo $result; // e.g. "PCLZIP_ERR_MISSING_FILE : Unable to open file"
+    * @param {bool} $p_full - Whether to return full error info including the error name (default false).
+    * @returns {string} Return error message string (full or short depending on $p_full).
+    */
     public function errorInfo($p_full = false)
     {
         if (PCLZIP_ERROR_EXTERNAL == 1) {
@@ -1299,6 +1448,15 @@ class PclZip
     //     true on success,
     //     false on error, the error code is set.
     // --------------------------------------------------------------------------------
+    /**
+    * Validate the ZIP archive format and basic integrity for the current PclZip instance.
+    * @example
+    * $zip = new PclZip('example_archive.zip');
+    * $result = $zip->privCheckFormat(0);
+    * echo var_export($result, true); // true or false
+    * @param {int} $p_level - Level of checks to perform (0 = basic checks; higher levels may enable more thorough validation).
+    * @returns {bool} True if the archive passes the performed checks; false on failure (errors are logged with PclZip::privErrorLog()).
+    */
     public function privCheckFormat($p_level = 0)
     {
         $v_result = true;
@@ -1352,6 +1510,21 @@ class PclZip
     //     1 on success.
     //     0 on failure.
     // --------------------------------------------------------------------------------
+    /**
+    * Parse and validate a list of PclZip options and populate a result array.
+    * @example
+    * $options = array(PCLZIP_OPT_PATH, '/var/www', PCLZIP_OPT_ADD_COMMENT, 'Backup archive');
+    * $size = count($options);
+    * $resultList = array();
+    * $requested = array(PCLZIP_OPT_PATH => 'mandatory');
+    * $result = $this->privParseOptions($options, $size, $resultList, $requested);
+    * echo $result; // 1 on success or an integer error code
+    * @param {{array}} {{$p_options_list}} - Indexed array of option constants and their values (passed by reference).
+    * @param {{int}} {{$p_size}} - Number of elements in $p_options_list.
+    * @param {{array}} {{$v_result_list}} - Associative array to receive parsed option values (passed by reference).
+    * @param {{array|false}} {{$v_requested_options}} - Optional associative array of requested options (e.g. array(PCLZIP_OPT_PATH => 'mandatory')) or false.
+    * @returns {{int}} Return 1 on success or an integer error code (from PclZip::errorCode()).
+    */
     public function privParseOptions(&$p_options_list, $p_size, &$v_result_list, $v_requested_options = false)
     {
         $v_result=1;
@@ -1714,6 +1887,19 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Determine and set a default temporary-file threshold in the provided options array based on PHP's memory_limit.
+    * If PCLZIP_OPT_TEMP_FILE_THRESHOLD or PCLZIP_OPT_TEMP_FILE_OFF is already present the options are left unchanged.
+    * The computed threshold equals floor(memory_limit_in_bytes * PCLZIP_TEMPORARY_FILE_RATIO) and is only set if >= 1MB.
+    * @example
+    * $options = array();
+    * // Example: assume ini_get('memory_limit') returns '128M' and PCLZIP_TEMPORARY_FILE_RATIO = 0.02
+    * $result = $this->privOptionDefaultThreshold($options);
+    * // After call, $options[PCLZIP_OPT_TEMP_FILE_THRESHOLD] will contain an integer threshold, e.g.:
+    * var_dump($options[PCLZIP_OPT_TEMP_FILE_THRESHOLD]); // int(2684354)
+    * @param array &$p_options - Reference to the options array; may be modified to include PCLZIP_OPT_TEMP_FILE_THRESHOLD.
+    * @returns int Return value 1 on completion.
+    */
     public function privOptionDefaultThreshold(&$p_options)
     {
         $v_result=1;
@@ -1759,6 +1945,24 @@ class PclZip
     //     1 on success.
     //     0 on failure.
     // --------------------------------------------------------------------------------
+    /**
+    * Parse and validate file attribute list and merge values into the given file descriptor.
+    * @example
+    * $file_list = array(
+    *   PCLZIP_ATT_FILE_NAME => 'documents/report.txt',
+    *   PCLZIP_ATT_FILE_MTIME => 1609459200, // 2021-01-01 00:00:00 UTC
+    * );
+    * $file_descr = array();
+    * $options = array(); // additional options (not used by this method)
+    * $requested_options = array(PCLZIP_ATT_FILE_NAME => 'mandatory');
+    * $result = $this->privFileDescrParseAtt($file_list, $file_descr, $options, $requested_options);
+    * echo $result; // 1 on success, or an error code integer on failure
+    * @param {array} &$p_file_list - Associative array of file attributes to parse (keys are PCLZIP_ATT_* constants, values their corresponding values).
+    * @param {array} &$p_filedescr - Reference to the file descriptor array to populate (will receive keys like 'filename', 'new_short_name', 'new_full_name', 'comment', 'mtime', 'content').
+    * @param {array} $v_options - Optional options array (reserved; not used by this method).
+    * @param {array|false} $v_requested_options - Array of supported/required option keys where a value of 'mandatory' marks an option as required, or false to skip mandatory checks.
+    * @returns {int} Return 1 on success or an error code integer (retrievable via PclZip::errorCode()) on failure.
+    */
     public function privFileDescrParseAtt(&$p_file_list, &$p_filedescr, $v_options, $v_requested_options = false)
     {
         $v_result=1;
@@ -1875,6 +2079,22 @@ class PclZip
     //     1 on success.
     //     0 on failure.
     // --------------------------------------------------------------------------------
+    /**
+    * Expand and normalize a list of file descriptors: resolves paths, determines type (file, folder, virtual_file),
+    * calculates stored filenames, and recursively expands directories into individual file descriptors.
+    * @example
+    * $files = array(
+    *     array('filename' => '/var/www/html/file.txt'),
+    *     array('filename' => '/var/www/html/subdir')
+    * );
+    * $options = array(); // e.g. array(PCLZIP_OPT_REMOVE_ALL_PATH => true)
+    * $result = $this->privFileDescrExpand($files, $options);
+    * print_r($files); // expanded list of descriptors with 'type' and 'stored_filename' populated
+    * echo $result; // 1 on success or a PclZip error code
+    * @param array &$p_filedescr_list - Reference to an array of file descriptor arrays to process (each must include 'filename', may include 'content' or 'new_full_name').
+    * @param array &$p_options - Reference to an array of options that influence filename storage and path removal.
+    * @returns int Returns 1 on success or a PclZip error code on failure.
+    */
     public function privFileDescrExpand(&$p_filedescr_list, &$p_options)
     {
         $v_result=1;
@@ -1986,6 +2206,22 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Create the zip archive file from a list of file descriptors (internal method).
+    * @example
+    * $zip = new PclZip('archive.zip');
+    * $file_list = array(
+    *     array('filename' => '/path/to/local.txt', 'stored_filename' => 'local.txt')
+    * );
+    * $result_list = array();
+    * $options = array('remove_path' => '/path/to');
+    * $result = $zip->privCreate($file_list, $result_list, $options);
+    * echo $result; // 1
+    * @param {array} $p_filedescr_list - List of file descriptor arrays to add to the archive.
+    * @param {array} &$p_result_list - Reference to array that will receive per-file result/details.
+    * @param {array} &$p_options - Reference to array of options influencing creation (e.g. remove_path, add_path).
+    * @returns {int} Result code: 1 on success, negative value on error.
+    */
     public function privCreate($p_filedescr_list, &$p_result_list, &$p_options)
     {
         $v_result=1;
@@ -2020,6 +2256,19 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Add files to an existing ZIP archive. If the archive does not exist or is empty, this method will create it.
+    * @example
+    * $archive = new PclZip('/path/to/archive.zip');
+    * $files = array('docs/readme.txt', 'images/logo.png');
+    * $options = array(PCLZIP_OPT_COMMENT => 'My archive comment');
+    * $result = $archive->privAdd($files, $result_list, $options);
+    * echo $result; // 1 on success, or a PclZip error code on failure
+    * @param array $p_filedescr_list - List of file descriptors to add. Can be an array of file paths or descriptor arrays. Example: array('file1.txt', 'dir/file2.jpg')
+    * @param array &$p_result_list - Reference to an array that will be filled with information about each processed file (passed by reference).
+    * @param array &$p_options - Reference to an array of options controlling the add operation (passed by reference). Example: array(PCLZIP_OPT_COMMENT => 'Archive comment', PCLZIP_OPT_ADD_COMMENT => ' More text')
+    * @returns int Return 1 on success, or a PclZip error code on failure.
+    */
     public function privAdd($p_filedescr_list, &$p_result_list, &$p_options)
     {
         $v_result=1;
@@ -2189,6 +2438,17 @@ class PclZip
     // Description :
     // Parameters :
     // --------------------------------------------------------------------------------
+    /**
+     * Open the ZIP archive file descriptor in the specified mode.
+     * Ensures the archive is not already open, attempts to fopen the archive file,
+     * logs an error on failure and returns the PclZip error code.
+     * @example
+     * $archive = new PclZip('example.zip');
+     * $result = $archive->privOpenFd('rb');
+     * echo $result; // 1 on success, or an integer error code on failure
+     * @param string $p_mode - Mode string passed to fopen (e.g. 'rb', 'r', 'w')
+     * @return int 1 on success, otherwise a PclZip error code (integer)
+     */
     public function privOpenFd($p_mode)
     {
         $v_result=1;
@@ -2221,6 +2481,14 @@ class PclZip
     // Description :
     // Parameters :
     // --------------------------------------------------------------------------------
+    /**
+    * Close the internal zip file descriptor if it is open and reset the descriptor to 0.
+    * @example
+    * $result = $this->privCloseFd();
+    * echo $result; // 1
+    * @param void $unused - This method does not accept any arguments.
+    * @returns int Return 1 on success.
+    */
     public function privCloseFd()
     {
         $v_result=1;
@@ -2249,6 +2517,22 @@ class PclZip
     // Return Values :
     // --------------------------------------------------------------------------------
     //    public function privAddList($p_list, &$p_result_list, $p_add_dir, $p_remove_dir, $p_remove_all_dir, &$p_options)
+    /**
+     * Add a list of files to the ZIP archive, write their central directory headers and the central directory footer.
+     * @example
+     * $fileList = array(
+     *     array('filename' => '/path/to/file1.txt', 'stored_filename' => 'file1.txt'),
+     *     array('filename' => '/path/to/image.jpg', 'stored_filename' => 'images/image.jpg'),
+     * );
+     * $resultList = array();
+     * $options = array(PCLZIP_OPT_COMMENT => 'Archive created 2025-12-19');
+     * $result = $zip->privAddList($fileList, $resultList, $options);
+     * echo $result; // 1
+     * @param {array} $p_filedescr_list - List of file description arrays to add to the archive (each entry describes a file to add).
+     * @param {array} &$p_result_list - Reference to an array that will be populated with resulting file info for each added file.
+     * @param {array} &$p_options - Reference to an options array (e.g. PCLZIP_OPT_COMMENT) influencing archive creation.
+     * @returns {int} Returns 1 on success or a PclZip error code (<1) on failure.
+     */
     public function privAddList($p_filedescr_list, &$p_result_list, &$p_options)
     {
         $v_result=1;
@@ -2310,6 +2594,23 @@ class PclZip
     //     $p_result_list : list of added files with their properties (specially the status field)
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Add a list of file descriptors to the archive and append their header information to the result list.
+    * @example
+    * $files = array(
+    *     array('filename' => '/path/to/file.txt', 'type' => 'file'),
+    *     array('filename' => 'virtual.txt', 'type' => 'virtual_file', 'content' => 'Virtual file content'),
+    *     array('filename' => '/path/to/dir', 'type' => 'folder')
+    * );
+    * $resultList = array();
+    * $options = array(PCLZIP_OPT_REMOVE_ALL_PATH => false);
+    * $result = $pclZip->privAddFileList($files, $resultList, $options);
+    * echo $result; // 1 on success
+    * @param array $p_filedescr_list - List of file descriptor arrays to add. Each descriptor must include at least 'filename' and 'type' ('file', 'virtual_file' or 'folder') and may include additional keys (e.g. 'content' for virtual files).
+    * @param array &$p_result_list - Reference to an array that will be filled/appended with header information for each added file.
+    * @param array &$p_options - Reference to an array of options affecting addition (for example PCLZIP_OPT_REMOVE_ALL_PATH).
+    * @returns int Returns 1 on success or a PclZip error code on failure.
+    */
     public function privAddFileList($p_filedescr_list, &$p_result_list, &$p_options)
     {
         $v_result=1;
@@ -2362,6 +2663,21 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+     * Prepare and add a single file descriptor to the zip archive header and write its data to the zip stream.
+     * @example
+     * $fileDescr = array(
+     *     'filename' => '/path/to/file.txt',
+     *     'type' => 'file', // 'file' | 'folder' | 'virtual_file'
+     *     'stored_filename' => 'file.txt', // name saved in archive
+     *     // 'content' => 'file contents for virtual_file',
+     *     // 'mtime' => 1609459200,
+     *     // 'comment' => 'Optional comment'
+     * );
+     * $header = array();
+     * $options = array(
+     *     PCLZIP_OPT_NO_COMPRESSION => false,
+     *     // PCLZIP_CB_PRE_ADD => function($cmd, &$fileInfo) { /* ... */
     public function privAddFile($p_filedescr, &$p_header, &$p_options)
     {
         $v_result=1;
@@ -2606,6 +2922,19 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Add a file to the archive by creating a temporary gzip file, extracting its compressed attributes (crc, compressed size, compression method), writing the file header to the archive, and appending the compressed data.
+    * @example
+    * $p_filedescr = array('filename' => '/path/to/file.txt');
+    * $p_header = array();
+    * $p_options = array();
+    * $result = $this->privAddFileUsingTempFile($p_filedescr, $p_header, $p_options);
+    * echo $result; // e.g. 1 on success or a PCLZIP error code on failure
+    * @param {array} $p_filedescr - File description array with at least a 'filename' entry (string path to the source file).
+    * @param {array} &$p_header - Reference to the header array that will be updated with compression attributes (crc, compressed_size, compression).
+    * @param {array} &$p_options - Reference to options array (unused or additional options for file addition).
+    * @returns {int} Return PCLZIP_ERR_NO_ERROR (or 1) on success, or a PCLZIP error code on failure.
+    */
     public function privAddFileUsingTempFile($p_filedescr, &$p_header, &$p_options)
     {
         $v_result=PCLZIP_ERR_NO_ERROR;
@@ -2716,6 +3045,17 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Calculate and set the stored filename for a file entry based on the file description and options.
+    * @example
+    * $file = array('filename' => './path/to/file.txt');
+    * $options = array(PCLZIP_OPT_REMOVE_PATH => './path/to'); // or PCLZIP_OPT_ADD_PATH => 'archive_dir', PCLZIP_OPT_REMOVE_ALL_PATH => 1
+    * $result = $this->privCalculateStoredFilename($file, $options);
+    * echo $result; // 1 (success) and $file['stored_filename'] will contain 'file.txt'
+    * @param {array} &$p_filedescr - File description array passed by reference. Must include 'filename'. Optional keys: 'new_full_name', 'new_short_name'. On return 'stored_filename' is set to the calculated archive path.
+    * @param {array} &$p_options - Options array passed by reference. Recognized keys: PCLZIP_OPT_ADD_PATH (string), PCLZIP_OPT_REMOVE_PATH (string), PCLZIP_OPT_REMOVE_ALL_PATH (bool/int).
+    * @returns {int} Return 1 on success.
+    */
     public function privCalculateStoredFilename(&$p_filedescr, &$p_options)
     {
         $v_result=1;
@@ -2814,6 +3154,26 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Write the local file header for a file entry into the open ZIP file stream.
+    * @example
+    * $sample_header = array(
+    *     'mtime' => 1609459200,            // UNIX timestamp (2021-01-01 00:00:00)
+    *     'version_extracted' => 20,        // version needed to extract
+    *     'flag' => 0,                      // general purpose bit flag
+    *     'compression' => 0,               // compression method (0 = stored)
+    *     'crc' => 123456789,               // CRC32 of the file data
+    *     'compressed_size' => 1024,        // size of compressed data
+    *     'size' => 2048,                   // original uncompressed size
+    *     'stored_filename' => 'docs/readme.txt',
+    *     'extra_len' => 0,
+    *     'extra' => ''
+    * );
+    * $result = $this->privWriteFileHeader($sample_header);
+    * echo $result; // 1
+    * @param {{array}} {{&$p_header}} - Reference to an associative header array containing file metadata used to build and write the local file header.
+    * @returns {{int}} Return 1 on success.
+    */
     public function privWriteFileHeader(&$p_header)
     {
         $v_result=1;
@@ -2851,6 +3211,33 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+     * Write the central directory file header for a single file entry into the ZIP archive.
+     * @example
+     * $header = array(
+     *     'version' => 20,
+     *     'version_extracted' => 20,
+     *     'flag' => 0,
+     *     'compression' => 0,
+     *     'mtime' => time(),
+     *     'crc' => 0,
+     *     'compressed_size' => 0,
+     *     'size' => 0,
+     *     'stored_filename' => 'example.txt',
+     *     'extra_len' => 0,
+     *     'extra' => '',
+     *     'comment_len' => 0,
+     *     'comment' => '',
+     *     'disk' => 0,
+     *     'internal' => 0,
+     *     'external' => 0,
+     *     'offset' => 0,
+     * );
+     * $result = $zip->privWriteCentralFileHeader($header);
+     * echo $result; // 1
+     * @param {array} $p_header - Header array passed by reference containing file metadata used to build the central directory record (expected keys: version, version_extracted, flag, compression, mtime, crc, compressed_size, size, stored_filename, extra_len, extra, comment_len, comment, disk, internal, external, offset).
+     * @returns {int} Return 1 on success.
+     */
     public function privWriteCentralFileHeader(&$p_header)
     {
         $v_result=1;
@@ -2893,6 +3280,17 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Write the End Of Central Directory (EOCD) record to the open ZIP file and append an optional archive comment.
+    * @example
+    * $result = $zip->privWriteCentralHeader(3, 12345, 4096, "Created by MyApp");
+    * echo $result // 1
+    * @param {int} $p_nb_entries - Number of entries in the central directory (total entries).
+    * @param {int} $p_size - Size in bytes of the central directory.
+    * @param {int} $p_offset - Offset (in bytes) of the start of the central directory within the ZIP file.
+    * @param {string} $p_comment - Archive comment to append to the EOCD record (may be an empty string).
+    * @returns {int} Return 1 on success.
+    */
     public function privWriteCentralHeader($p_nb_entries, $p_size, $p_offset, $p_comment)
     {
         $v_result = 1;
@@ -2919,6 +3317,21 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Read the ZIP archive central directory and populate the provided list with file information entries.
+    * @example
+    * $list = array();
+    * $zip = new PclZip('archive.zip');
+    * $result = $zip->privList($list);
+    * echo $result; // 1 on success, or an error code returned by PclZip::errorCode()
+    * // Example $list after success:
+    * // array(
+    * //   0 => array('filename'=>'doc.txt','stored_filename'=>'doc.txt','index'=>0,'size'=>1024,'compressed_size'=>900,'mtime'=>1609459200, ...),
+    * //   1 => array('filename'=>'image.png','stored_filename'=>'image.png','index'=>1,'size'=>20480,'compressed_size'=>12345,'mtime'=>1609459300, ...)
+    * // );
+    * @param {array} &$p_list - Reference to an array that will be filled with parsed file entries (metadata) from the archive.
+    * @returns {int} Return 1 on success, or a PclZip error code on failure.
+    */
     public function privList(&$p_list)
     {
         $v_result = 1;
@@ -3001,6 +3414,29 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Convert a ZIP central directory header into a normalized file information array.
+    * @example
+    * $p_header = array(
+    *     'filename' => 'dir/sub/file.txt',
+    *     'stored_filename' => 'file.txt',
+    *     'size' => 1234,
+    *     'compressed_size' => 512,
+    *     'mtime' => 1609459200,
+    *     'comment' => 'Example file',
+    *     'external' => 0x00000010,
+    *     'index' => 3,
+    *     'status' => 0,
+    *     'crc' => 1234567890
+    * );
+    * $info = array();
+    * $result = $this->privConvertHeader2FileInfo($p_header, $info);
+    * print_r($info); // render processed file info array like ['filename'=>'dir/sub/file.txt','stored_filename'=>'file.txt','size'=>1234,'compressed_size'=>512,'mtime'=>1609459200,'comment'=>'Example file','folder'=>true,'index'=>3,'status'=>0,'crc'=>1234567890]
+    * echo $result; // render 1
+    * @param {array} $p_header - Header data (as read from the ZIP central directory) to convert.
+    * @param {array} &$p_info - Reference to an array that will be filled with normalized file information.
+    * @returns {int} Return 1 on success.
+    */
     public function privConvertHeader2FileInfo($p_header, &$p_info)
     {
         $v_result=1;
@@ -3040,6 +3476,20 @@ class PclZip
     // Return Values :
     //     1 on success,0 or less on error (see error code list)
     // --------------------------------------------------------------------------------
+    /**
+    * Extract files from the ZIP archive according to provided rules/options and populate the given file list.
+    * @example
+    * $fileList = array();
+    * $options = array(PCLZIP_OPT_BY_NAME => array('docs/', 'readme.txt'), PCLZIP_OPT_EXTRACT_AS_STRING => false);
+    * $result = $pclzip->privExtractByRule($fileList, './archives/', 'docs/to/remove/', '', $options);
+    * echo $result; // 1 on success or a PclZip error code on failure
+    * @param {array} &$p_file_list - Reference to an array that will be filled with extracted file info entries (each entry contains attributes like stored_filename, status, content when applicable).
+    * @param {string} $p_path - Destination base path where files will be extracted (relative or absolute). Example: './extracted'
+    * @param {string} $p_remove_path - Path prefix to remove from stored filenames when extracting (should end with '/'). Example: 'folder/to/remove/'
+    * @param {string} $p_remove_all_path - Path to remove entirely from stored filenames (if any). Example: ''
+    * @param {array} &$p_options - Reference to an associative array of extraction options (e.g. PCLZIP_OPT_BY_NAME, PCLZIP_OPT_BY_PREG, PCLZIP_OPT_BY_INDEX, PCLZIP_OPT_EXTRACT_AS_STRING, PCLZIP_OPT_EXTRACT_IN_OUTPUT, PCLZIP_OPT_STOP_ON_ERROR).
+    * @returns {int} Return 1 on success, or a PclZip error code (integer) on failure.
+    */
     public function privExtractByRule(&$p_file_list, $p_path, $p_remove_path, $p_remove_all_path, &$p_options)
     {
         $v_result=1;
@@ -3314,6 +3764,28 @@ class PclZip
     // 1 : ... ?
     // PCLZIP_ERR_USER_ABORTED(2) : User ask for extraction stop in callback
     // --------------------------------------------------------------------------------
+    /**
+    * Extract a single file entry from the ZIP archive to disk, handling path removal, directory creation, callbacks, compression and permissions.
+    * @example
+    * $p_entry = array(
+    *     'filename' => 'folder/in/archive/file.txt',
+    *     'mtime' => time(),
+    *     'external' => 0,
+    *     'compressed_size' => 0,
+    *     'size' => 0,
+    *     'compression' => 0,
+    *     'flag' => 0
+    * );
+    * $options = array();
+    * $result = $pclzip->privExtractFile($p_entry, 'output/dir', 'folder/in/archive/', false, $options);
+    * echo $result; // 1 on success or an error code (int)
+    * @param {array} &$p_entry - Reference to the file header array (fields used: filename, mtime, external, compressed_size, size, compression, flag, status, etc.).
+    * @param {string} $p_path - Destination path to prepend to the extracted file's filename (empty to use entry filename).
+    * @param {string} $p_remove_path - Archive path prefix to remove from the entry filename before extraction.
+    * @param {bool} $p_remove_all_path - If true, remove all path information and extract only the basename of the file.
+    * @param {array} &$p_options - Reference to options array controlling extraction (e.g. PCLZIP_OPT_EXTRACT_DIR_RESTRICTION, PCLZIP_CB_PRE_EXTRACT, PCLZIP_CB_POST_EXTRACT, PCLZIP_OPT_SET_CHMOD, PCLZIP_OPT_STOP_ON_ERROR, PCLZIP_OPT_TEMP_FILE_ON/OFF, etc.).
+    * @returns {int} Return 1 on success or a negative PCLZIP error code on failure.
+    */
     public function privExtractFile(&$p_entry, $p_path, $p_remove_path, $p_remove_all_path, &$p_options)
     {
         $v_result=1;
@@ -3591,6 +4063,29 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Extracts a compressed entry from the archive by writing a temporary gzip file,
+    * inflating it and writing the decompressed data to the entry's destination filename.
+    * The method creates a temporary .gz file, writes gzip header/footer, reads the compressed
+    * data from the archive file descriptor, inflates the temporary file with gzopen/gzread,
+    * then writes the decompressed content to the target filename. On errors the entry's
+    * 'status' may be set (e.g. "write_error", "read_error") and PclZip error codes are used.
+    * @example
+    * $entry = array(
+    *     'filename' => 'extracted/file.txt',
+    *     'compressed_size' => 1024,
+    *     'size' => 2048,
+    *     'compression' => 8, // compression method byte used in gzip header
+    *     'crc' => 123456789
+    * );
+    * $options = array(); // extraction options (if any)
+    * $pclzip = new PclZip($archivePath); // instance with open zip file descriptor
+    * $result = $pclzip->privExtractFileUsingTempFile($entry, $options);
+    * echo $result; // 1 on success
+    * @param array &$p_entry - Entry metadata array (expects keys: 'filename','compressed_size','size','compression','crc'); may be modified (e.g. 'status' on error).
+    * @param array &$p_options - Extraction options array (passed by reference; reserved/used for extraction behavior).
+    * @returns int Return 1 on success, or a PclZip error code on failure.
+    */
     public function privExtractFileUsingTempFile(&$p_entry, &$p_options)
     {
         $v_result=1;
@@ -3664,6 +4159,23 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Extracts a single ZIP entry and outputs its uncompressed contents directly (echo).
+    * @example
+    * $entry = array(
+    *     'filename' => 'example.txt',
+    *     'status' => 'ok',
+    *     'compressed_size' => 42,
+    *     'size' => 42,
+    *     'external' => 0
+    * );
+    * $options = array(); // or array(PCLZIP_CB_PRE_EXTRACT => $preCallback, PCLZIP_CB_POST_EXTRACT => $postCallback);
+    * $result = $pclzip->privExtractFileInOutput($entry, $options);
+    * echo $result // render 1 on success or an error code such as PCLZIP_ERR_USER_ABORTED;
+    * @param {array} $p_entry - Entry information array passed by reference. Expected keys include 'filename', 'status', 'compressed_size', 'size', 'external' and others; the function may modify 'status' and 'filename'.
+    * @param {array} $p_options - Options array passed by reference. May contain callbacks PCLZIP_CB_PRE_EXTRACT and PCLZIP_CB_POST_EXTRACT (callables) and other extraction options.
+    * @returns {int} Return code: 1 on success, PCLZIP_ERR_USER_ABORTED for a user-aborted operation, or another PCLZIP error code on failure.
+    */
     public function privExtractFileInOutput(&$p_entry, &$p_options)
     {
         $v_result=1;
@@ -3768,6 +4280,27 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Extract the contents of a zip entry into a string.
+    * @example
+    * $entry = array(
+    *     'filename' => 'docs/readme.txt',
+    *     'status' => 'ok',
+    *     'compression' => 0,
+    *     'compressed_size' => 123,
+    *     'size' => 123,
+    *     'external' => 0
+    * );
+    * $options = array(); // or array(PCLZIP_CB_PRE_EXTRACT => 'pre_cb', PCLZIP_CB_POST_EXTRACT => 'post_cb');
+    * $content = '';
+    * $result = $zip->privExtractFileAsString($entry, $content, $options);
+    * echo $result; // 1 on success, or an error code such as PCLZIP_ERR_USER_ABORTED
+    * echo substr($content, 0, 100); // sample output: "Hello, this is the file content..."
+    * @param array &$p_entry - Reference to the zip entry array (input/output). Expected keys: filename, compressed_size, size, compression, external, status; status may be modified ('ok', 'skipped', 'aborted').
+    * @param string &$p_string - Reference to the string that will receive the extracted file content. On error or when callbacks alter content, this value may be changed.
+    * @param array &$p_options - Reference to options array. May contain callbacks PCLZIP_CB_PRE_EXTRACT and PCLZIP_CB_POST_EXTRACT which will be invoked with (event, $file_info).
+    * @returns int Return code: 1 on success, or a PCLZIP error constant (e.g. PCLZIP_ERR_USER_ABORTED) on failure.
+    */
     public function privExtractFileAsString(&$p_entry, &$p_string, &$p_options)
     {
         $v_result=1;
@@ -3877,6 +4410,31 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+     * Read a local file header from the current ZIP stream and populate the provided header array.
+     * @example
+     * $header = array();
+     * $result = $zip->privReadFileHeader($header);
+     * // On success $result === 1 and $header is populated. On failure $result is a PclZip error code.
+     * // Example populated $header (sample values):
+     * // Array (
+     * //   [filename] => "documents/report.txt",
+     * //   [extra] => "",
+     * //   [version_extracted] => 20,
+     * //   [compression] => 0,
+     * //   [size] => 1024,
+     * //   [compressed_size] => 1024,
+     * //   [crc] => 305419896,
+     * //   [flag] => 0,
+     * //   [filename_len] => 16,
+     * //   [mdate] => 12345,
+     * //   [mtime] => 1609459200,
+     * //   [stored_filename] => "documents/report.txt",
+     * //   [status] => "ok"
+     * // )
+     * @param {array} &$p_header - Reference to an associative array that will be filled with header fields (filename, extra, version_extracted, compression, size, compressed_size, crc, flag, filename_len, mdate, mtime, stored_filename, status).
+     * @returns {int} Return 1 on success, or a PclZip error code (integer) on failure.
+     */
     public function privReadFileHeader(&$p_header)
     {
         $v_result=1;
@@ -3973,6 +4531,38 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Read a central directory file header from the current position of the ZIP file descriptor and populate the provided header array.
+    * @example
+    * $p_header = array();
+    * $result = $pclzip->privReadCentralFileHeader($p_header);
+    * echo $result; // 1 on success, or an integer error code (PclZip::errorCode()) on failure
+    * // Sample populated $p_header after success:
+    * // array(
+    * //   'version' => 20,
+    * //   'version_extracted' => 20,
+    * //   'flag' => 0,
+    * //   'compression' => 0,
+    * //   'mtime' => 1609459200, // UNIX timestamp
+    * //   'crc' => 123456789,
+    * //   'compressed_size' => 1024,
+    * //   'size' => 2048,
+    * //   'filename_len' => 9,
+    * //   'extra_len' => 0,
+    * //   'comment_len' => 0,
+    * //   'disk' => 0,
+    * //   'internal' => 0,
+    * //   'external' => 16,
+    * //   'offset' => 123,
+    * //   'filename' => 'file.txt',
+    * //   'extra' => '',
+    * //   'comment' => '',
+    * //   'stored_filename' => 'file.txt',
+    * //   'status' => 'ok'
+    * // );
+    * @param {array} &$p_header - Reference to an array that will be filled with the central file header fields (filename, sizes, crc, mtime, extra, comment, offset, external, stored_filename, status, etc.).
+    * @returns {int} 1 on success, or a PclZip error code (PclZip::errorCode()) on failure.
+    */
     public function privReadCentralFileHeader(&$p_header)
     {
         $v_result = 1;
@@ -4078,6 +4668,34 @@ class PclZip
     //     1 on success,
     //     0 on error;
     // --------------------------------------------------------------------------------
+    /**
+    * Compare a ZIP local file header with its central directory header and synchronize fields when necessary.
+    * @example
+    * $local = array(
+    *     'filename' => 'file.txt',
+    *     'version_extracted' => 20,
+    *     'flag' => 8,
+    *     'compression' => 0,
+    *     'mtime' => 1609459200,
+    *     'filename_len' => 8,
+    * );
+    * $central = array(
+    *     'filename' => 'file.txt',
+    *     'version_extracted' => 20,
+    *     'flag' => 8,
+    *     'compression' => 0,
+    *     'mtime' => 1609459200,
+    *     'filename_len' => 8,
+    *     'size' => 1234,
+    *     'compressed_size' => 1234,
+    *     'crc' => 0x1A2B3C4D,
+    * );
+    * $result = $zip->privCheckFileHeaders($local, $central);
+    * echo $result; // 1
+    * @param {array} $p_local_header - Local file header array passed by reference; may be updated with size, compressed_size and crc when flag bit 3 is set.
+    * @param {array} $p_central_header - Central directory header array passed by reference; serves as authoritative source for some fields.
+    * @returns {int} Return 1 on success (headers checked and local header possibly synchronized).
+    */
     public function privCheckFileHeaders(&$p_local_header, &$p_central_header)
     {
         $v_result=1;
@@ -4115,6 +4733,26 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Read the End of Central Directory (EOCD) record from the open ZIP archive and populate the provided array with central directory metadata.
+    * @example
+    * $central_dir = array();
+    * $result = $zip->privReadEndCentralDir($central_dir);
+    * echo $result; // 1 on success, or a PclZip error code on failure
+    * // Example populated $central_dir after success:
+    * // Array
+    * // (
+    * //   [comment] => 'Archive comment'
+    * //   [entries] => 3
+    * //   [disk_entries] => 3
+    * //   [offset] => 1024
+    * //   [size] => 2048
+    * //   [disk] => 0
+    * //   [disk_start] => 0
+    * // )
+    * @param {array} &$p_central_dir - Reference to an array that will be filled with central directory information (keys: comment, entries, disk_entries, offset, size, disk, disk_start).
+    * @returns {int} Return 1 on success, or a PclZip error code (int) on failure.
+    */
     public function privReadEndCentralDir(&$p_central_dir)
     {
         $v_result=1;
@@ -4261,6 +4899,18 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Delete entries from the current ZIP archive according to the provided rules and update the resulting file list.
+    * @example
+    * $p_result_list = array();
+    * $p_options = array(PCLZIP_OPT_BY_NAME => array('docs/', 'readme.txt'));
+    * $zip = new PclZip('archive.zip');
+    * $v_result = $zip->privDeleteByRule($p_result_list, $p_options);
+    * echo $v_result; // 1 on success, otherwise an error code
+    * @param array &$p_result_list - Reference to an array that will be populated with information about files kept in the archive (file info entries).
+    * @param array &$p_options - Reference to an associative array of deletion options (e.g. PCLZIP_OPT_BY_NAME, PCLZIP_OPT_BY_PREG, PCLZIP_OPT_BY_INDEX, PCLZIP_OPT_COMMENT).
+    * @returns int Return code: 1 on success, otherwise a PclZip error code (see PclZip::errorCode()).
+    */
     public function privDeleteByRule(&$p_result_list, &$p_options)
     {
         $v_result=1;
@@ -4526,6 +5176,15 @@ class PclZip
     //        1 : OK
     //     -1 : Unable to create directory
     // --------------------------------------------------------------------------------
+    /**
+    * Ensure a directory path exists by recursively creating any missing parent directories.
+    * @example
+    * $result = $pclzip->privDirCheck('/tmp/example/newdir', true);
+    * echo $result; // 1 on success, or an error code (e.g. PCLZIP_ERR_DIR_CREATE_FAIL code) on failure
+    * @param string $p_dir - Directory path to check or create.
+    * @param bool $p_is_dir - If true, a trailing '/' is removed from $p_dir before processing.
+    * @returns int Return 1 on success, or a PclZip error code on failure.
+    */
     public function privDirCheck($p_dir, $p_is_dir = false)
     {
         $v_result = 1;
@@ -4574,6 +5233,16 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Merge another PclZip archive into this archive. Copies entries and central directory from the provided archive into the current archive, updates the central directory and merges comments.
+    * @example
+    * $archive = new PclZip('archive.zip');
+    * $toAdd   = new PclZip('to_add.zip');
+    * $result  = $archive->privMerge($toAdd);
+    * echo $result; // 1 (success) or an error code (e.g. PCLZIP_ERR_READ_OPEN_FAIL)
+    * @param {PclZip} &$p_archive_to_add - PclZip object representing the archive to add/merge.
+    * @returns {int} Return 1 on success, or a PclZip error code on failure.
+    */
     public function privMerge(&$p_archive_to_add)
     {
         $v_result=1;
@@ -4745,6 +5414,14 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Duplicate an existing archive file into the current temporary zip file descriptor.
+    * @example
+    * $result = $this->privDuplicate('/var/www/project/archive.zip');
+    * echo $result // 1
+    * @param string $p_archive_filename - Path to the archive file to duplicate (source ZIP file).
+    * @returns int 1 on success, or a PCLZIP error code (e.g. PCLZIP_ERR_READ_OPEN_FAIL) on failure.
+    */
     public function privDuplicate($p_archive_filename)
     {
         $v_result=1;
@@ -4833,6 +5510,13 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Disable PHP runtime magic quotes if available and memorize the previous status in $this->magic_quotes_status.
+    * @example
+    * $result = $this->privDisableMagicQuotes();
+    * echo $result; // 1
+    * @returns {int} 1 on completion (this method always returns 1).
+    */
     public function privDisableMagicQuotes()
     {
         $v_result=1;
@@ -4866,6 +5550,15 @@ class PclZip
     // Parameters :
     // Return Values :
     // --------------------------------------------------------------------------------
+    /**
+    * Restore the PHP runtime magic quotes setting to its previous state (if applicable).
+    * @example
+    * $pclzip = new PclZip(); // instance of the class that contains privSwapBackMagicQuotes
+    * $result = $pclzip->privSwapBackMagicQuotes();
+    * echo $result; // 1
+    * @param void $none - No arguments.
+    * @returns int Return status (1 on completion).
+    */
     public function privSwapBackMagicQuotes()
     {
         $v_result=1;
@@ -4899,6 +5592,14 @@ class PclZip
 // Parameters :
 // Return Values :
 // --------------------------------------------------------------------------------
+/**
+* Reduce/normalize a path string by resolving "." and ".." segments and removing redundant slashes.
+* @example
+* $result = PclZipUtilPathReduction('dir1/dir2/../file.txt');
+* echo $result // "dir1/file.txt";
+* @param {string} $p_dir - Path to reduce (may contain ".", "..", and redundant slashes).
+* @returns {string} Reduced/normalized path string.
+*/
 function PclZipUtilPathReduction($p_dir)
 {
     $v_result = "";
@@ -4974,6 +5675,15 @@ function PclZipUtilPathReduction($p_dir)
 //     1 if $p_path is inside directory $p_dir
 //     2 if $p_path is exactly the same as $p_dir
 // --------------------------------------------------------------------------------
+/**
+* Determine whether a path is inside, identical to, or outside a directory path.
+* @example
+* $result = PclZipUtilPathInclusion('folder/sub', 'folder/sub/file.txt');
+* echo $result; // 1 (means $p_path is inside $p_dir)
+* @param string $p_dir - Directory path to test (can be relative like './dir' or '.' ).
+* @param string $p_path - Path to check for inclusion (can be relative like './path' or '.' ).
+* @returns int Return code: 0 = not included, 1 = $p_path is inside $p_dir (prefix), 2 = paths are exactly the same.
+*/
 function PclZipUtilPathInclusion($p_dir, $p_path)
 {
     $v_result = 1;
@@ -5051,6 +5761,19 @@ function PclZipUtilPathInclusion($p_dir, $p_path)
 //                         3 : src & dest gzip
 // Return Values :
 // --------------------------------------------------------------------------------
+/**
+* Copy a block of data from a source stream to a destination stream, optionally using gzip read/write functions based on mode.
+* @example
+* $src = fopen('php://memory', 'rb'); // or gzopen('file.gz', 'rb') for gzip source
+* $dest = fopen('/path/to/out.bin', 'wb'); // or gzopen('/path/to/out.gz', 'wb') for gzip destination
+* $result = PclZipUtilCopyBlock($src, $dest, 1024, 0);
+* echo $result; // 1
+* @param resource $p_src - Source stream handle. For mode 0 and 2 use a plain fopen() handle; for mode 1 and 3 use a gzopen() handle.
+* @param resource $p_dest - Destination stream handle. For mode 0 and 1 use a plain fopen() handle; for mode 2 and 3 use a gzopen() handle.
+* @param int $p_size - Number of bytes to copy from source to destination.
+* @param int $p_mode - Copy mode: 0 = fread/fwrite (plain->plain), 1 = gzread/fwrite (gz->plain), 2 = fread/gzwrite (plain->gz), 3 = gzread/gzwrite (gz->gz).
+* @returns int Return 1 on success.
+*/
 function PclZipUtilCopyBlock($p_src, $p_dest, $p_size, $p_mode = 0)
 {
     $v_result = 1;
@@ -5102,6 +5825,15 @@ function PclZipUtilCopyBlock($p_src, $p_dest, $p_size, $p_mode = 0)
 // Return Values :
 //     1 on success, 0 on failure.
 // --------------------------------------------------------------------------------
+/**
+ * Attempt to rename a file; if rename fails, fall back to copy then unlink.
+ * @example
+ * $result = PclZipUtilRename('/tmp/source.txt', '/tmp/dest.txt');
+ * echo $result; // 1
+ * @param {string} $p_src - Path to the source file.
+ * @param {string} $p_dest - Path to the destination file.
+ * @returns {int} 1 on success, 0 on failure.
+ */
 function PclZipUtilRename($p_src, $p_dest)
 {
     $v_result = 1;
@@ -5130,6 +5862,14 @@ function PclZipUtilRename($p_src, $p_dest)
 // Return Values :
 //     The option text value.
 // --------------------------------------------------------------------------------
+/**
+* Get the name (constant identifier) for a given PCLZip option value.
+* @example
+* $result = PclZipUtilOptionText(PCLZIP_OPT_PATH);
+* echo $result // render "PCLZIP_OPT_PATH";
+* @param int $p_option - Option value (constant value) to look up.
+* @returns string Return the matching constant name (e.g. "PCLZIP_OPT_PATH") or 'Unknown' if not found.
+*/
 function PclZipUtilOptionText($p_option)
 {
     $v_list = get_defined_constants();
@@ -5157,6 +5897,15 @@ function PclZipUtilOptionText($p_option)
 // Return Values :
 //     The path translated.
 // --------------------------------------------------------------------------------
+/**
+* Translate a Windows file path to a normalized POSIX-style path (convert backslashes to slashes and optionally remove the drive letter).
+* @example
+* $result = PclZipUtilTranslateWinPath('C:\\\\folder\\\\file.txt', true);
+* echo $result // render /folder/file.txt
+* @param {string} $p_path - Windows path to translate (e.g. "C:\\folder\\file.txt").
+* @param {bool} $p_remove_disk_letter - Whether to remove the drive letter (default true).
+* @returns {string} Translated path with forward slashes and optional drive letter removal.
+*/
 function PclZipUtilTranslateWinPath($p_path, $p_remove_disk_letter = true)
 {
     if (stristr(php_uname(), 'windows')) {
