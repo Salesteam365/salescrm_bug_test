@@ -12,6 +12,18 @@ class Cron_massmailing extends CI_Controller
   }
   
   
+ /**
+ * Process queued mass-mailing jobs: fetch pending email records, load template files, send emails and mark records as sent.
+ * @example
+ * // Call from controller/cron (no arguments):
+ * $this->cron_massmailing->index();
+ * // Sample email record processed:
+ * // ['id' => 42, 'full_name' => 'John Doe', 'eamil' => 'john@example.com', 'template_name' => '/path/to/template.html']
+ * // The controller will read '/path/to/template.html' and call:
+ * // $this->email_lib->send_email('john@example.com', 'Hi Sir/Mam', $message);
+ * @param void $none - No parameters are required for this controller method.
+ * @returns void No return value; emails are sent and database rows updated via Massmailing_model->update_email().
+ */
 	public function index()
 	{
 	   
