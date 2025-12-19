@@ -369,6 +369,16 @@ class PHPExcel_Chart_DataSeries
         return $this;
     }
 
+    /**
+    * Refresh cached plot series data (plotValues, plotLabel, plotCategory) from the provided worksheet.
+    * @example
+    * // $objPHPExcel is an instance of PHPExcel and $dataSeries is an instance of PHPExcel_Chart_DataSeries
+    * $sheet = $objPHPExcel->getActiveSheet();
+    * $dataSeries->refresh($sheet);
+    * echo 'Chart data refreshed'; // Chart data refreshed
+    * @param PHPExcel_Worksheet $worksheet - Worksheet instance used to reload series data.
+    * @returns void No return value.
+    */
     public function refresh(PHPExcel_Worksheet $worksheet)
     {
         foreach ($this->plotValues as $plotValues) {
