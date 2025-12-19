@@ -70,6 +70,21 @@ class PHPExcel_Calculation_Financial
     }
 
 
+    /**
+    * Calculate the first coupon period date (as an Excel serialized date) for a security given settlement and maturity.
+    * @example
+    * $settlement = 40177; // Excel serial date (e.g. 2010-02-01)
+    * $maturity  = 40909; // Excel serial date (e.g. 2012-02-01)
+    * $frequency = 2;     // semi-annual coupons
+    * $next      = false;
+    * $result = Financial::couponFirstPeriodDate($settlement, $maturity, $frequency, $next);
+    * echo $result; // e.g. 40744 (Excel serial date of calculated first coupon period)
+    * @param {float|int} $settlement - Excel serialized settlement date (number).
+    * @param {float|int} $maturity - Excel serialized maturity date (number).
+    * @param {int} $frequency - Number of coupon payments per year (1, 2, or 4).
+    * @param {bool} $next - If true, returns the next period date after the found date; otherwise returns the found period.
+    * @returns {float|int} Excel serialized date (number) of the first coupon period.
+    */
     private static function couponFirstPeriodDate($settlement, $maturity, $frequency, $next)
     {
         $months = 12 / $frequency;
@@ -1646,6 +1661,20 @@ class PHPExcel_Calculation_Financial
     }
 
 
+    /**
+    * Calculate the price per 100 face value of a security that pays periodic interest.
+    * @example
+    * $result = PHPExcel_Calculation_Financial::PRICE('2025-01-01', '2027-01-01', 0.05, 0.04, 100, 2, 0);
+    * echo $result; // e.g. 101.23
+    * @param mixed $settlement - Settlement date of the security (Excel date serial, timestamp or date string).
+    * @param mixed $maturity - Maturity date of the security (Excel date serial, timestamp or date string).
+    * @param float $rate - Annual coupon rate as a decimal (e.g., 0.05 for 5%).
+    * @param float $yield - Annual yield as a decimal.
+    * @param float $redemption - Redemption value per 100 of face value (typically 100).
+    * @param int $frequency - Number of coupon payments per year (1, 2 or 4).
+    * @param int $basis - Day count basis (0 = US (NASD) 30/360, 1 = Actual/actual, 2 = Actual/360, 3 = Actual/365, 4 = European 30/360). Default 0.
+    * @returns float|mixed Price per 100 face value as a float, or an error value (e.g. VALUE or NaN) on invalid input.
+    */
     public static function PRICE($settlement, $maturity, $rate, $yield, $redemption, $frequency, $basis = 0)
     {
         $settlement    = PHPExcel_Calculation_Functions::flattenSingleValue($settlement);
@@ -2141,6 +2170,18 @@ class PHPExcel_Calculation_Financial
     }
 
 
+    /**
+    * Calculate the internal rate of return (XIRR) for a series of cash flows with irregular intervals.
+    * @example
+    * $values = array(-100, 110);
+    * $dates  = array('2020-01-01', '2021-01-01');
+    * $result = PHPExcel_Calculation_Financial::XIRR($values, $dates);
+    * echo $result // 0.1
+    * @param {array} $values - Array of cash flow values (positive = inflow, negative = outflow).
+    * @param {array} $dates - Array of dates corresponding to each cash flow (strings, DateTime objects or Excel date serials).
+    * @param {float} $guess - Initial guess for the rate (optional, default 0.1).
+    * @returns {float|string} Calculated internal rate of return as a decimal, or a PHPExcel error string on failure.
+    */
     public static function XIRR($values, $dates, $guess = 0.1)
     {
         if ((!is_array($values)) && (!is_array($dates))) {
