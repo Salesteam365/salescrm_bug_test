@@ -2,6 +2,13 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 class Home extends CI_Controller
 {
+ /**
+  * Constructor for the Home1 controller: initializes the parent controller and loads the URL helper, required models (Login_model, Salesorders_model, Branch_model, Reports_model, Target_model, roles_model) and libraries (upload, email_lib).
+  * @example
+  * $home = new Home1();
+  * echo get_class($home); // Home1
+  * @returns void Constructor performs initialization and returns nothing.
+  */
 	public function __construct()
 	{
 		parent::__construct();
@@ -14,6 +21,15 @@ class Home extends CI_Controller
 		$this->load->model('roles_model');
 		$this->load->library(array('upload', 'email_lib'));
 	}
+ /**
+ * Load dashboard data (targets, reports, counts, renewal orders) and render the 'users/newdashboard' view or redirect to company/login if session is not valid.
+ * @example
+ * $home = new Home1();
+ * $home->index();
+ * // Expected: loads 'users/newdashboard' view with aggregated dashboard data (e.g. 'dateyr' => [2024], 'total_leads' => 125) or redirects to 'company' or 'login'.
+ * @param void none - No parameters are required for this controller method.
+ * @returns void Nothing is returned; this method either loads a view with prepared $data or redirects the user.
+ */
 	public function index()
     {  
         $list = $this->Reports_model->get_profit_datatables_product_wise();
@@ -60,6 +76,16 @@ class Home extends CI_Controller
             redirect('login');
         }
     }
+ /**
+ * Retrieve yearly/monthly counts for organizations (customers), leads, opportunities and quotes and echo them as a JSON object.
+ * @example
+ * // Call from controller:
+ * $this->getyeargraph();
+ * // Example output:
+ * // {"totalcustarr":[12,8,5],"totalleadarr":[9,6,2],"totalopparr":[4,3,1],"totalquotearr":[7,5,2]}
+ * @param {void} none - No parameters required.
+ * @returns {void} Echoes a JSON-encoded array with keys: totalcustarr, totalleadarr, totalopparr, totalquotearr.
+ */
 	public function getyeargraph(){
         $selyeargraph="YEAR(datetime) AS year, MONTH(datetime) AS month, COUNT(id) AS total";
 		$data['totalcust_yeargraph']=$this->Salesorders_model->yeargraph($selyeargraph,'organization')->result_array();
@@ -107,6 +133,17 @@ echo json_encode($dataa);
 		$data = $this->Reports_model->get_profit_graph();
 		echo json_encode($data);
 	}
+ /**
+ * Outputs HTML <option> elements for months available for a given year (reads POST parameter 'yearsDt').
+ * @example
+ * // Simulate POST and call from controller
+ * $_POST['yearsDt'] = '2020';
+ * $this->getMonth();
+ * // Example echoed output:
+ * // <option value='01'>January</option><option value='02'>February</option>...
+ * @param string|int $yearsDt - Year value read from POST parameter 'yearsDt' used to fetch month data.
+ * @returns void Echoes HTML <option> elements for each month (no return value).
+ */
 	public function getMonth()
 	{
 		$yearsDt = $this->input->post('yearsDt');
@@ -130,6 +167,27 @@ echo json_encode($dataa);
 		$data = $this->Reports_model->get_all_sales_by_user();
 		echo json_encode($data);
 	}
+ /**
+ * Sort and output profit graph data as JSON based on the posted date and current user type.
+ * For "admin" users the controller aggregates sales minus purchase costs and ORC to produce per-owner subtotals.
+ * For "standard" users it returns the raw sales records for the given date.
+ * @example
+ * // Example for admin (outputs aggregated owner subtotals)
+ * $this->session->set_userdata('type', 'admin');
+ * $_POST['date'] = '2025-01-15';
+ * $this->sort_profit_graph();
+ * // Outputs JSON like:
+ * // [{"owner":"Alice","sub_total":1500},{"owner":"Bob","sub_total":800}]
+ * @example
+ * // Example for standard (outputs raw sales data)
+ * $this->session->set_userdata('type', 'standard');
+ * $_POST['date'] = '2025-01-15';
+ * $this->sort_profit_graph();
+ * // Outputs JSON like:
+ * // [{"owner":"Charlie","after_discount":"1200","total_orc":"50", ...}, ...]
+ * @param string $date - Date filter read from POST parameter 'date' (format e.g. 'YYYY-MM-DD').
+ * @returns string JSON-encoded response echoed to output: for admin an array of {owner, sub_total}, for standard the raw sales records.
+ */
 	public function sort_profit_graph()
 	{
 		$type = $this->session->userdata('type');
@@ -186,6 +244,15 @@ echo json_encode($dataa);
 		$data = $this->Reports_model->get_all_so_by_user($type);
 		echo json_encode($data);
 	}
+ /**
+ * Outputs a JSON-encoded DataTables response containing dashboard profit rows per owner.
+ * @example
+ * $this->get_dashboard_profit_table();
+ * // Example echoed output:
+ * // {"draw":1,"recordsTotal":2,"recordsFiltered":2,"data":[["Alice","Rp 1.000.000","Rp 800.000","Rp 200.000"],["Bob","Rp 500.000","Rp 400.000","Rp 100.000"]]}
+ * @param {void} none - No parameters required.
+ * @returns {void} Echoes a JSON string (DataTables format) with keys: draw, recordsTotal, recordsFiltered, data.
+ */
 	public function get_dashboard_profit_table()
 	{
 		$list = $this->Reports_model->get_dashboard_profit_datatables();
@@ -210,6 +277,20 @@ echo json_encode($dataa);
 		echo json_encode($list);
 	}
 
+ /**
+ * Retrieve and echo JSON of the top ten customers based on provided POST filters and current session.
+ * @example
+ * // Example usage from a controller context (POST values set by client)
+ * // POST: profitYear=2025, profitMoth=03, searchDate=2025-01-01, financial_year=2024-2025
+ * $this->gettoptencus();
+ * // Sample echoed JSON:
+ * // {"toptencus":[{"customer":"Acme Corp","total":12500.50},{"customer":"Beta LLC","total":9800.00}, ...]}
+ * @param string|null $profitYear - POST 'profitYear': target profit year (e.g. "2025") or null to ignore.
+ * @param string|null $profitMoth - POST 'profitMoth' (note: spelled 'profitMoth' in request): target profit month (e.g. "03") or null to ignore.
+ * @param string|null $searchDate - POST 'searchDate': start date for range filtering in "YYYY-MM-DD" format (e.g. "2025-01-01") or null to use defaults.
+ * @param string|null $financial_year - POST 'financial_year': financial year string (e.g. "2024-2025") or null to ignore.
+ * @param string $session_type - Session 'type': determines access scope ("admin" or "standard"); uses session 'company_email' and optionally 'email'.
+ * @returns string JSON string (echoed) containing a single key "toptencus" with an array of top customer objects. */
 	public function gettoptencus() {
 		$data['toptencus'] = [];
 		$profityear = $this->input->post('profitYear');
@@ -235,6 +316,21 @@ echo json_encode($dataa);
 		echo json_encode($data);
 	}
 	
+ /**
+ * Generate and echo a JSON-encoded HTML string containing the "top quotes" table rows based on POSTed filters and current session.
+ * @example
+ * $_POST['profitYear'] = '2025';
+ * $_POST['profitMoth'] = '04'; // note: key name uses the same typo as in the controller
+ * $_POST['searchDate'] = '2025-01-01';
+ * $_POST['financial_year'] = '2024-2025';
+ * $this->session->set_userdata(['type' => 'admin', 'company_email' => 'admin@example.com']);
+ * $this->topquotes(); // echos a JSON string, e.g. "[\"<tr class=\\\"...\\\">...<td>₹ 12,345</td>...</tr>\"]"
+ * @param {string} profitYear - POST parameter 'profitYear' (year filter, e.g. '2025').
+ * @param {string} profitMoth - POST parameter 'profitMoth' (month filter, note typo in key, e.g. '04').
+ * @param {string} searchDate - POST parameter 'searchDate' (start date in 'Y-m-d', e.g. '2025-01-01').
+ * @param {string} financial_year - POST parameter 'financial_year' (financial year string, e.g. '2024-2025').
+ * @returns {string} JSON-encoded HTML string containing table rows for the top quotes (intended to be echoed directly).
+ */
 	public function topquotes(){
 		$data['topquotes'] = [];
 		$profityear = $this->input->post('profitYear');
@@ -349,6 +445,17 @@ echo json_encode($dataa);
 			redirect('login');
 		}
 	}
+ /**
+ * Update the currently authenticated user's profile (admin or standard), handle optional file uploads (company logo or profile image), persist changes via Login_model, and echo a JSON status response.
+ * @example
+ * // For an admin updating company info with a new logo upload:
+ * $_POST = ['id' => 5, 'name' => 'Acme Admin', 'email' => 'admin@acme.com', 'company_contact' => '1234567890', 'country' => 'US', 'state' => 'NY', 'city' => 'New York', 'address' => '1 Main St', 'zipcode' => '10001'];
+ * // attach file in $_FILES['company_logo'] (jpg/png, max 2MB)
+ * $this->update_profile();
+ * // Example echoed output on success:
+ * // {"status":200}
+ * @param array $postData - POST payload read from request (expected keys for admin: id, name, email, company_contact, country, state, city, address, zipcode; for standard: id, name, contact_number). File inputs are read from $_FILES['company_logo'] or $_FILES['profile_image'].
+ * @returns void Echoes a JSON object with a "status" key (200 on success) and terminates output. */
 	public function update_profile()
 	{
 		$validation = $this->check_validation();
@@ -410,6 +517,29 @@ echo json_encode($dataa);
 
 		}
 	}
+ /**
+  * Validate form inputs based on current session user type and return JSON errors or success code.
+  * @example
+  * // For admin user (validation failure):
+  * // $this->session->set_userdata('type', 'admin');
+  * // $result = $this->check_validation();
+  * // echo $result;
+  * // Possible output:
+  * // {"st":202,"name":"Name is required","mobile":"","email":"Email is not valid","company_contact":"Contact Number is not valid","country":"Country is required","state":"State is required","city":"City is required","address":"Address is required","zipcode":"Zipcode is required"}
+  * //
+  * // For standard user (validation failure):
+  * // $this->session->set_userdata('type', 'standard');
+  * // $result = $this->check_validation();
+  * // echo $result;
+  * // Possible output:
+  * // {"st":202,"name":"Name is required","contact_number":"Contact Number is not valid"}
+  * //
+  * // On successful validation:
+  * // $result = $this->check_validation();
+  * // var_dump($result); // int(200)
+  * @param void none - This method does not accept any parameters.
+  * @returns int|string Returns 200 (int) on successful validation or a JSON encoded string of validation errors (st => 202) on failure.
+  */
 	public function check_validation()
 	{
 		$this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; float: left;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -438,6 +568,18 @@ echo json_encode($dataa);
 			return 200;
 		}
 	}
+ /**
+ * Check if posted standard_email already exists and echo client-side HTML/JS response.
+ * @example
+ * $_POST['standard_email'] = 'user@example.com';
+ * $this->checkUserExist();
+ * // Possible outputs:
+ * // 1) '<i class="fas fa-exclamation-triangle" style="margin-right:7px; color:red"></i>This email already exists as a admin' (and clears #standard_email)
+ * // 2) '<i class="fas fa-exclamation-triangle" style="margin-right:7px; color:red"></i>This email already exists' (and clears #standard_email)
+ * // 3) '<script>$("#add_user_btn").prop("disabled",false);</script>' (enables the add button)
+ * @param string $standard_email - Email address read from POST input 'standard_email'.
+ * @returns void Echoes HTML/JavaScript to the client (warning message or enables #add_user_btn); does not return a PHP value.
+ */
 	public function checkUserExist()
 	{
 		$standard_email = $this->input->post('standard_email');
@@ -452,6 +594,20 @@ echo json_encode($dataa);
 			echo "<script>$('#add_user_btn').prop('disabled',false);</script>";
 		}
 	}
+ /**
+ * Check licence availability and output JSON/status indicating whether the current user can add another user (handles partner, admin trial and paid plans).
+ * @example
+ * // Called from a controller; the method echoes a status directly (no return value).
+ * $this->checkUserPartner();
+ * // Possible outputs:
+ * // 200
+ * // echo json_encode(array('st' => 200));
+ * // echo json_encode(array('st' => 201, 'show_msg' => '<i class="fas fa-info-circle">You have only 5 licences and you have already Added 4 Users</i>'));
+ * // echo json_encode(array('st' => 201, 'show_msg' => '<i class="fas fa-info-circle">You have only 5 licences and you can add only 4 users</i>'));
+ * // echo json_encode(array('st' => 201, 'show_msg' => '<i class="fas fa-info-circle">You have only 3 licences and you are using 3 licence already.</i>'));
+ * @param {void} none - This controller method does not accept any parameters.
+ * @returns {void} Echoes JSON or numeric status and may exit; does not return a value.
+ */
 	public function checkUserPartner()
 	{
 		//$standard_email = $this->input->post('standard_email');
@@ -504,6 +660,32 @@ echo json_encode($dataa);
 	}
 	
 	
+ /**
+ * Create a new standard CRM user after validating the current user and plan licence availability.
+ * Handles optional profile image upload, persists the new user, updates the plan's used licence count,
+ * and sends a welcome email containing the login details. Emits JSON responses or error messages and may exit on failure.
+ * @example
+ * // Simulate POST data (in actual use this comes from form submission)
+ * $_POST = array(
+ *   'license_type' => 1,
+ *   'first_name' => 'John',
+ *   'last_name' => 'Doe',
+ *   'standard_email' => 'john.doe@example.com',
+ *   'standard_password' => 'Password123',
+ *   'sel_role' => 4,
+ *   'reports_to' => 2,
+ *   'user_type' => 'employee',
+ *   'standard_mobile' => '9999999999'
+ * );
+ * // Optionally upload a file into $_FILES['profile_image']
+ * $this->Home1->create();
+ * // Possible sample output (success):
+ * // {"status":true}
+ * // Possible sample output (license exhausted):
+ * // {"st":201,"show_msg":"<i class=\"fas fa-info-circle\">You have only 5 licences ...</i>"}
+ * @param array $post - Input POST data expected by the method (license_type, standard_email, standard_password, first_name, last_name, sel_role, reports_to, user_type, standard_mobile)
+ * @returns void Echoes JSON responses or plain messages and may terminate execution (no return value).
+ */
 	public function create()
 	{
 		$validation = $this->check_user_validation();
@@ -740,6 +922,17 @@ echo json_encode($dataa);
 		}
 	}
 	
+ /**
+ * Validate 'standard_email' and 'standard_mobile' form inputs using CodeIgniter form validation and return the validation result.
+ * @example
+ * $result = $this->check_user_validation();
+ * // Success:
+ * echo $result; // 200
+ * // Failure (example JSON response):
+ * // echo $result; // {"st":202,"standard_email":"Email is required","standard_mobile":"Number is not valid"}
+ * @param {void} none - This method does not accept parameters; it validates POST input.
+ * @returns {mixed} Returns integer 200 on successful validation, or a JSON-encoded string containing status 202 and field-specific error messages on failure.
+ */
 	public function check_user_validation()
 	{
 		$this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; float: left;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -776,6 +969,19 @@ echo json_encode($dataa);
 		}
 	}
 	
+ /**
+ * Generate and echo a DataTables-compatible JSON payload of company users and admins for an AJAX request.
+ * @example
+ * // Simulate an AJAX call to this controller method
+ * $_POST = ['draw' => 1, 'start' => 0];
+ * $this->session->set_userdata(['email' => 'admin@example.com', 'company_name' => 'Acme Ltd', 'company_email' => 'info@acme.com']);
+ * $this->ajax_user_table();
+ * // Example output (printed JSON):
+ * // {"draw":1,"recordsTotal":12,"recordsFiltered":5,"data":[["<img ...>","Admin Name","admin@example.com","9999999999","http://...","GSTIN","License","<input ...>"],["<img ...>","User Name","user@example.com","8888888888","http://...","GSTIN","Plan Name"]]}
+ * @param {{array}} {{$_POST}} - Expected POST parameters: 'draw' (int) DataTables draw counter and 'start' (int) pagination offset.
+ * @param {{CI_Session}} {{$this->session}} - Active session must contain 'email'; also uses 'company_name' and 'company_email' to scope data.
+ * @returns {{void}} Echoes JSON response for DataTables; redirects to 'login' if no active session.
+ */
 	public function ajax_user_table()
 	{
 		if (!empty($this->session->userdata('email'))) {
@@ -863,6 +1069,20 @@ echo json_encode($dataa);
 		}
 	}
 	
+ /**
+ * Outputs a JSON-formatted list of users (for DataTables) by reading POST parameters and using Login_model.
+ * @example
+ * // Simulate DataTables POST and call the controller method (typically accessed via HTTP)
+ * $_POST['draw'] = 1;
+ * $_POST['start'] = 0;
+ * $this->view_user();
+ * // Sample echoed JSON (rendered output):
+ * // {"draw":1,"recordsTotal":42,"recordsFiltered":42,"data":[
+ * //   ["Acme Corp<div class=\"links\"><a ...>View</a> | <a ...>Update</a> | <a ...>Set Target</a> | <a ...>Delete</a></div>","admin@acme.com","9876543210","https://acme.example","22AAAAA0000A1Z5","Premium"]
+ * // ]}
+ * @param {{none}} {{N/A}} - No direct function parameters; reads $_POST['draw'] and $_POST['start'] and queries Login_model.
+ * @returns {{void}} Echoes a JSON response containing draw, recordsTotal, recordsFiltered and data for DataTables.
+ */
 	public function view_user()
 	{
 		$list = $this->Login_model->get_datatables();
@@ -927,6 +1147,29 @@ echo json_encode($dataa);
 	
 	
 	
+ /**
+ * Update user/profile and manage licence counts; validates input, uploads a profile image (if provided), updates the user record in the Login_model, adjusts plan used_licence values when the user's plan changes, and prints a JSON response.
+ * @example
+ * // Simulate a POST request in a controller test (example values)
+ * $_POST = [
+ *   'update_id' => '123',
+ *   'sel_role' => '2',
+ *   'sel_lic_type' => '1',
+ *   'sel_lic_type_hidden' => '0',
+ *   'standard_name' => 'Acme Corp',
+ *   'standard_email' => 'user@example.com',
+ *   'standard_mobile' => '5551234567'
+ * ];
+ * // Optionally set an uploaded file in $_FILES['profile_image'] with a valid jpg/png to update user_photo
+ * $this->Home1->update();
+ * // Possible outputs:
+ * // {"st":200} // update successful
+ * // {"st":201,"show_msg":"Your licence quantity full in this licence, Please upgrade your licence."} // licence limit reached
+ * // or a validation status code echoed directly if validation fails
+ * @param {array} $_POST - POST input containing update fields (e.g., update_id, sel_role, sel_lic_type, sel_lic_type_hidden, standard_name, standard_email, permissions flags, etc.).
+ * @param {array} $_FILES - FILES input; may include 'profile_image' (allowed types: jpg|jpeg|png) to update user_photo.
+ * @returns {void} Prints (echoes) JSON responses or validation codes and terminates execution; does not return a PHP value.
+ */
 	public function update()
 	{
 		$validation = $this->check_update_validation();
@@ -1057,6 +1300,17 @@ echo json_encode($dataa);
 			}
 		}
 	}
+ /**
+ * Validate update form fields (name, email, mobile, user type, address, GST, location, zipcode) and return the validation result.
+ * @example
+ * // Called from the Home1 controller
+ * $result = $this->check_update_validation();
+ * // On validation failure this returns a JSON-encoded string (example):
+ * // {"st":202,"standard_name":"Name is required","standard_email":"Email is required","standard_mobile":"Number is required","user_typeUpdate":"User type is required","country":"Country is required","state":"State is required","city":"City is required","zipcode":"Zipcode is required","company_gstin":"GST is required","company_address":"Company Address is required"}
+ * // On success this returns an integer:
+ * // 200
+ * @returns {int|string} Return 200 on successful validation, otherwise a JSON-encoded string containing 'st' => 202 and per-field error messages.
+ */
 	public function check_update_validation()
 	{
 		$this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; float: left;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -1079,6 +1333,14 @@ echo json_encode($dataa);
 			return 200;
 		}
 	}
+ /**
+ * Delete a record by ID, decrement the associated plan's used licence if applicable, remove the record and echo a JSON status.
+ * @example
+ * $this->delete(123);
+ * // outputs: {"status":true}
+ * @param {int|string} $id - Identifier of the record/user to delete (e.g., 123).
+ * @returns {void} Echoes a JSON-encoded response with the operation status ({"status": true} on success).
+ */
 	public function delete($id)
 	{
 		$data = $this->Login_model->get_by_id($id);
@@ -1100,6 +1362,20 @@ echo json_encode($dataa);
 			redirect('login');
 		}
 	}
+ /**
+ * Outputs a JSON-formatted list of branches suitable for DataTables (reads paging from $_POST and uses Branch_model).
+ * @example
+ * $_POST['draw'] = 1;
+ * $_POST['start'] = 0;
+ * $this->ajax_list_branch();
+ * // Sample JSON output:
+ * // {"draw":1,"recordsTotal":5,"recordsFiltered":5,"data":[
+ * //  ["<input type=\"checkbox\" class=\"delete_checkbox\" value=\"1\">","Main Branch<div class=\"links\"><a style=\"text-decoration:none\" href=\"javascript:void(0)\" onclick=\"view('1')\" class=\"text-info\">View</a> | <a style=\"text-decoration:none\" href=\"javascript:void(0)\" onclick=\"update('1')\" class=\"text-secondary\">Update</a> | <a style=\"text-decoration:none\" href=\"javascript:void(0)\" onclick=\"delete_entry('1')\" class=\"text-danger\">Delete</a></div>","branch@example.com","0123456789","ACME Corp","GSTIN123","<input type=\"checkbox\" class=\"delete_checkbox\" value=\"1\">"],
+ * //  ["<input type=\"checkbox\" class=\"delete_checkbox\" value=\"2\">","Secondary Branch<div class=\"links\">...","branch2@example.com","0987654321","ACME Corp","GSTIN456","<input type=\"checkbox\" class=\"delete_checkbox\" value=\"2\">"]
+ * // ]}
+ * @param array $_POST - Superglobal array expected to contain 'draw' (int) and 'start' (int) for DataTables paging.
+ * @returns void Echoes JSON response containing draw, recordsTotal, recordsFiltered and data array.
+ */
 	public function ajax_list_branch()
 	{
 		$list = $this->Branch_model->get_datatables();
@@ -1126,6 +1402,36 @@ echo json_encode($dataa);
 		//output to json format
 		echo json_encode($output);
 	}
+ /**
+  * Create a new branch using POST data and the current session; echoes a JSON success status or a validation error and exits.
+  * @example
+  * // Setup (example values)
+  * $this->session->set_userdata([
+  *   'id' => 123,
+  *   'email' => 'admin@example.com',
+  *   'company_name' => 'Acme Ltd'
+  * ]);
+  * $_POST = [
+  *   'branch_name' => 'Acme Branch',
+  *   'branch_email' => 'branch@example.com',
+  *   'contact_number' => '9876543210',
+  *   'gstin' => '29ABCDE1234F2Z5',
+  *   'cin' => 'U12345MH2010PTC123456',
+  *   'pan' => 'ABCDE1234F',
+  *   'country' => 'India',
+  *   'state' => 'Karnataka',
+  *   'city' => 'Bengaluru',
+  *   'zipcode' => '560001',
+  *   'address' => '123 Main St'
+  * ];
+  * $this->create_branch();
+  * // Possible output on success:
+  * // {"st":200}
+  * // Possible output on validation failure (example):
+  * // 400
+  * @param void $none - This method does not accept parameters; it reads from session and POST data.
+  * @returns void Echoes a JSON-encoded success object (e.g. {"st":200}) on success, or echoes a validation error code and terminates execution.
+  */
 	public function create_branch()
 	{
 		$validation = $this->check_branch_validation();
@@ -1138,6 +1444,28 @@ echo json_encode($dataa);
 			echo json_encode(array("st" => 200));
 		}
 	}
+ /**
+ * Update an existing branch record using POSTed form data after validation.
+ * @example
+ * $_POST = array(
+ *   'id' => 12,
+ *   'branch_name' => 'Main Branch',
+ *   'branch_email' => 'main@example.com',
+ *   'contact_number' => '1234567890',
+ *   'gstin' => '27ABCDE1234F1Z5',
+ *   'cin' => 'L12345MH2000PLC123456',
+ *   'pan' => 'ABCDE1234F',
+ *   'country' => 'India',
+ *   'state' => 'Maharashtra',
+ *   'city' => 'Mumbai',
+ *   'zipcode' => '400001',
+ *   'address' => '123 Some Street'
+ * );
+ * $result = $this->update_branch();
+ * echo $result // render sample output: {"st":200}
+ * @param array $post - Associative array of POST values expected (id, branch_name, branch_email, contact_number, gstin, cin, pan, country, state, city, zipcode, address).
+ * @returns string JSON-encoded status response (e.g. '{"st":200}') or a validation error code echoed directly.
+ */
 	public function update_branch()
 	{
 		$validation = $this->check_branch_validation();
@@ -1150,6 +1478,14 @@ echo json_encode($dataa);
 			echo json_encode(array("st" => 200));
 		}
 	}
+ /**
+ * Validate branch form inputs and return validation result as JSON errors or success code.
+ * @example
+ * $result = $this->check_branch_validation();
+ * echo $result; // Example outputs: 200 (on success) OR '{"st":202,"branch_name":"Name is required","branch_email":"Email is not valid","contact_number":"Number is not valid","gstin":"GSTIN is required","cin":"CIN is required","pan":"Pan is required","country":"Country is required","state":"State is required","city":"City is required","zipcode":"Zipcode is required","address":"Branch Address is required"}'
+ * @param void $none - No arguments are required by this method.
+ * @returns mixed Returns integer 200 on successful validation or a JSON-encoded string containing validation error messages with status 202 on failure.
+ */
 	public function check_branch_validation()
 	{
 		$this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; float: left;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -1192,6 +1528,27 @@ echo json_encode($dataa);
 			}
 		}
 	}
+ /**
+ * Get profit table rows for DataTables and output them as a JSON response.
+ * @example
+ * // Example POST values expected by the method:
+ * $_POST['start'] = 0;
+ * $_POST['draw'] = 1;
+ * // Call from controller:
+ * $this->get_profit_table();
+ * // Example JSON output (formatted):
+ * // {
+ * //   "draw": 1,
+ * //   "recordsTotal": 125,
+ * //   "recordsFiltered": 10,
+ * //   "data": [
+ * //     ["Alice","SO/2025/001","Acme Corp","Website Project","1,00,000","1,20,000","20,000"],
+ * //     ["Bob","SO/2025/002","Beta LLC","App Development","80,000","90,000","10,000"]
+ * //   ]
+ * // }
+ * @param array $_POST - Global POST array containing DataTables parameters (e.g. 'start' and 'draw').
+ * @returns void Echoes JSON-encoded array for DataTables with keys: draw, recordsTotal, recordsFiltered and data.
+ */
 	public function get_profit_table()
 	{
 		$list = $this->Reports_model->get_profit_pro_datatables();
@@ -1221,6 +1578,16 @@ echo json_encode($dataa);
 		$list = $this->Reports_model->count_profit_user_so();
 		echo $list['profit_by_user'];
 	}
+ /**
+ * Outputs a JSON-encoded product-wise profit table (formatted for DataTables) based on POST parameters.
+ * @example
+ * // Typical controller call via HTTP POST (no direct return; method echoes JSON)
+ * $this->get_profit_table_product_wise();
+ * // Example echoed output (JSON):
+ * // {"draw":1,"recordsTotal":100,"recordsFiltered":50,"data":[["Alice","SO123","PO456","Sample subject..","1,000"],["Bob","SO124","PO457","Another subject..","2,500"]]}
+ * @param array $_POST - POST parameters used by the method (expects at least 'start' => int and 'draw' => int).
+ * @returns void Outputs (echoes) a JSON string with keys: draw (int), recordsTotal (int), recordsFiltered (int), data (array of rows).
+ */
 	public function get_profit_table_product_wise()
 	{
 		$list = $this->Reports_model->get_profit_datatables_product_wise();
@@ -1279,6 +1646,14 @@ echo json_encode($dataa);
 		echo $countProfit;
 	}
 	//######## Function to send mail auto backup of database....############
+ /**
+ * Generate a SQL dump of the local MySQL database and send it as an email (Office365 SMTP) with the dump attached.
+ * @example
+ * $this->sentMailAtt();
+ * // Sends an email to dev2@team365.io from no-reply@team365.io and attaches a file like "admintea_team365_backup_2025-12-19 14 30 00.sql"
+ * @param void $none - This method does not accept any arguments.
+ * @returns void Performs side effects: creates a .sql backup file in the current working directory and attempts to send it as an email attachment; no value is returned.
+ */
 	public function sentMailAtt()
 	{
 		//set up email
