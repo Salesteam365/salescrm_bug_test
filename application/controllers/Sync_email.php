@@ -17,6 +17,32 @@ class Sync_email extends CI_Controller
 	}
   
   
+  /**
+  * Handle incoming POST request to add or update company details, store them in session and the database, and echo an HTML success or error message.
+  * @example
+  * // Example (controller context): simulate POST data (CodeIgniter)
+  * $_POST = [
+  *   'company_name' => 'Acme Corp',
+  *   'company_website' => 'https://www.acme.example',
+  *   'company_email' => 'info@acme.example',
+  *   'company_mobile' => '+1234567890',
+  *   'pan_number' => 'ABCDE1234F',
+  *   'cin' => 'L12345MH2000PLC123456',
+  *   'company_gstin' => '27ABCDE1234F1Z5',
+  *   'country' => 'India',
+  *   'state' => 'Maharashtra',
+  *   'city' => 'Mumbai',
+  *   'zipcode' => '400001',
+  *   'address' => '123 Acme Street',
+  *   'terms_condition_customer' => ['Customer term 1','Customer term 2'],
+  *   'terms_condition_seller' => ['Seller term 1']
+  * ];
+  * $this->sync_email->add_company_details();
+  * // Sample echoed success output:
+  * // <i class="far fa-check-circle" style="color:green; display: block; margin-bottom: 3%; font-size: 30px;" ></i>&nbsp;&nbsp;Your company information successfully submitted.
+  * @param {array} $post - POST input array (via $this->input->post()). Expected keys: company_name (string, optional), company_website (string), company_email (string, optional), company_mobile (string), pan_number (string), cin (string), company_gstin (string), country (string), state (string), city (string), zipcode (string), address (string), terms_condition_customer (array|string), terms_condition_seller (array|string).
+  * @returns {void} Echoes an HTML formatted success or error message; does not return a value.
+  */
   public function add_company_details()
   {
     
