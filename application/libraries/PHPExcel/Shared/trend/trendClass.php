@@ -78,6 +78,19 @@ class trendClass
     private static $trendCache = array();
 
 
+    /**
+    * Calculate and return a trend best-fit object for the given data using the specified trend type.
+    * @example
+    * $yValues = array(10, 20, 30, 40);
+    * $xValues = array(1, 2, 3, 4);
+    * $result = PHPExcel_Shared_trend::calculate(PHPExcel_Shared_trend::TREND_LINEAR, $yValues, $xValues, true);
+    * var_dump($result); // instance of a Best_Fit class (e.g. PHPExcel_LINEAR_Best_Fit) or false
+    * @param {string} $trendType - Trend type constant to use (e.g. self::TREND_LINEAR, self::TREND_BEST_FIT).
+    * @param {array} $yValues - Array of Y values (dependent variable) as numbers.
+    * @param {array} $xValues - Optional array of X values (independent variable) as numbers; defaults to sequential integers if empty.
+    * @param {bool} $const - Whether to include a constant (intercept) in the fit (true by default).
+    * @returns {mixed} Return a Best_Fit object instance for the requested trend method on success, or false on failure.
+    */
     public static function calculate($trendType = self::TREND_BEST_FIT, $yValues, $xValues = array(), $const = true)
     {
         //    Calculate number of points in each dataset
