@@ -14,6 +14,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$this->load->library('excel');
    }
    
+  /**
+  * Aggregate CRM activity metrics and status counts for a given date and filter.
+  * @example
+  * $result = $this->getData('2025-12-22', ['team_id' => 3, 'owner' => 5]);
+  * print_r($result); // Example output: Array ( [total_org] => 12 [total_leads] => 37 [total_opp] => 8 [conatacted_status] => 5 [quali_status] => 8 [draft_status] => 3 [pending_status] => 2 [todaydue] => 1 )
+  * @param string $currentdate - Date string (YYYY-MM-DD) used to filter records (e.g. '2025-12-22').
+  * @param array|string $fltr - Filter criteria as an associative array or a simple identifier string (e.g. ['owner'=>5] or 'all').
+  * @returns array Return associative array of aggregated counts and grouped status values (keys include total_org, total_leads, total_opp, get_opp_stage_count, total_quotes, total_sales, total_task, total_meeting, total_call, total_vendors, total_pi, total_roles and many status-specific keys like conatacted_status, quali_status, draft_status, pending_status, todaydue, etc.).
+  */
   public function getData($currentdate,$fltr){
     // echo $this->input->post('fromDate')."text test";
     $data['total_org']    = $this->Todo_work->get_all_org($currentdate,$fltr);
@@ -101,6 +110,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   } 
   
     
+  /**
+   * Display the activities page if the current user is authenticated and authorized.
+   * Checks session for an email, verifies the "Retrieve Activities" permission and loads the 'activities' view for the current date.
+   * If the user is not authenticated, redirects to 'login'. If authenticated but not authorized, redirects to 'permission'.
+   * @example
+   * $controller = new Activities();
+   * $controller->index();
+   * // Possible outcomes:
+   * // 1) Session has email and permission 'Retrieve Activities' -> loads 'activities' view for current date.
+   * // 2) Session has email but lacks permission -> redirect("permission");
+   * // 3) No session email -> redirect("login");
+   * @returns {void} Does not return a value; this method either loads a view or issues a redirect.
+   */
   public function index()
   {
 	
@@ -803,6 +825,24 @@ margin:8px;}
   }
   
   
+   /**
+   * Outputs an HTML table of organizations retrieved from the Todo_work model (prints the table header and one row per organization).
+   * @example
+   * $this->getId_org();
+   * // Example output:
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Organization Name</th>
+   * //     <th class="th-sm">Email</th>
+   * //     <th class="th-sm">Website</th>
+   * //     <th class="th-sm">Mobile</th>
+   * //     <th class="th-sm">Billing City</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>Acme Corp</td><td>info@acme.test</td><td>https://acme.test</td><td>+123456789</td><td>Metropolis</td></tr>
+   * @param void $none - No input parameters.
+   * @returns void Echoes the generated HTML table directly (does not return a value).
+   */
    public function getId_org()
    {
     $data = $this->Todo_work->get_by_id(); 
@@ -828,6 +868,24 @@ margin:8px;}
        echo $output;		 
 	 } 
   }
+  /**
+  * Outputs an HTML table (thead and rows) of leads by fetching leads from the Todo_work model and echoing the result.
+  * @example
+  * $this->getId_leads();
+  * // Example rendered output:
+  * // <thead>
+  * //   <tr>
+  * //     <th class="th-sm">Lead Name</th>
+  * //     <th class="th-sm">Organization Name</th>
+  * //     <th class="th-sm">Email</th>
+  * //     <th class="th-sm">Assigned To</th>
+  * //     <th class="th-sm">Lead Status</th>
+  * //   </tr>
+  * // </thead>
+  * // <tr><td>John Doe</td><td>Acme Inc</td><td>john@example.com</td><td>Jane Smith</td><td>New</td></tr>
+  * @param void $none - This method does not accept any parameters.
+  * @returns void Echoes HTML table output directly.
+  */
   public function getId_leads()
    {
     $data_leads = $this->Todo_work->get_by_leads(); 
@@ -853,6 +911,24 @@ margin:8px;}
       echo $output;		 
 	}
   }
+  /**
+  * Outputs an HTML table containing opportunity records (header + one row per opportunity) by echoing the result of Todo_work->get_by_opport().
+  * @example
+  * // From within a controller method:
+  * $this->getId_opport();
+  * // Sample echoed output:
+  * // <thead>
+  * //   <tr>
+  * //     <th class="th-sm">Opportunity Name</th>
+  * //     <th class="th-sm">Organization Name</th>
+  * //     <th class="th-sm">Email</th>
+  * //     <th class="th-sm">Primary Phone</th>
+  * //     <th class="th-sm">Opportunuity ID</th>
+  * //   </tr>
+  * // </thead>
+  * // <tr><td>Website Redesign</td><td>Acme Corp</td><td>contact@acme.com</td><td>+1-555-0100</td><td>OPP-2025-001</td></tr>
+  * @returns {void} Echoes the generated HTML header and row elements directly; does not return a value.
+  */
   public function getId_opport()
    {
     $data_opprt = $this->Todo_work->get_by_opport(); 
@@ -878,6 +954,24 @@ margin:8px;}
    echo $output;		 
 	 }
   }
+  /**
+  * Output an HTML table header and rows for quotes retrieved from the Todo_work model.
+  * @example
+  * $this->getId_quotat();
+  * // Sample rendered output:
+  * // <thead>
+  * //   <tr>
+  * //     <th class="th-sm">Subject</th>
+  * //     <th class="th-sm">Organization Name</th>
+  * //     <th class="th-sm">Quote ID</th>
+  * //     <th class="th-sm">Date</th>
+  * //     <th class="th-sm">Owner</th>
+  * //   </tr>
+  * // </thead>
+  * // <tr><td>Website redesign</td><td>Acme Corp</td><td>Q-1001</td><td>2025-12-20</td><td>Jane Doe</td></tr>
+  * @param {void} none - No arguments.
+  * @returns {void} Echoes an HTML table header and one table row per quote; does not return a value.
+  */
   public function getId_quotat()
    {
     $data_quot = $this->Todo_work->get_by_quotat(); 
@@ -903,6 +997,24 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+   * Outputs an HTML table header and rows for sales items by retrieving data from Todo_work->get_by_sales() and echoing the markup.
+   * @example
+   * $this->getId_sales();
+   * // Sample output:
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Subject</th>
+   * //     <th class="th-sm">Organization Name</th>
+   * //     <th class="th-sm">Salesorder ID </th>
+   * //     <th class="th-sm">Date</th>
+   * //     <th class="th-sm">Status</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>Follow up</td><td>Acme Corp</td><td>SO-12345</td><td>2025-12-20</td><td>Open</td></tr>
+   * @param {void} $none - No parameters are accepted.
+   * @returns {void} Outputs HTML directly to the response; does not return a value.
+   */
    public function getId_sales()
    {
     $data_sales = $this->Todo_work->get_by_sales(); 
@@ -928,6 +1040,25 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+   * Echoes an HTML table of tasks retrieved from the Todo_work model.
+   * @example
+   * // Call from the controller to output the table directly:
+   * $this->getId_task();
+   * // Sample rendered HTML output:
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Task</th>
+   * //     <th class="th-sm">Task Owner</th>
+   * //     <th class="th-sm">Priority</th>
+   * //     <th class="th-sm">Due Date</th>
+   * //     <th class="th-sm">Status</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>Fix login bug</td><td>Alice</td><td>High</td><td>2025-01-10</td><td>Open</td></tr>
+   * @param void $none - This method does not accept any parameters.
+   * @returns void No return value; outputs HTML directly via echo.
+   */
    public function getId_task()
    {
     $data_task = $this->Todo_work->get_by_task(); 
@@ -953,6 +1084,25 @@ margin:8px;}
        echo $output;		 
 	 }
    } 
+   /**
+   * Outputs an HTML table of meetings by echoing a table header and a row for each meeting from Todo_work->get_by_meeting().
+   * @example
+   * $activities = new Activities();
+   * $activities->getId_meeting();
+   * // Example echoed output:
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Meeting</th>
+   * //     <th class="th-sm">Host By</th>
+   * //     <th class="th-sm">Location</th>
+   * //     <th class="th-sm">Date</th>
+   * //     <th class="th-sm">Status</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>Team Sync</td><td>Alice</td><td>Conference Room</td><td>2025-12-22</td><td>Scheduled</td></tr>
+   * @param void none - No arguments are required.
+   * @returns void Echos HTML table header and rows; does not return a value.
+   */
    public function getId_meeting()
    {
     $data_meeting = $this->Todo_work->get_by_meeting(); 
@@ -978,6 +1128,26 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+   * Outputs an HTML table header and rows for "call" activities retrieved from the Todo_work model.
+   * @example
+   * $activities = new Activities();
+   * // This will directly echo the table header and one row per call item, for example:
+   * $activities->getId_call();
+   * // Output (sample):
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Call</th>
+   * //     <th class="th-sm">Contact Name</th>
+   * //     <th class="th-sm">Call Purpose</th>
+   * //     <th class="th-sm">Releted To</th>
+   * //     <th class="th-sm">Status</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>Sales follow up</td><td>John Doe</td><td>Initial contact</td><td>Account #123</td><td>Open</td></tr>
+   * @param void $none - No parameters are accepted by this method.
+   * @returns void Echoes HTML for the table header and rows; does not return a value.
+   */
    public function getId_call()
    {
     $data_call = $this->Todo_work->get_by_call(); 
@@ -1003,6 +1173,26 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+    * Echoes an HTML table header and table rows for purchase orders retrieved from the Todo_work model.
+    * @example
+    * // Example (calling the controller method directly)
+    * $activities = new Activities();
+    * $activities->getId_purch();
+    * // Sample output (HTML echoed):
+    * // <thead>
+    * //   <tr>
+    * //     <th class="th-sm">Company Name</th>
+    * //     <th class="th-sm">Customer Name</th>
+    * //     <th class="th-sm">Vendor Name</th>
+    * //     <th class="th-sm">Subject</th>
+    * //     <th class="th-sm">PO Number</th>
+    * //     <th class="th-sm">Created By</th>
+    * //   </tr>
+    * // </thead>
+    * // <tr><td>Acme Corp</td><td>Acme Customer</td><td>Vendor Ltd</td><td>Order Widgets</td><td>PO-12345</td><td>jdoe</td></tr>
+    * @return void Outputs HTML directly by echoing a table header and one table row per purchase record.
+    */
    public function getId_purch()
    {
     $data_purch = $this->Todo_work->get_by_purch(); 
@@ -1030,6 +1220,25 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+   * Output an HTML table of vendors (header and rows) by fetching vendor records from the Todo_work model and echoing the markup directly.
+   * @example
+   * // Call the controller method (no return value — HTML is echoed directly)
+   * $this->getId_vendors();
+   * // Sample echoed output:
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Vendor Name</th>
+   * //     <th class="th-sm">Primary Email</th>
+   * //     <th class="th-sm">Primary Phone</th>
+   * //     <th class="th-sm">Created By</th>
+   * //     <th class="th-sm">Assigned To</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>Acme Supplies</td><td>info@acme.com</td><td>+1-555-1234</td><td>Admin</td><td>John Doe</td></tr>
+   * @param void $none - No parameters.
+   * @returns void Echoes HTML table header and rows; does not return a value.
+   */
    public function getId_vendors()
    {
     $data_vendor= $this->Todo_work->get_by_vendors(); 
@@ -1055,6 +1264,25 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+   * Echoes an HTML table header and rows for proforma invoices retrieved from the Todo_work model.
+   * @example
+   * $this->getId_proforma();
+   * // Example output:
+   * // <thead>
+   * //   <tr>
+   * //     <th class="th-sm">Invoice#</th>
+   * //     <th class="th-sm">Billed To(Org Name)</th>
+   * //     <th class="th-sm">Page Name</th>
+   * //     <th class="th-sm">Total Amount</th>
+   * //     <th class="th-sm">Status</th>
+   * //     <th class="th-sm">Date</th>
+   * //   </tr>
+   * // </thead>
+   * // <tr><td>INV-1001</td><td>Acme Ltd</td><td>Landing Page</td><td>1500.00</td><td>Pending</td><td>2025-12-01</td></tr>
+   * @param {void} $none - No arguments required.
+   * @returns {void} Echoes the HTML table rows and header directly (no return value).
+   */
    public function getId_proforma()
    {
     $data_pro= $this->Todo_work->get_by_proforma(); 
@@ -1082,6 +1310,23 @@ margin:8px;}
        echo $output;		 
 	 }
    }
+   /**
+   * Echoes an HTML table header and rows for roles retrieved from the Todo_work model.
+   * @example
+   * $this->getId_roles();
+   * // Example echoed output:
+   * // <thead>
+   * //  <tr>
+   * //    <th class="th-sm">Role Name</th>
+   * //    <th class="th-sm">Report To</th>
+   * //    <th class="th-sm">Status</th>
+   * //  </tr>
+   * // </thead>
+   * // <tr><td>Admin</td><td>0</td><td>active</td></tr>
+   * // <tr><td>Manager</td><td>Admin</td><td>inactive</td></tr>
+   * @param void $none - No parameters are required.
+   * @returns void Echoes the generated HTML directly; does not return a value.
+   */
    public function getId_roles()
    {
     $data_roles= $this->Todo_work->get_by_roles(); 
