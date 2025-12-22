@@ -12,6 +12,17 @@ class Cron_lead extends CI_Controller
 	$this->load->database();
   }
   
+  /**
+  * Retrieve the latest lead's assigned user information for a company session.
+  * @example
+  * $result = $this->assignedUser('billing@acme.com', 'Acme Corp', 123, 456);
+  * print_r($result); // Array ( [assigned_to] => 123 [id] => 456 [assigned_to_name] => John Doe )
+  * @param {string} $session_comp_email - Company session email used to filter leads.
+  * @param {string} $session_company - Company identifier used to filter leads.
+  * @param {int|string} $userAssign - (optional) Assigned user ID or identifier to filter by a specific user.
+  * @param {int|string} $leadid - (optional) Lead ID to filter by a specific lead.
+  * @returns {array|null} Associative array with keys 'assigned_to', 'id', and 'assigned_to_name' for the matched lead, or null if none found.
+  */
   public function assignedUser($session_comp_email,$session_company,$userAssign='',$leadid='')
     {   
 		$this->db->from('lead');
@@ -41,6 +52,17 @@ class Cron_lead extends CI_Controller
 		return $query->row_array();
     }
   
+ /**
+ * Process cron integrations for IndiaMART and TradeIndia: fetch leads from remote APIs, normalize lead data,
+ * attempt to assign owners, post leads to the Team365 leads API, and send a debug email for TradeIndia responses.
+ * @example
+ * // Run from a controller or CLI in CodeIgniter
+ * $cron = new Cron_lead();
+ * $cron->index();
+ * // No return value; leads are forwarded to https://api.team365.io/api/leads/add and a debug email is sent for TradeIndia.
+ * @param void $none - This method accepts no parameters.
+ * @returns void No return value; side effects include HTTP requests to external services and sending email.
+ */
 	public function index()
 	{
 	    
