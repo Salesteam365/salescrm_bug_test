@@ -10,6 +10,20 @@ class Leads extends CI_Controller
         $this->load->model('Opportunity_model', 'Opportunity');
         $this->load->model('Login_model');
     }
+    /**
+    * Display the leads dashboard: checks session and permissions, prepares lead counts and total prices per status, then loads the sales/leads view or redirects as needed.
+    * @example
+    * $leadsController = new Leads();
+    * $leadsController->index();
+    * // Renders 'sales/leads' view and populates $data, for example:
+    * // $data['user'] = ['username' => 'jdoe', 'standard_email' => 'jdoe@example.com'];
+    * // $data['admin'] = ['username' => 'admin'];
+    * // $data['users_data'] = [['standard_email' => 'jdoe@example.com'], ['standard_email' => 'asmith@example.com']];
+    * // $data['price'] = ['PreQualified' => 1500.00, 'Contacted' => 300.00, 'JunkLead' => 0.00];
+    * // $data['countLead'] = 42;
+    * @param {void} $none - No parameters.
+    * @returns {void} Does not return a value; outputs a view or performs a redirect.
+    */
     public function index()
     {
         if (!empty($this->session->userdata('email'))) {
@@ -56,6 +70,15 @@ class Leads extends CI_Controller
             redirect('login');
         }
     }
+    /**
+    * Display a lead record by ID and render the sales/view-lead view. Checks user session and permissions; may redirect to login or home. If the current user is an admin, related notifications are updated.
+    * @example
+    * // Call from the Leads controller to render lead with ID 123
+    * $this->view_lead(123);
+    * // Renders 'sales/view-lead' with the lead record or redirects to 'login' / 'home'
+    * @param {int} $id - Lead ID to load and display.
+    * @returns {void} No return value; this method outputs a view or performs a redirect.
+    */
     public function view_lead($id)
     {
         if (!empty($this->session->userdata('email'))) {
@@ -79,6 +102,20 @@ class Leads extends CI_Controller
             redirect('login');
         }
     }
+    /**
+    * Load the add/edit leads page after verifying create/update permissions and preparing data for the view.
+    * @example
+    * // Typically invoked by the framework when visiting the controller route, or from another controller:
+    * $this->load->controller('Leads')->add_leads();
+    * // If permitted, the method will load the view 'sales/add-lead' with data such as:
+    * // $data['lead_status'] => array('New', 'Contacted', 'Qualified');
+    * // $data['user'] => 'jdoe';
+    * // $data['admin'] => 'adminuser';
+    * // $data['record'] => array('id' => 5, 'name' => 'Acme Corp', 'status' => 'New');
+    * // $data['countLead'] => 42;
+    * @param {void} - No parameters are accepted by this controller method.
+    * @returns {void} Loads a view ('sales/add-lead' or 'permission') and does not return a value.
+    */
     public function add_leads()
     {
         if (check_permission_status('Leads', 'update_u') == true || check_permission_status('Leads', 'create_u') == true) {
@@ -95,6 +132,20 @@ class Leads extends CI_Controller
             $this->load->view('permission');
         }
     }
+    /**
+     * Display the lead view page for a single lead if the current user has 'retrieve' permission; otherwise redirect to the home page.
+     * @example
+     * // Example when visiting URL: /leads/123
+     * $id = 123; // extracted from $this->uri->segment(2)
+     * $this->view_leads(); // loads 'sales/view-lead' with sample data:
+     * // $data = [
+     * //   'user'   => 'jdoe', 
+     * //   'admin'  => 'admin1', 
+     * //   'record' => ['id' => 123, 'name' => 'Acme Corp', 'email' => 'contact@acme.com']
+     * // ];
+     * @param int $id - Lead ID extracted from the URI segment(2); used to fetch the lead record for viewing.
+     * @returns void No return value; loads the view on success or redirects to base_url().'home' when permission is denied.
+     */
     public function view_leads()
     {
         if (check_permission_status('Leads', 'retrieve_u') == true) {
@@ -107,6 +158,21 @@ class Leads extends CI_Controller
             redirect(base_url() . 'home');
         }
     }
+    /**
+    * Render a column grid of leads for a specific lead status as HTML (outputs directly).
+    * @example
+    * $list = [
+    *   ['id' => 12, 'lead_id' => 5, 'lead_status' => 'New Lead', 'name' => 'Acme Corp', 'org_name' => 'Acme', 'initial_total' => 15000, 'currentdate' => '2025-12-01', 'lead_owner' => 'Alice']
+    * ];
+    * $dataCount = ['New Lead' => 1];
+    * $this->returngrid($list, 'New Lead', 1, $dataCount);
+    * // Prints a <div class="lists" ...> with lead items (HTML is echoed directly)
+    * @param array $list - Array of lead records; each record should contain keys: id, lead_id, lead_status, name, org_name, initial_total, currentdate, lead_owner.
+    * @param string $leadStatus - The lead status to render (e.g. 'New Lead').
+    * @param int $count - Index used to build the container element id (e.g. 1).
+    * @param array $dataCount - Associative array mapping lead statuses to counts (e.g. ['New Lead' => 3]).
+    * @returns void Outputs HTML directly; does not return a value.
+    */
     public function returngrid($list, $leadStatus, $count, $dataCount)
     {
         $ind = str_replace(' ', '', $leadStatus);
@@ -185,6 +251,16 @@ class Leads extends CI_Controller
 		</div>
       <?php
     }
+    /**
+    * Render a Kanban-style grid of leads grouped by status and output the necessary HTML and JavaScript
+    * to enable drag-and-drop reordering between status columns. The method reads pagination and filter
+    * inputs from POST, fetches leads, sorts and counts them by status, renders seven status columns and
+    * binds a jQuery UI sortable handler that posts status updates to the leads/update_status endpoint.
+    * @example
+    * // From a controller context (no arguments). This call will directly echo HTML + JS to the response.
+    * $this->Leads->gridview();
+    * // Example fragment of what is rendered:
+    * // "<div id='list1' class='lists' data-status='Pre-Qualified'>...lead items...</div><script>/* sortable + AJAX to update_status */
     public function gridview()
     {
         $per_page = 10;
@@ -249,6 +325,19 @@ class Leads extends CI_Controller
 		</script>
 <?php
     }
+    /**
+    * Generate JSON pagination links for the Leads listing (initializes CodeIgniter pagination using optional filters).
+    * @example
+    * $_GET['searchDate'] = '2025-01-01';
+    * $_GET['search'] = 'Acme';
+    * $_POST['assigned'] = '12';
+    * $this->pagination();
+    * // Outputs: {"pagination_link":"<ul class=\"pagination\"><li class='activli'><a href='#'>1</a></li><li><a href='#'>2</a></li></ul>"}
+    * @param string|null $searchDate - Optional GET parameter 'searchDate' used to filter leads.
+    * @param string|null $search - Optional GET parameter 'search' used to filter leads.
+    * @param string|null $assigned - Optional POST parameter 'assigned' used to filter leads.
+    * @returns string JSON encoded object with key 'pagination_link' containing the HTML for the pagination links.
+    */
     public function pagination()
     {
         $this->load->library("pagination");
@@ -307,6 +396,16 @@ class Leads extends CI_Controller
     }
 
 
+    /**
+    * Generate and echo a JSON response for DataTables containing the leads list with action HTML based on user permissions.
+    * @example
+    * $_POST = ['start' => 0, 'draw' => 1, 'actDate' => '']; 
+    * $controller = new Leads();
+    * $controller->ajax_list();
+    * // Outputs (example): {"draw":1,"recordsTotal":42,"recordsFiltered":42,"data":[["<a...>...</a>","John Doe","owner@example.com","Assignee","<label class=\"text-primary\">Open</label>","<div class=\"row\">...</div>"], ...]}
+    * @param array $post - POST input array (expects 'start' => int, 'draw' => int, optional 'actDate' => string) used to paginate and tailor the response.
+    * @returns void Echoes a JSON-encoded string containing keys: draw, recordsTotal, recordsFiltered, and data (rows with HTML for display/actions).
+    */
     public function ajax_list()
     {
         $list = $this->Lead->get_datatables();
@@ -440,6 +539,19 @@ class Leads extends CI_Controller
         //output to json format
         echo json_encode($output);
     }
+    /**
+    * Assign selected leads to a specified user by updating assigned_status, assigned_to, and assigned_to_name.
+    * @example
+    * $_POST['selected'] = '12,15,';
+    * $_POST['userforlead'] = '23';
+    * $_POST['username'] = 'Jane Doe';
+    * $this->assignlead_user();
+    * // Outputs: 1
+    * @param {string} selected - Comma-separated list of lead IDs from POST (e.g. "12,15,")
+    * @param {int|string} userforlead - ID of the user to assign leads to (e.g. 23)
+    * @param {string} username - Display name of the user to assign leads to (e.g. "Jane Doe")
+    * @returns {int|bool} Result of the last update operation (typically 1 or true on success, 0/false on failure).
+    */
     public function assignlead_user()
     {
         $allId = $this->input->post('selected');
@@ -462,6 +574,106 @@ class Leads extends CI_Controller
             echo $st;
         }
     }
+    /**
+     * Create a new lead from POSTed form data, persist it, trigger workflow emails and echo a JSON status.
+     *
+     * Validates input via check_validation(). If validation fails, the method echoes the validation HTTP code and terminates.
+     * On success the method:
+     *  - sanitizes numeric values (removes thousands separators like ","),
+     *  - composes lead data from POST and session values,
+     *  - inserts the lead via $this->Lead->create(),
+     *  - updates the lead id token, logs customer activity,
+     *  - optionally sends notification emails to the lead owner and admin according to workflow/permission settings,
+     *  - echoes a JSON response ({"status":true}) and continues execution.
+     *
+     * @example
+     * // Simulate POST data (typical values)
+     * $_POST = [
+     *   'name' => 'John Doe Lead',
+     *   'org_name' => 'Acme Inc.',
+     *   'lead_owner' => 'owner@example.com',
+     *   'email' => 'lead@example.com',
+     *   'office_phone' => '0123456789',
+     *   'mobile' => '0987654321',
+     *   'lead_source' => 'Website',
+     *   'lead_status' => 'New',
+     *   'industry' => 'Software',
+     *   'employees' => '50',
+     *   'annual_revenue' => '1000000',
+     *   'rating' => 'Hot',
+     *   'website' => 'https://acme.example',
+     *   'secondary_email' => 'alt@example.com',
+     *   'assigned_to' => 'assignee@example.com',
+     *   'assigned_to_name' => 'Assignee Name',
+     *   'org_id_act' => '123',
+     *   'cnt_id_act' => '456',
+     *   'contact_name' => 'Jane Contact',
+     *   'billing_country' => 'USA',
+     *   'billing_state' => 'CA',
+     *   'shipping_country' => 'USA',
+     *   'shipping_state' => 'CA',
+     *   'billing_city' => 'San Francisco',
+     *   'billing_zipcode' => '94105',
+     *   'shipping_city' => 'San Francisco',
+     *   'shipping_zipcode' => '94105',
+     *   'billing_address' => '100 Market St',
+     *   'shipping_address' => '100 Market St',
+     *   'product_name' => ['Product A','Product B'],
+     *   'quantity' => ['1','2'],
+     *   'unit_price' => ['1,234.56','789.00'],
+     *   'total' => ['1,234.56','1,578.00'],
+     *   'pro_description' => ['Desc A','Desc B'],
+     *   'initial_total' => '2,812.56',
+     *   'discount' => '0.00',
+     *   'sub_total' => '2,812.56'
+     * ];
+     *
+     * // Call (within controller context)
+     * $this->Leads->create();
+     *
+     * // Typical echoed output on success:
+     * // {"status":true}
+     *
+     * @param string $name - Lead full name (POST: 'name').
+     * @param string $org_name - Organization / Customer name (POST: 'org_name').
+     * @param string $lead_owner - Lead owner identifier or email (POST: 'lead_owner').
+     * @param string $email - Lead email address (POST: 'email').
+     * @param string $office_phone - Office phone number (POST: 'office_phone').
+     * @param string $mobile - Mobile phone number (POST: 'mobile').
+     * @param string $lead_source - Source of the lead (POST: 'lead_source').
+     * @param string $lead_status - Current lead status (POST: 'lead_status').
+     * @param string $industry - Industry name (POST: 'industry').
+     * @param string|int $employees - Number of employees (POST: 'employees').
+     * @param string|float $annual_revenue - Annual revenue (POST: 'annual_revenue').
+     * @param string $rating - Lead rating (POST: 'rating').
+     * @param string $website - Company website (POST: 'website').
+     * @param string $secondary_email - Secondary email (POST: 'secondary_email').
+     * @param string $assigned_to - Assignee email (POST: 'assigned_to').
+     * @param string $assigned_to_name - Assignee full name (POST: 'assigned_to_name').
+     * @param string|int $org_id_act - Associated organization id (POST: 'org_id_act').
+     * @param string|int $cnt_id_act - Associated contact id (POST: 'cnt_id_act').
+     * @param string $contact_name - Primary contact name (POST: 'contact_name').
+     * @param string $billing_country - Billing country (POST: 'billing_country').
+     * @param string $billing_state - Billing state (POST: 'billing_state').
+     * @param string $shipping_country - Shipping country (POST: 'shipping_country').
+     * @param string $shipping_state - Shipping state (POST: 'shipping_state').
+     * @param string $billing_city - Billing city (POST: 'billing_city').
+     * @param string $billing_zipcode - Billing postal/zipcode (POST: 'billing_zipcode').
+     * @param string $shipping_city - Shipping city (POST: 'shipping_city').
+     * @param string $shipping_zipcode - Shipping postal/zipcode (POST: 'shipping_zipcode').
+     * @param string $billing_address - Billing street address (POST: 'billing_address').
+     * @param string $shipping_address - Shipping street address (POST: 'shipping_address').
+     * @param string[] $product_name - Array of product names (POST: 'product_name').
+     * @param string[] $quantity - Array of quantities per product (POST: 'quantity').
+     * @param string[] $unit_price - Array of unit prices per product (POST: 'unit_price', may include commas).
+     * @param string[] $total - Array of total prices per product (POST: 'total', may include commas).
+     * @param string[] $pro_description - Array of product descriptions (POST: 'pro_description').
+     * @param string|float $initial_total - Initial total amount (POST: 'initial_total', may include commas).
+     * @param string|float $discount - Discount amount (POST: 'discount', may include commas).
+     * @param string|float $sub_total - Sub total amount (POST: 'sub_total', may include commas).
+     *
+     * @returns void Echoes JSON(true) on success: {"status":true}. If validation fails it echoes the validation code (non-200) and terminates the request. Session values (email, company_name, company_email, name) are used during processing and for email notifications.
+     */
     public function create()
     {
         $validation = $this->check_validation();
@@ -597,6 +809,26 @@ class Leads extends CI_Controller
         $data = $this->Lead->get_by_id($id);
         echo json_encode($data);
     }
+    /**
+     * Update an existing lead record using POSTed form data, validate input and echo a JSON status response.
+     * @example
+     * // Example HTTP POST (curl) with sample values:
+     * // curl -X POST https://example.com/leads/update \
+     * //   -F "id=123" \
+     * //   -F "name=Acme Corp" \
+     * //   -F "org_name=Acme Organization" \
+     * //   -F "email=contact@acme.test" \
+     * //   -F "assigned_to=user@example.com" \
+     * //   -F "assigned_to_name=Jane Doe" \
+     * //   -F "product_name[]=Widget A" -F "product_name[]=Widget B" \
+     * //   -F "quantity[]=2" -F "quantity[]=1" \
+     * //   -F "unit_price[]=1,200.00" -F "unit_price[]=300.00" \
+     * //   -F "initial_total=1500.00" -F "sub_total=1400.00" -F "discount=100.00"
+     * // Sample response:
+     * // {"status":1}
+     * @param {array} $postData - Associative array of POST fields expected from the form (examples: id, name, org_name, email, office_phone, mobile, lead_source, lead_status, industry, employees, org_id_act, cnt_id_act, annual_revenue, rating, website, secondary_email, assigned_to, assigned_to_name, contact_name, billing_country, billing_state, billing_city, billing_zipcode, billing_address, shipping_country, shipping_state, shipping_city, shipping_zipcode, shipping_address, product_name[], quantity[], unit_price[], total[], pro_description[], initial_total, discount, sub_total)
+     * @returns {string} JSON-encoded string containing a "status" key (e.g. {"status":1}) indicating whether the update succeeded.
+     */
     public function update()
     {
         $validation = $this->check_validation();
@@ -677,6 +909,16 @@ class Leads extends CI_Controller
             }
         }
     }
+    /**
+    * Retrieve assigned leads page: verifies session and module permission, aggregates total prices by lead status for leads assigned to the user, and loads the 'sales/assignedlead' view.
+    * @example
+    * // From a controller context (authenticated user with permission):
+    * $this->assigned();
+    * // The view receives $data['user'] and $data['price'] where $data['price'] is an associative array like:
+    * // ['PreQualified' => 1200.50, 'Contacted' => 300.00, 'JunkLead' => 0.00, 'LostLead' => 50.00, 'NotContacted' => 0.00, 'ContactinFuture' => 0.00, 'InProgress' => 250.00]
+    * @param {void} $none - No arguments required.
+    * @returns {void} Loads the assigned leads view or redirects to 'login'/'home' (no direct return value).
+    */
     public function assigned()
     {
         if (!empty($this->session->userdata('email'))) {
@@ -699,6 +941,16 @@ class Leads extends CI_Controller
             redirect('login');
         }
     }
+    /**
+    * Retrieve assigned leads for DataTables and echo a JSON response suitable for DataTables consumption.
+    * @example
+    * // Called from a controller route; this method prints JSON directly:
+    * $this->ajax_list_assigned();
+    * // Sample output (formatted):
+    * // {"draw":1,"recordsTotal":12,"recordsFiltered":12,"data":[["<input type=\"checkbox\" value=\"3\">","<div class='d-flex'>...Org Name...</div>","John Doe","john@example.com","Lead Owner","<label class='text-primary'>New</label>","<div class='row'>...actions...</div>"], ...]}
+    * @param array $_POST - POST payload expected from DataTables with keys 'start' (int) and 'draw' (int).
+    * @returns void Outputs JSON containing keys 'draw' (int), 'recordsTotal' (int), 'recordsFiltered' (int) and 'data' (array of table rows).
+    */
     public function ajax_list_assigned()
     {
         $list = $this->Lead->get_datatables_assigned();
@@ -841,6 +1093,18 @@ class Leads extends CI_Controller
         $data1 = $this->Lead->get_chat_by_id($id);
         echo json_encode($data1);
     }
+    /**
+    * Send a chat message for a lead: validates the request, collects session and POST data, forwards it to the Lead model, and echoes a JSON success response.
+    * @example
+    * // Example usage (within controller context). Ensure POST contains 'entry_id' and 'messages' and session contains user/company data:
+    * $_POST = ['entry_id' => 123, 'messages' => 'Hello, I am interested in this lead.'];
+    * $this->session->set_userdata(['email' => 'user@example.com', 'company_name' => 'Acme Inc', 'company_email' => 'info@acme.com', 'name' => 'Jane Doe']);
+    * $this->sendmsg();
+    * // Output (echoed):
+    * // {"status":true}
+    * @param void $none - This method accepts no direct parameters; it reads input from POST and session.
+    * @returns void Echoes a JSON object with a boolean "status" key indicating success.
+    */
     public function sendmsg()
     {
         $validation = $this->chat_validation();
@@ -861,6 +1125,14 @@ class Leads extends CI_Controller
             echo json_encode(["status" => true]);
         }
     }
+    /**
+    * Validate lead form input using CodeIgniter form_validation; returns JSON errors on failure or 200 on success.
+    * @example
+    * $result = $this->check_validation();
+    * echo $result; // On failure: {"st":202,"name":"Name is required","email":"Email is not valid"} On success: 200
+    * @param void $none - This method does not accept any arguments.
+    * @returns int|string Returns 200 on successful validation or a JSON-encoded string (status 202 and field-specific HTML error messages) on failure.
+    */
     public function check_validation()
     {
         $this->form_validation->set_error_delimiters('<div class="error" style="margin-bottom: -12px; color: red; font-size: 11px; margin-left: 10px;" ><i class="fa fa-times" aria-hidden="true"></i>&nbsp;', '</div>');
@@ -934,6 +1206,20 @@ class Leads extends CI_Controller
             return 200;
         }
     }
+    /**
+     * Import leads from an uploaded CSV file.
+     * Checks create permission, parses the CSV rows using the csvimport library,
+     * validates required fields (email and phone), creates lead records, and echoes a JSON response.
+     * @example
+     * // Send a POST request with the CSV file under the "file" field:
+     * // curl -X POST -F "file=@leads.csv" https://example.com/leads/import
+     * // Example responses:
+     * // Success: {"st":200,"msg":"Data Imported Successfully"}
+     * // Missing required fields: {"st":202,"msg":"Import Failed All Fields Are Required"}
+     * // Duplicates: [{"row":2,"error":"duplicate entry for email or phone"}]
+     * @param array $_FILES - PHP $_FILES superglobal; expects a CSV file in $_FILES['file'] (tmp_name is read by the importer).
+     * @returns string JSON encoded response (echoed) indicating the operation status or duplicate details.
+     */
     public function import()
     {
         $this->load->library('csvimport');
@@ -990,6 +1276,21 @@ class Leads extends CI_Controller
     }
     
     
+      /**
+       * Add a new lead status from an AJAX request and return a JSON response.
+       * @example
+       * // jQuery AJAX example sending a new lead status:
+       * $.post('/leads/add_leadStatus', { leadstatus: 'New Lead' }, function(response) {
+       *     // sample success response: {"success":true,"message":"Satus Save Successfully","id":123}
+       *     // sample failure response: {"success":false,"message":"Status Add Failed"}
+       *     console.log(response);
+       * }, 'json');
+       * @param {string} $leadstatus - Lead status value supplied in POST data (key: 'leadstatus').
+       * @returns {string} JSON encoded response string with keys:
+       *                    - success (bool) whether the save succeeded,
+       *                    - message (string) human readable result message,
+       *                    - id (int|null) the new record id when success; if not an AJAX request the plain string "Invalid request" is echoed.
+       */
       public function add_leadStatus()
 	{
         // print_r('test');die;
@@ -1024,6 +1325,17 @@ class Leads extends CI_Controller
 
 
 
+    /**
+    * Add or update a mass field based on AJAX POST data and echo a JSON response.
+    * @example
+    * $_POST = ['mass_id' => 123, 'mass_name' => 'weight', 'mass_value' => '75kg'];
+    * $result = $this->Leads->add_mass();
+    * echo $result; // {"success":true,"message":"Mass Update Successfully"} or {"success":false,"message":"Mass Update Failed"} or "Invalid request"
+    * @param int|null $mass_id - ID of the mass entry from POST (nullable; new record if empty).
+    * @param string $mass_name - The name/key of the mass field from POST.
+    * @param string $mass_value - The value for the mass field from POST.
+    * @returns string JSON encoded response indicating success or failure, or a plain string "Invalid request".
+    */
     public function add_mass()
 	{
 		if ($this->input->is_ajax_request()) {
