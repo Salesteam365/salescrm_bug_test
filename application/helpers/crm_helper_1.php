@@ -57,6 +57,15 @@ function check_permission($moduleName,$userId)
 	return $CI->Permission_model->check_permission($moduleName,$userId);
 }
 
+/**
+* Check whether the current user has the specified permission for a given module or is an admin.
+* @example
+* $result = check_permission_status('leads', 'delete');
+* echo $result; // render true (1) if allowed or false (empty) if not
+* @param {string} $moduleName - Module name to check permissions for (e.g., 'leads').
+* @param {string} $columnName - Permission key/column to verify (e.g., 'view', 'edit', 'delete').
+* @returns {bool} Returns true when the user has the permission or is an admin, otherwise false.
+*/
 function check_permission_status($moduleName,$columnName)
 {	
 	$CI = &get_instance();
@@ -72,6 +81,16 @@ function check_permission_status($moduleName,$columnName)
 }
 
 
+/**
+* Send an HTML email using the application's predefined template and email library.
+* @example
+* $result = sendMailWithTemp('user@example.com', '<p>Hello John, welcome to Team365!</p>', 'Welcome to Team365');
+* echo $result // null (no return value) — the function sends the email and does not return a value;
+* @param {string} $to - Recipient email address (e.g. 'user@example.com').
+* @param {string} $messageBody - HTML content to inject into the email body (e.g. '<p>Hello John</p>').
+* @param {string} $subject - Email subject line (e.g. 'Welcome to Team365').
+* @returns {void} No return value; the function sends the email using the application's email library.
+*/
 function sendMailWithTemp($to,$messageBody,$subject)
 {
 	$CI = &get_instance();
@@ -152,6 +171,14 @@ function sendMailWithTemp($to,$messageBody,$subject)
 }
 
 
+/**
+* Retrieve the list of module names available to the currently logged-in user based on their account type and plan.
+* @example
+* $modules = checkModule();
+* print_r($modules); // Example output: Array ( [0] => "leads" [1] => "contacts" [2] => "reports" )
+* @param {void} none - No parameters are required for this function.
+* @returns {array} Array of module name strings available to the current user.
+*/
 function checkModule()
 {	
 	$CI 	= &get_instance();
@@ -202,6 +229,16 @@ function checkModuleForContr($module)
 }
 
 
+/**
+ * Generate a formatted identifier for a record (prefix/YEAR/count), update the record's column in the database (unless table is 'performa_invoice'), and return the generated identifier.
+ * @example
+ * $result = updateid(123, 'invoices', 'invoice_id');
+ * echo $result // e.g. "ACM/INV/2025/42";
+ * @param int|string $id - The record primary key (id) to update (e.g. 123).
+ * @param string $table - The database table name used to determine prefixes and module code (e.g. 'invoices').
+ * @param string $culmnName - The column name to update with the generated identifier (e.g. 'invoice_id').
+ * @returns string The generated identifier string in the format "PREFIX/MOD/YEAR/COUNT".
+ */
 function updateid($id, $table,$culmnName)
 {	
 	$CI = &get_instance();
@@ -224,6 +261,16 @@ function updateid($id, $table,$culmnName)
 }
 
 
+/**
+* Generate and (optionally) update a prefixed identifier for a record and return the generated ID.
+* @example
+* $result = updateidForApi(123, 'sales_invoice', 'invoice_id');
+* echo $result // renders e.g. 'ABC/SAL/2025/10' or 'PREFIX/2025/10';
+* @param {int|string} $id - Record primary key (numeric id or string) used to load the record to update.
+* @param {string} $table - Table name used to fetch record details and build the identifier (e.g. 'sales_invoice').
+* @param {string} $culmnName - Column name in the table to store the generated identifier (e.g. 'invoice_id').
+* @returns {string} Generated identifier string (either "{prefix_id}/YYYY/{count}" or "CMP/MDL/YYYY/{count}").
+*/
 function updateidForApi($id, $table,$culmnName)
 {	
 	$CI = &get_instance();
@@ -269,6 +316,14 @@ function IND_money_format($num){
 
 
 
+/**
+* Convert a date/time string into a human-readable elapsed time (e.g., "2 days ago").
+* @example
+* $result = time_elapsed_string('2025-12-17 14:30:00');
+* echo $result // render some sample output value; e.g., "2 days ago";
+* @param {{string}} {{$timestamp}} - Date/time string parseable by strtotime (e.g., '2025-12-17 14:30:00'). Timezone is set to "Asia/Kolkata" inside the function.
+* @returns {{string}} Returns a human-readable elapsed time string (e.g., "Just Now", "one minute ago", "yesterday", "3 months ago").
+*/
 function time_elapsed_string($timestamp) {
     date_default_timezone_set("Asia/Kolkata");         
   $time_ago        = strtotime($timestamp);
@@ -362,6 +417,14 @@ function time_elapsed_string($timestamp) {
 }
 
 
+/**
+* Calculate the fiscal year date range (April 1 to March 31) that contains the given month.
+* @example
+* $result = calculateFiscalYearForDate(5);
+* echo $result; // e.g. "2025-04-01:2026-03-31" (example when current year is 2025)
+* @param {int} $month - Month number (1-12) used to determine the fiscal year.
+* @returns {string} Fiscal year date range in format "YYYY-04-01:YYYY-03-31".
+*/
 function calculateFiscalYearForDate($month)
 {
     if($month >= 4){
@@ -378,6 +441,14 @@ function calculateFiscalYearForDate($month)
 
 
 
+/**
+* Convert a numeric amount into words using the Indian numbering system (Rupees and Paise).
+* @example
+* $result = AmountInWords(1234567.89);
+* echo $result // "Twelve Lakh Thirty Four Thousand Five Hundred Sixty Seven Rupees And Eighty Nine Paise"
+* @param {float} $amount - Amount as a float where the integer part is Rupees and the fractional part (up to two decimals) is Paise.
+* @returns {string} Amount spelled out in words including "Rupees" and optional "Paise".
+*/
 function AmountInWords(float $amount)
 {
    $amount_after_decimal = round($amount - ($num = floor($amount)), 2) * 100;
@@ -419,6 +490,14 @@ function AmountInWords(float $amount)
 
 
 
+/**
+* Build and echo a nested HTML unordered list (<ul>/<li>) representing the roles tree starting from the provided role ID.
+* @example
+* $result = getTreeView(1);
+* echo $result // renders HTML like: "<ul><li>Admin <span class='treeSpan'>Admin   <button class='btnid' data-id='1'>...</button><button class='addRol' data-pid='1'>...</button></span></li></ul>"
+* @param {int} $id - Parent role ID to start building the tree (use 0 or null for root).
+* @returns {void} Echoes the generated nested HTML list directly; does not return a value.
+*/
 function getTreeView($id)
 {
     $CI = & get_instance();
@@ -445,6 +524,29 @@ function getTreeView($id)
 
 
 
+/**
+ * Create a new opportunity record from submitted form data and return its generated opportunity ID.
+ * @example
+ * $sample_post = array(
+ *   'org_name' => 'Acme Corp',
+ *   'owner' => 'john.doe@example.com',
+ *   'subject' => 'New Website Project',
+ *   'contact_name' => 'Jane Smith',
+ *   'product_name' => array('Website Design', 'Hosting'),
+ *   'quantity' => array('1', '12'),
+ *   'unit_price' => array('1500', '10'),
+ *   'total' => array('1500', '120'),
+ *   'initial_total' => '1620',
+ *   'discount' => '0',
+ *   'total_percent' => '100',
+ *   // optional keys: lead_id, expclose_date, pipeline, stage, lead_source, probability,
+ *   // industry, type, employees, weighted_revenue, email, mobile, lost_reason
+ * );
+ * $result = create_opportunity($sample_post);
+ * echo $result; // e.g. 12345
+ * @param {array} $post - Associative array of opportunity data (required keys: 'org_name', 'owner', 'subject', 'product_name'[], 'quantity'[], 'unit_price'[], 'total'[], 'initial_total', 'total_percent'; optional: 'discount', 'lead_id', 'expclose_date', 'pipeline', 'stage', 'lead_source', 'probability', 'industry', 'type', 'employees', 'weighted_revenue', 'email', 'mobile', 'lost_reason').
+ * @returns {int|null} Opportunity ID (numeric) on success, or null/false on failure.
+ */
 function create_opportunity($post) {  
 	
 		$CI = & get_instance();
@@ -549,6 +651,21 @@ function create_opportunity($post) {
   
   
   
+    /**
+    * Create a quotation from current POST input and associate it with an opportunity.
+    * @example
+    * $post = array(
+    *   'quote_stage' => 'Draft',
+    *   'valid_until' => '2026-01-31',
+    *   'email'       => 'client@example.com',
+    *   'type'        => 'Standard'
+    * );
+    * $result = create_quote($post, 123);
+    * echo $result; // e.g. 456
+    * @param {array} $post - Associative array of optional override fields (quote_stage, valid_until, email, type). Most quote fields are read from CI POST input.
+    * @param {int} $opportunity_id - ID of the opportunity to link the created quote to.
+    * @returns {int} Return the newly created quote identifier (quote_id) on success.
+    */
     function create_quote($post,$opportunity_id)
     {  
 	    $CI = & get_instance();
@@ -673,6 +790,17 @@ function create_opportunity($post) {
   
   
     
+/**
+* Creates a subdomain by issuing a cPanel request over a local socket.
+* @example
+* $result = create_subdomain('blog', 'cpuser', 'cppass', 'example.com');
+* echo $result // e.g. "Created subdomain GET /frontend/x3/subdomain/doadddomain.html?rootdomain=example.com&domain=blog&dir=public_html/subdomains/blog HTTP/1.0 Host:localhost Authorization: Basic Y3B1c2VyOmNwcGFzcw=="
+* @param {string} $subDomain - Subdomain label (e.g. 'blog').
+* @param {string} $cPanelUser - cPanel username for authentication (e.g. 'cpuser').
+* @param {string} $cPanelPass - cPanel password for authentication (e.g. 'cppass').
+* @param {string} $rootDomain - Root domain to attach the subdomain to (e.g. 'example.com').
+* @returns {string} Return status string; either "Socket error" on failure or a message containing the built request headers on success.
+*/
 function create_subdomain($subDomain,$cPanelUser,$cPanelPass,$rootDomain) {
  
 //  $buildRequest = "/frontend/x3/subdomain/doadddomain.html?rootdomain=" . $rootDomain . "&domain=" . $subDomain;
