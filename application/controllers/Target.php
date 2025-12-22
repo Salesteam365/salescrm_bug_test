@@ -12,6 +12,20 @@ class Target extends CI_Controller
     $this->perPage = 5;
     
   }
+  /**
+  * Display the user target page when a user is authenticated; otherwise redirect to the login page.
+  * @example
+  * // Call from code or a test:
+  * $targetController = new Target();
+  * $targetController->index();
+  * // Or access via browser: GET /target
+  * // Example resulting data available to the view:
+  * // $data['user'] = ['id' => 1, 'email' => 'user@example.com'];
+  * // $data['dateyr'] = [2025];
+  * // $data['datemnth'] = ['January', 'February', 'March'];
+  * @param void $none - This method does not accept any parameters.
+  * @returns void No direct return; the method loads the 'users/user_target' view with data or redirects to 'login'.
+  */
   public function index()
   {
 
@@ -30,6 +44,16 @@ class Target extends CI_Controller
   }
 
 
+  /**
+  * Generate and echo HTML <option> elements for months available for a posted year ('yearsDt').
+  * @example
+  * $_POST['yearsDt'] = '2020';
+  * $this->Target->getMonth();
+  * // Echoes sample output (depending on months returned by Target_model->get_DateYear):
+  * // "<option value='01'>January</option><option value='02'>February</option><option value='03'>March</option>"
+  * @param string $yearsDt - Year value read from POST input 'yearsDt' (e.g., "2020").
+  * @returns void Echoes HTML <option> elements representing months for the given year.
+  */
   public function getMonth(){
   	 $yearsDt = $this->input->post('yearsDt');
   	 $data = $this->Target_model->get_DateYear('month',$yearsDt);
@@ -149,6 +173,19 @@ public function update_target()
 /*****************************/
 
 	
+  /**
+  * Return JSON payload for DataTables containing target rows (admins and standards) with sales/profit summaries.
+  * @example
+  * // Call via controller (method echoes JSON directly)
+  * $target = new Target();
+  * $target->ajax_list(); // Outputs JSON like:
+  * // {"draw":1,"recordsTotal":42,"recordsFiltered":10,"data":[["John Doe<div>...","10,000","<b>8,500</b>","2,000","<b>1,500</b>","March 2025"],["Standard A<div>...","5,000","<b>4,200</b>","1,000","<b>800</b>","February 2025"]]}
+  * @param int|null $start - DataTables paging start index (read from $_POST['start']).
+  * @param int|null $draw - DataTables draw counter (read from $_POST['draw']).
+  * @param string|null $searchYrs - Optional year filter (read from POST 'searchYrs').
+  * @param string|null $searchMnth - Optional month filter (read from POST 'searchMnth').
+  * @returns void Echoes a JSON-encoded array with keys: draw, recordsTotal, recordsFiltered and data (array of table rows).
+  */
   public function ajax_list()
   {
     $list = $this->Target_model->get_datatables();
