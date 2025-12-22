@@ -11,6 +11,17 @@ class Pipeline_performance extends CI_Controller
     $this->load->library('excel');
     $this->perPage = 10;
   }
+  /**
+  * Display the pipeline performance page for authenticated users or redirect guests.
+  * @example
+  * // From another controller or test, call the method directly:
+  * $this->pipeline_performance->index();
+  * // Or access via browser: GET /pipeline_performance
+  * // Effect: Renders the 'sales/pipeline_performance' view (HTML output) when user is logged in;
+  * // otherwise performs a redirect to 'home'.
+  * @param {void} none - No arguments are accepted by this method.
+  * @returns {void} Returns nothing; this method either loads a view or redirects the request.
+  */
   public function index()
   {
     if(!empty($this->session->userdata('email')))
@@ -30,6 +41,18 @@ class Pipeline_performance extends CI_Controller
       redirect('home');
     }
   }
+  /**
+  * Return JSON for DataTables containing lead counts grouped by lead owner for the requested page.
+  * @example
+  * // Called as a controller action; expects POST parameters 'start' and 'draw'.
+  * $_POST['start'] = 0;
+  * $_POST['draw'] = 1;
+  * $this->get_lead_for_record();
+  * // Example output printed to response:
+  * // {"draw":1,"recordsTotal":10,"recordsFiltered":5,"data":[["Alice Smith",3],["Bob Jones",2]]}
+  * @param {void} none - This controller method does not accept function arguments; it reads input from $_POST.
+  * @returns {void} Echoes a JSON-encoded object with keys: draw, recordsTotal, recordsFiltered and data.
+  */
   public function get_lead_for_record()
   {
     $list = $this->Pipeline->get_lead_for_record();
@@ -80,6 +103,14 @@ class Pipeline_performance extends CI_Controller
 
   }
   
+  /**
+  * Fetches pipeline funnel data by stage and echoes a JSON-encoded representation suitable for charting.
+  * @example
+  * $result = $this->getdata_pipelineFunnel();
+  * echo $result // render sample output: "[{ y: 120, label: \"Qualification\" , total: 5},{ y: 80, label: \"Proposal\" , total: 3}]"
+  * @param void $none - No parameters required.
+  * @returns string Echoes a JSON-encoded string containing an array of funnel objects (each with y, label and total). If no data is found, echoes the string '201'.
+  */
   public function getdata_pipelineFunnel()
   {    
     $result = $this->Pipeline->get_pipeline_funnel();
@@ -99,6 +130,19 @@ class Pipeline_performance extends CI_Controller
 	}
   }
    
+  /**
+  * Fetch pipeline activity from the Pipeline model and echo a JSON-encoded string suitable for charting.
+  * Uses POST parameter 'filterYear' (falls back to current year) to determine the filter year (though the current implementation only assigns it and does not alter output).
+  * @example
+  * // Call from a controller to output pipeline activity JSON to the response (no return value).
+  * $this->getdata_pipelineActivity();
+  * // Sample echoed output (json-encoded string):
+  * // "[{x: Jan, y: 5, z: 10,  stage: \"Proposal\" , cdate: \"2025-03-15\",onam: \"Acme Corp\"},{x: Feb, y: 3, z: 10,  stage: \"Negotiation\" , cdate: \"2025-04-01\",onam: \"Beta Ltd\"}]"
+  * @param void none - This method accepts no parameters.
+  * @returns void Echoes a JSON-encoded string containing an array of objects with keys:
+  *               x (month label), y (subtotal numeric), z (constant 10), stage (stage name),
+  *               cdate (expected close date) and onam (opportunity name). If no data is found echoes JSON-encoded '201'.
+  */
   public function getdata_pipelineActivity()
   {    
     $result = $this->Pipeline->get_pipeline_activity();
