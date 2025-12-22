@@ -3,6 +3,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Login extends CI_Controller
 {
+  /**
+  * Login controller constructor — initializes parent controller and loads required helpers, models and libraries (url, cookie, login_model, Country_model as 'Country', upload, email_lib).
+  * @example
+  * $login = new Login();
+  * // Controller initialized; url & cookie helpers loaded, login_model and Country_model (alias 'Country') loaded, upload and email_lib libraries loaded.
+  * @param void $none - No parameters are required.
+  * @returns void Constructor does not return a value.
+  */
   public function __construct()
   {
     parent::__construct();
@@ -25,6 +33,23 @@ class Login extends CI_Controller
   {
     $this->load->view('users/signup');
   }
+  /**
+  * Check if an email already exists among administrators or standard users and echo appropriate HTML/JS response for the frontend.
+  * @example
+  * $_POST['admin_email'] = 'admin@example.com';
+  * $this->checkemail();
+  * // Possible outputs:
+  * // If exists as admin:
+  * // <i class="fas fa-exclamation-triangle" style="margin-right:7px; color:red"></i>This email already exists
+  * // <script>$('#accept').prop('disabled',true);$('#admin_email').val('');</script>
+  * // If exists as standard users:
+  * // <i class="fas fa-exclamation-triangle" style="margin-right:7px; color:red"></i>This email already exists as a standard users
+  * // <script>$('#accept').prop('disabled',true);$('#admin_email').val('');</script>
+  * // If not found:
+  * // <script>$('#accept').prop('disabled',false);</script>
+  * @param {string} $admin_email - The email address provided via POST under key 'admin_email' to check for existence.
+  * @returns {void} Echoes HTML/JavaScript directly to the response; does not return a value.
+  */
   public function checkemail()
   {
     $status = $this->login_model->checkemail($_POST['admin_email']);
@@ -61,6 +86,26 @@ class Login extends CI_Controller
   }
 
 
+  /**
+  * Handle new user registration: validate input, create the user, send an OTP via SMS and email, then redirect to activation page on success or back to home on failure.
+  * @example
+  * // Example POST data that this controller expects:
+  * $_POST = [
+  *   'register_user'  => '1',
+  *   'first_name'     => 'John',
+  *   'last_name'      => 'Doe',
+  *   'admin_email'    => 'john.doe@example.com',
+  *   'admin_mobile'   => '919876543210',
+  *   'admin_password' => 'ExamplePass123',
+  *   'yourUrlname'    => 'johndoe'
+  * ];
+  * // When invoked after submitting the form:
+  * $this->login->register();
+  * // On success: redirects to 'login/activate_account/{id}'
+  * // On failure: redirects to base URL with an error flash message.
+  * @param array $post - POST input array (expects keys: register_user, first_name, last_name, admin_email, admin_mobile, admin_password, yourUrlname).
+  * @returns void Performs registration actions and redirects; does not return a value.
+  */
   public function register()
   {
     if ($this->input->post('register_user')) {
@@ -170,6 +215,18 @@ class Login extends CI_Controller
       }
     }
   }
+  /**
+  * Activate an account using POSTed activation_code and mobile_activation_code; sends confirmation emails and redirects on success or failure.
+  * @example
+  * // In controller context (simulate form POST)
+  * $_POST['activation_code'] = 'ABC123';
+  * $_POST['mobile_activation_code'] = 'MOB456';
+  * $this->login->activate_account();
+  * // On success flash: '<span style ="color:green">Account Activated</span>'
+  * // On failure flash: '<i class="fa fa-info-circle" style="color: red; margin-right: 7px;"></i>Invalid OTP Code'
+  * @param int $id - Account ID read from URI segment(3) (e.g. 42).
+  * @returns void Performs email notifications, sets flash message and redirects; no direct return value.
+  */
   public function activate_account()
   {
     $id =  $this->uri->segment(3);
@@ -429,6 +486,21 @@ class Login extends CI_Controller
   }
 
 
+  /**
+  * Handle password reset requests: generates a 6-digit OTP, stores it with a 1-hour expiry, sends the OTP by email or SMS, sets flash messages and redirects to the OTP verification page.
+  * @example
+  * // Example 1: Trigger via controller POST (Email)
+  * // POST data: ['method' => 'Email', 'email' => 'user@example.com']
+  * $result = $this->get_password_link();
+  * echo $result // null (method performs sending and redirects; no direct return value)
+  * @example
+  * // Example 2: Trigger via controller POST (Phone)
+  * // POST data: ['method' => 'Phone', 'mobile' => '919876543210']
+  * $result = $this->get_password_link();
+  * echo $result // null (method performs sending and redirects; no direct return value)
+  * @param {void} $none - No direct function arguments; input is read from POST parameters ('method', 'email' or 'mobile').
+  * @returns {void} Performs actions (DB updates, sends email/SMS, sets session flashdata) and redirects; does not return a value.
+  */
   public function get_password_link()
   {
     $this->load->view('verification/get_password_link');
@@ -613,6 +685,22 @@ class Login extends CI_Controller
       }
     }
   }
+  /**
+   * Display the OTP entry form and handle OTP submission. Loads the OTP view and, on form submit,
+   * validates the provided OTP against the stored OTP(s) for the user ID taken from URI segment 3.
+   * If the OTP matches, redirects to the reset password page for that user; otherwise sets a flash
+   * error message and redirects back to the OTP entry page.
+   * @example
+   * // Example: user visits /login/otp_password/42 and submits OTP '123456'
+   * $_POST['submit'] = 'Submit';
+   * $_POST['otp'] = '123456';
+   * // Controller obtains id from URI segment(3) => 42 and calls:
+   * $this->otp_password();
+   * // Expected behavior: redirect to 'login/reset_password/42' if OTP matches,
+   * // otherwise redirect back to 'login/otp_password/42' with a flash error message.
+   * @param {int} $id - User identifier retrieved from URI segment(3); not a direct function argument.
+   * @returns {void} No return value; performs view loading or redirects based on OTP verification.
+   */
   public function otp_password()
   {
     $this->load->view('verification/enter_otp_new');
@@ -635,6 +723,18 @@ class Login extends CI_Controller
       }
     }
   }
+  /**
+  * Reset user's password based on the token/ID in URI segment 3; displays the reset form and updates the password when the form is submitted.
+  * @example
+  * // Example: reset password for user id 42 by submitting the form with a new password
+  * $_POST['update'] = '1';
+  * $_POST['c_password'] = 'NewP@ssw0rd';
+  * $this->uri->segment(3) = 42;
+  * $this->login->reset_password();
+  * // After execution the user is redirected to 'login' and sees flash message: "Password Changed Successfully"
+  * @param {void} $none - No direct function parameters; uses URI segment 3 as the user identifier and POST fields 'c_password' and 'update'.
+  * @returns {void} No return value; loads the reset view and redirects to the login page after a successful password update.
+  */
   public function reset_password()
   {
 
@@ -1222,6 +1322,15 @@ class Login extends CI_Controller
     }
   
 
+  /**
+  * Fetch state and country information by TIN from POST and echo the result as JSON.
+  * @example
+  * $_POST['tin'] = '123456789';
+  * $this->fetchstatebytin();
+  * // Output: {"state":"California","country":"United States","state_id":5}
+  * @param {{string}} {{$_POST['tin']}} - Tax Identification Number provided in POST data.
+  * @returns {{void}} Echoes a JSON object containing 'state', 'country', and 'state_id'.
+  */
   public function fetchstatebytin()
   {
     if (isset($_POST['tin'])) {
@@ -1236,6 +1345,14 @@ class Login extends CI_Controller
     }
   }
 
+  /**
+  * Fetch country suggestions based on the GET parameter 'term' and echo a JSON array suitable for an autocomplete widget.
+  * @example
+  * $_GET['term'] = 'Ind';
+  * $this->autocomplete_countries(); // outputs: [{"label":"India","values":1},{"label":"Indonesia","values":2}]
+  * @param string $_GET['term'] - Search term used to filter countries (provided via GET).
+  * @returns void Echoes a JSON encoded array of matching countries (each element contains 'label' => country name and 'values' => country id) or a single element with 'label' => "No Records Found".
+  */
   public function autocomplete_countries()
   {
     if (isset($_GET['term'])) {
@@ -1255,6 +1372,15 @@ class Login extends CI_Controller
       }
     }
   }
+  /**
+  * Autocomplete states endpoint: reads POST 'terms' and optional 'country_id', retrieves matching states and echoes a JSON array of suggestion objects.
+  * @example
+  * $this->input->post(['terms' => 'New', 'country_id' => 1]);
+  * $this->autocomplete_states();
+  * // Output (echoed): [{"label":"New York","values":32},{"label":"New Jersey","values":34}]
+  * @param array $post - POST data array; expects 'terms' (string) and optional 'country_id' (int).
+  * @returns void Echoes a JSON-encoded array of suggestions or [{"label":"No Records Found"}] when no matches.
+  */
   public function autocomplete_states()
   {
     $post = $this->input->post();
@@ -1275,6 +1401,19 @@ class Login extends CI_Controller
       }
     }
   }
+  /**
+  * Autocompletes city names from POSTed 'terms' (and optional 'state_id') and echoes a JSON array of suggestion objects with a 'label' property.
+  * @example
+  * // Example usage (controller receives POST):
+  * $_POST['terms'] = 'New';
+  * $_POST['state_id'] = 5;
+  * $this->autocomplete_cities();
+  * // Example output (JSON):
+  * // [{"label":"New York"},{"label":"Newark"},{"label":"New Haven"}]
+  * @param {string} $post['terms'] - Search term submitted via POST to match city names (required).
+  * @param {int|null} $post['state_id'] - Optional state ID submitted via POST to limit the search (may be null).
+  * @returns {void} Echoes a JSON-encoded array of objects like [{"label":"City Name"}, ...]; if no results, echoes [{"label":"No Records Found"}].
+  */
   public function autocomplete_cities()
   {
     $post = $this->input->post();
@@ -1301,6 +1440,21 @@ class Login extends CI_Controller
     $this->load->view('users/auth-login');
   }
 
+  /**
+   * Verify the submitted OTP for secure login and establish the user session (supports 'standard' and 'admin' types).
+   * @example
+   * // Simulate POST data then call from controller
+   * $_POST['otpcode'] = '123456';
+   * $_POST['checkboxOtp'] = '1'; // set to '1' or true to remember OTP (stores cookie for 14 days)
+   * $_POST['method'] = 'email';  // sample method/value returned in redirect query
+   * $this->check_secure_login();
+   * // On success: redirects to 'home'
+   * // On failure: sets flash message and redirects to 'login/secure?ot=enter-otp&u=email'
+   * @param string $otpcode - One-time password code submitted by the user (e.g. '123456').
+   * @param bool|int $checkboxOtp - Flag indicating "remember this device" (1 or true to persist OTP cookie).
+   * @param string $method - Return/redirect method parameter used in failure redirect (e.g. 'email').
+   * @returns void Performs redirects and session updates; does not return a value.
+   */
   public function check_secure_login()
   {
     $otpcode    = $this->input->post('otpcode');
@@ -1367,6 +1521,34 @@ class Login extends CI_Controller
 
   }
 
+  /**
+   * Send a one-time password (OTP) to the currently stored user contact (mobile or email),
+   * update the OTP and expiry in the database and redirect to the OTP entry page.
+   *
+   * This controller method reads POST flags "mobilecheck" and "emailcheck" to determine
+   * whether to send the OTP via SMS (using 2factor.in API) or email (using email_lib).
+   * The OTP and an expiry key (current time + 1 hour) are stored via login_model:
+   * - updateOtpCodeStd(...) if session 'type_secur' == 'standard'
+   * - updateOtpCode(...) otherwise
+   * A flash message is set and the user is redirected to login/secure with query
+   * parameters indicating the destination (u=m for mobile, u=e for email).
+   *
+   * Example:
+   * $_POST['mobilecheck'] = '1'; // or $_POST['emailcheck'] = '1';
+   * $this->session->set_userdata('email_secur', 'user@example.com');
+   * $this->session->set_userdata('mobile_secur', '919876543210');
+   * $this->session->set_userdata('type_secur', 'admin'); // or 'standard'
+   * $this->securLogin();
+   * // Result: OTP generated (e.g. 482905), saved to DB, SMS or email sent, and browser redirected.
+   *
+   * @example
+   * // Sending OTP via mobile:
+   * $_POST['mobilecheck'] = '1';
+   * $this->securLogin();
+   *
+   * @param {void} none - No direct arguments; reads POST keys 'mobilecheck' / 'emailcheck' and session keys 'email_secur', 'mobile_secur', 'type_secur'.
+   * @returns {void} Redirects the response after attempting to send the OTP (no direct return value).
+   */
   public function securLogin(){
     $mobilecheck = $this->input->post('mobilecheck');
     $emailcheck = $this->input->post('emailcheck');
