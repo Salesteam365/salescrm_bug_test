@@ -2,7 +2,7 @@
 var element = document.getElementById("courses-earnings");
 if (element !== null) {
     element.innerHTML = "";
-    var options = {
+    let options = {
         series: [{
             name: "Earnings",
             data: [30, 25, 36, 30, 45, 35, 64, 51, 59, 36, 39, 51]
@@ -61,7 +61,7 @@ function earningsReport() {
 var element = document.getElementById("course-payouts");
 if (element !== null) {
     element.innerHTML = "";
-    var options2 = {
+    let options2 = {
         series: [{
             name: 'Paid',
             data: [55, 55, 42, 42, 55, 55, 38, 38, 53, 53, 35, 35],
