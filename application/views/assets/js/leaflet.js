@@ -2,14 +2,14 @@
     "use strict";
 
     /* default map */
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    let map = L.map('map').setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
     /* maps with markers circles and polygons */
-    var shapesmap = L.map('map1').setView([51.505, -0.09], 13);
+    let shapesmap = L.map('map1').setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
@@ -31,7 +31,7 @@
     }).addTo(shapesmap);
 
     /* maps with popup */
-    var popupmap = L.map('map-popup').setView([51.505, -0.09], 13);
+    let popupmap = L.map('map-popup').setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
@@ -54,18 +54,18 @@
     marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
     circle.bindPopup("I am a circle.");
     polygon.bindPopup("I am a polygon.");
-    var popup = L.popup()
+    let popup = L.popup()
         .setLatLng([51.513, -0.09])
         .setContent("I am a standalone popup.")
         .openOn(popupmap);
 
     /* maps with custom icon */
-    var customicon = L.map('map-custom-icon').setView([51.505, -0.09], 13);
+    let customicon = L.map('map-custom-icon').setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
     }).addTo(customicon);
-    var greenIcon = L.icon({
+    let greenIcon = L.icon({
         iconUrl: '../assets/images/brand-logos/desktop-logo.png',
         iconSize: [80, 25], // size of the icon
         iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
@@ -74,8 +74,8 @@
     L.marker([51.5, -0.09], { icon: greenIcon }).addTo(customicon);
 
     /* interactive chloropleth map */
-    var geomap = L.map('interactive-map').setView([37.8, -96], 4);
-    var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    let geomap = L.map('interactive-map').setView([37.8, -96], 4);
+    let tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(geomap);
@@ -103,7 +103,7 @@
     }
     // L.geoJson(statesData, { style: style }).addTo(geomap);
     function highlightFeature(e) {
-        var layer = e.target;
+        let layer = e.target;
         layer.setStyle({
             weight: 5,
             color: '#666',
