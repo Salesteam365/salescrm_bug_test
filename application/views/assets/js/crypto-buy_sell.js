@@ -1,7 +1,7 @@
 (function() {
     "use strict"
 
-    var options = {
+    let options = {
         series: [{
             name: "Buy",
             data: [20, 38, 38, 72, 55, 63, 43, 76, 55, 80, 40, 80],
@@ -83,7 +83,7 @@
         }
     };
     document.getElementById('buy_sell-statistics').innerHTML = ''
-    var chart = new ApexCharts(document.querySelector("#buy_sell-statistics"), options);
+    let chart = new ApexCharts(document.querySelector("#buy_sell-statistics"), options);
     chart.render();
 
 })()
