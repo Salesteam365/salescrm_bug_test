@@ -96,32 +96,9 @@ if (element !== null) {
             type: 'month',
             categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Aug", "Sep", "Oct", "Nov", "Dec"]
         },
-        dataLabels: {
-            enabled: false,
-        },
         legend: {
             show: true,
             position: 'top',
-        },
-        xaxis: {
-            show: false,
-            axisBorder: {
-                show: false,
-                color: 'rgba(119, 119, 142, 0.05)',
-                offsetX: 0,
-                offsetY: 0,
-            },
-            axisTicks: {
-                show: false,
-                borderType: 'solid',
-                color: 'rgba(119, 119, 142, 0.05)',
-                width: 6,
-                offsetX: 0,
-                offsetY: 0
-            },
-            labels: {
-                rotate: -90,
-            }
         },
         yaxis: {
             show: false,
