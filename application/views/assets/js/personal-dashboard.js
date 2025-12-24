@@ -148,7 +148,7 @@ if (element !== null) {
       }
     },
   };
-  var chart = new ApexCharts(document.querySelector("#sleepTrack"), options);
+  let chart = new ApexCharts(document.querySelector("#sleepTrack"), options);
   chart.render();
 }
 /* Sleep Tracking Chart */
