@@ -1,10 +1,10 @@
 (function() {
     "use strict"
 
-    var myElement1 = document.getElementById('profile-posts-scroll');
+    let myElement1 = document.getElementById('profile-posts-scroll');
     new SimpleBar(myElement1, { autoHide: true });
 
-    var lightboxVideo = GLightbox({
+    let lightboxVideo = GLightbox({
         selector: '.glightbox'
     });
     lightboxVideo.on('slide_changed', ({ prev, current }) => {
