@@ -283,17 +283,6 @@
             },
             borderColor: '#f2f5f7',
         },
-        xaxis: {
-            labels: {
-                show: true,
-                style: {
-                    colors: "#8c9097",
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    cssClass: 'apexcharts-xaxis-label',
-                },
-            }
-        },
         yaxis: {
             labels: {
                 show: true,
