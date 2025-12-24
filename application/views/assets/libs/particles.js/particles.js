@@ -7,9 +7,9 @@
 /* v2.0.0
 /* ----------------------------------------------- */
 
-var pJS = function(tag_id, params){
+let pJS = function(tag_id, params){
 
-  var canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
+  let canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
 
   /* particles.js variables with default values */
   this.pJS = {
@@ -134,7 +134,7 @@ var pJS = function(tag_id, params){
     tmp: {}
   };
 
-  var pJS = this.pJS;
+  let pJS = this.pJS;
 
   /* params settings */
   if(params){
@@ -270,7 +270,7 @@ var pJS = function(tag_id, params){
     if(typeof(color.value) == 'object'){
 
       if(color.value instanceof Array){
-        var color_selected = color.value[Math.floor(Math.random() * pJS.particles.color.value.length)];
+        let color_selected = color.value[Math.floor(Math.random() * pJS.particles.color.value.length)];
         this.color.rgb = hexToRgb(color_selected);
       }else{
         if(color.value.r != undefined && color.value.g != undefined && color.value.b != undefined){
@@ -313,7 +313,7 @@ var pJS = function(tag_id, params){
     }
 
     /* animation - velocity for speed */
-    var velbase = {}
+    let velbase = {}
     switch(pJS.particles.move.direction){
       case 'top':
         velbase = { x:0, y:-1 };
@@ -367,10 +367,10 @@ var pJS = function(tag_id, params){
 
     /* if shape is image */
 
-    var shape_type = pJS.particles.shape.type;
+    let shape_type = pJS.particles.shape.type;
     if(typeof(shape_type) == 'object'){
       if(shape_type instanceof Array){
-        var shape_selected = shape_type[Math.floor(Math.random() * shape_type.length)];
+        let shape_selected = shape_type[Math.floor(Math.random() * shape_type.length)];
         this.shape = shape_selected;
       }
     }else{
@@ -378,7 +378,7 @@ var pJS = function(tag_id, params){
     }
 
     if(this.shape == 'image'){
-      var sh = pJS.particles.shape;
+      let sh = pJS.particles.shape;
       this.img = {
         src: sh.image.src,
         ratio: sh.image.width / sh.image.height
@@ -399,7 +399,7 @@ var pJS = function(tag_id, params){
 
   pJS.fn.particle.prototype.draw = function() {
 
-    var p = this;
+    let p = this;
 
     if(p.radius_bubble != undefined){
       var radius = p.radius_bubble; 
@@ -498,17 +498,17 @@ var pJS = function(tag_id, params){
 
 
   pJS.fn.particlesCreate = function(){
-    for(var i = 0; i < pJS.particles.number.value; i++) {
+    for(let i = 0; i < pJS.particles.number.value; i++) {
       pJS.particles.array.push(new pJS.fn.particle(pJS.particles.color, pJS.particles.opacity.value));
     }
   };
 
   pJS.fn.particlesUpdate = function(){
 
-    for(var i = 0; i < pJS.particles.array.length; i++){
+    for(let i = 0; i < pJS.particles.array.length; i++){
 
       /* the particle */
-      var p = pJS.particles.array[i];
+      let p = pJS.particles.array[i];
 
       // var d = ( dx = pJS.interactivity.mouse.click_pos_x - p.x ) * dx + ( dy = pJS.interactivity.mouse.click_pos_y - p.y ) * dy;
       // var f = -BANG_SIZE / d;
@@ -520,7 +520,7 @@ var pJS = function(tag_id, params){
 
       /* move the particle */
       if(pJS.particles.move.enable){
-        var ms = pJS.particles.move.speed/2;
+        let ms = pJS.particles.move.speed/2;
         p.x += p.vx * ms;
         p.y += p.vy * ms;
       }
@@ -608,8 +608,8 @@ var pJS = function(tag_id, params){
 
       /* interaction auto between particles */
       if(pJS.particles.line_linked.enable || pJS.particles.move.attract.enable){
-        for(var j = i + 1; j < pJS.particles.array.length; j++){
-          var p2 = pJS.particles.array[j];
+        for(let j = i + 1; j < pJS.particles.array.length; j++){
+          let p2 = pJS.particles.array[j];
 
           /* link particles */
           if(pJS.particles.line_linked.enable){
@@ -643,8 +643,8 @@ var pJS = function(tag_id, params){
     pJS.fn.particlesUpdate();
 
     /* draw each particle */
-    for(var i = 0; i < pJS.particles.array.length; i++){
-      var p = pJS.particles.array[i];
+    for(let i = 0; i < pJS.particles.array.length; i++){
+      let p = pJS.particles.array[i];
       p.draw();
     }
 
@@ -675,19 +675,19 @@ var pJS = function(tag_id, params){
 
   pJS.fn.interact.linkParticles = function(p1, p2){
 
-    var dx = p1.x - p2.x,
+    let dx = p1.x - p2.x,
         dy = p1.y - p2.y,
         dist = Math.sqrt(dx*dx + dy*dy);
 
     /* draw a line between p1 and p2 if the distance between them is under the config distance */
     if(dist <= pJS.particles.line_linked.distance){
 
-      var opacity_line = pJS.particles.line_linked.opacity - (dist / (1/pJS.particles.line_linked.opacity)) / pJS.particles.line_linked.distance;
+      let opacity_line = pJS.particles.line_linked.opacity - (dist / (1/pJS.particles.line_linked.opacity)) / pJS.particles.line_linked.distance;
 
       if(opacity_line > 0){        
         
         /* style */
-        var color_line = pJS.particles.line_linked.color_rgb_line;
+        let color_line = pJS.particles.line_linked.color_rgb_line;
         pJS.canvas.ctx.strokeStyle = 'rgba('+color_line.r+','+color_line.g+','+color_line.b+','+opacity_line+')';
         pJS.canvas.ctx.lineWidth = pJS.particles.line_linked.width;
         //pJS.canvas.ctx.lineCap = 'round'; /* performance issue */
@@ -709,13 +709,13 @@ var pJS = function(tag_id, params){
   pJS.fn.interact.attractParticles  = function(p1, p2){
 
     /* condensed particles */
-    var dx = p1.x - p2.x,
+    let dx = p1.x - p2.x,
         dy = p1.y - p2.y,
         dist = Math.sqrt(dx*dx + dy*dy);
 
     if(dist <= pJS.particles.line_linked.distance){
 
-      var ax = dx/(pJS.particles.move.attract.rotateX*1000),
+      let ax = dx/(pJS.particles.move.attract.rotateX*1000),
           ay = dy/(pJS.particles.move.attract.rotateY*1000);
 
       p1.vx -= ax;
@@ -732,7 +732,7 @@ var pJS = function(tag_id, params){
 
   pJS.fn.interact.bounceParticles = function(p1, p2){
 
-    var dx = p1.x - p2.x,
+    let dx = p1.x - p2.x,
         dy = p1.y - p2.y,
         dist = Math.sqrt(dx*dx + dy*dy),
         dist_p = p1.radius+p2.radius;
@@ -754,7 +754,7 @@ var pJS = function(tag_id, params){
 
     pJS.tmp.pushing = true;
 
-    for(var i = 0; i < nb; i++){
+    for(let i = 0; i < nb; i++){
       pJS.particles.array.push(
         new pJS.fn.particle(
           pJS.particles.color,
@@ -897,7 +897,7 @@ var pJS = function(tag_id, params){
             }
           }else{
             if(p_obj_bubble != undefined){
-              var value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration),
+              let value_tmp = p_obj - (time_spent * (p_obj - bubble_param) / pJS.interactivity.modes.bubble.duration),
                   dif = bubble_param - value_tmp;
                   value = bubble_param + dif;
               if(id == 'size') p.radius_bubble = value;
@@ -925,7 +925,7 @@ var pJS = function(tag_id, params){
 
     if(pJS.interactivity.events.onhover.enable && isInArray('repulse', pJS.interactivity.events.onhover.mode) && pJS.interactivity.status == 'mousemove') {
 
-      var dx_mouse = p.x - pJS.interactivity.mouse.pos_x,
+      let dx_mouse = p.x - pJS.interactivity.mouse.pos_x,
           dy_mouse = p.y - pJS.interactivity.mouse.pos_y,
           dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
 
@@ -934,7 +934,7 @@ var pJS = function(tag_id, params){
           velocity = 100,
           repulseFactor = clamp((1/repulseRadius)*(-1*Math.pow(dist_mouse/repulseRadius,2)+1)*repulseRadius*velocity, 0, 50);
       
-      var pos = {
+      let pos = {
         x: p.x + normVec.x * repulseFactor,
         y: p.y + normVec.y * repulseFactor
       }
@@ -963,20 +963,20 @@ var pJS = function(tag_id, params){
 
         var repulseRadius = Math.pow(pJS.interactivity.modes.repulse.distance/6, 3);
 
-        var dx = pJS.interactivity.mouse.click_pos_x - p.x,
+        let dx = pJS.interactivity.mouse.click_pos_x - p.x,
             dy = pJS.interactivity.mouse.click_pos_y - p.y,
             d = dx*dx + dy*dy;
 
-        var force = -repulseRadius / d * 1;
+        let force = -repulseRadius / d * 1;
 
         function process(){
 
-          var f = Math.atan2(dy,dx);
+          let f = Math.atan2(dy,dx);
           p.vx = force * Math.cos(f);
           p.vy = force * Math.sin(f);
 
           if(pJS.particles.move.out_mode == 'bounce'){
-            var pos = {
+            let pos = {
               x: p.x + p.vx,
               y: p.y + p.vy
             }
@@ -1023,19 +1023,19 @@ var pJS = function(tag_id, params){
 
     if(pJS.interactivity.events.onhover.enable && pJS.interactivity.status == 'mousemove'){
 
-      var dx_mouse = p.x - pJS.interactivity.mouse.pos_x,
+      let dx_mouse = p.x - pJS.interactivity.mouse.pos_x,
           dy_mouse = p.y - pJS.interactivity.mouse.pos_y,
           dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
 
       /* draw a line between the cursor and the particle if the distance between them is under the config distance */
       if(dist_mouse <= pJS.interactivity.modes.grab.distance){
 
-        var opacity_line = pJS.interactivity.modes.grab.line_linked.opacity - (dist_mouse / (1/pJS.interactivity.modes.grab.line_linked.opacity)) / pJS.interactivity.modes.grab.distance;
+        let opacity_line = pJS.interactivity.modes.grab.line_linked.opacity - (dist_mouse / (1/pJS.interactivity.modes.grab.line_linked.opacity)) / pJS.interactivity.modes.grab.distance;
 
         if(opacity_line > 0){
 
           /* style */
-          var color_line = pJS.particles.line_linked.color_rgb_line;
+          let color_line = pJS.particles.line_linked.color_rgb_line;
           pJS.canvas.ctx.strokeStyle = 'rgba('+color_line.r+','+color_line.g+','+color_line.b+','+opacity_line+')';
           pJS.canvas.ctx.lineWidth = pJS.particles.line_linked.width;
           //pJS.canvas.ctx.lineCap = 'round'; /* performance issue */
@@ -1166,16 +1166,16 @@ var pJS = function(tag_id, params){
     if(pJS.particles.number.density.enable){
 
       /* calc area */
-      var area = pJS.canvas.el.width * pJS.canvas.el.height / 1000;
+      let area = pJS.canvas.el.width * pJS.canvas.el.height / 1000;
       if(pJS.tmp.retina){
         area = area/(pJS.canvas.pxratio*2);
       }
 
       /* calc number of particles based on density area */
-      var nb_particles = area * pJS.particles.number.value / pJS.particles.number.density.value_area;
+      let nb_particles = area * pJS.particles.number.value / pJS.particles.number.density.value_area;
 
       /* add or remove X particles */
-      var missing_particles = pJS.particles.array.length - nb_particles;
+      let missing_particles = pJS.particles.array.length - nb_particles;
       if(missing_particles < 0) pJS.fn.modes.pushParticles(Math.abs(missing_particles));
       else pJS.fn.modes.removeParticles(missing_particles);
 
@@ -1185,10 +1185,10 @@ var pJS = function(tag_id, params){
 
 
   pJS.fn.vendors.checkOverlap = function(p1, position){
-    for(var i = 0; i < pJS.particles.array.length; i++){
-      var p2 = pJS.particles.array[i];
+    for(let i = 0; i < pJS.particles.array.length; i++){
+      let p2 = pJS.particles.array[i];
 
-      var dx = p1.x - p2.x,
+      let dx = p1.x - p2.x,
           dy = p1.y - p2.y,
           dist = Math.sqrt(dx*dx + dy*dy);
 
@@ -1204,7 +1204,7 @@ var pJS = function(tag_id, params){
   pJS.fn.vendors.createSvgImg = function(p){
 
     /* set color to svg element */
-    var svgXml = pJS.tmp.source_svg,
+    let svgXml = pJS.tmp.source_svg,
         rgbHex = /#([0-9A-F]{3,6})/gi,
         coloredSvgXml = svgXml.replace(rgbHex, function (m, r, g, b) {
           if(p.color.rgb){
@@ -1216,12 +1216,12 @@ var pJS = function(tag_id, params){
         });
 
     /* prepare to create img with colored svg */
-    var svg = new Blob([coloredSvgXml], {type: 'image/svg+xml;charset=utf-8'}),
+    let svg = new Blob([coloredSvgXml], {type: 'image/svg+xml;charset=utf-8'}),
         DOMURL = window.URL || window.webkitURL || window,
         url = DOMURL.createObjectURL(svg);
 
     /* create particle img obj */
-    var img = new Image();
+    let img = new Image();
     img.addEventListener('load', function(){
       p.img.obj = img;
       p.img.loaded = true;
@@ -1243,15 +1243,15 @@ var pJS = function(tag_id, params){
   pJS.fn.vendors.drawShape = function(c, startX, startY, sideLength, sideCountNumerator, sideCountDenominator){
 
     // By Programming Thomas - https://programmingthomas.wordpress.com/2013/04/03/n-sided-shapes/
-    var sideCount = sideCountNumerator * sideCountDenominator;
-    var decimalSides = sideCountNumerator / sideCountDenominator;
-    var interiorAngleDegrees = (180 * (decimalSides - 2)) / decimalSides;
-    var interiorAngle = Math.PI - Math.PI * interiorAngleDegrees / 180; // convert to radians
+    let sideCount = sideCountNumerator * sideCountDenominator;
+    let decimalSides = sideCountNumerator / sideCountDenominator;
+    let interiorAngleDegrees = (180 * (decimalSides - 2)) / decimalSides;
+    let interiorAngle = Math.PI - Math.PI * interiorAngleDegrees / 180; // convert to radians
     c.save();
     c.beginPath();
     c.translate(startX, startY);
     c.moveTo(0,0);
-    for (var i = 0; i < sideCount; i++) {
+    for (let i = 0; i < sideCount; i++) {
       c.lineTo(sideLength,0);
       c.translate(sideLength,0);
       c.rotate(interiorAngle);
@@ -1275,7 +1275,7 @@ var pJS = function(tag_id, params){
 
       if(type == 'svg'){
 
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.open('GET', pJS.particles.shape.image.src);
         xhr.onreadystatechange = function (data) {
           if(xhr.readyState == 4){
@@ -1292,7 +1292,7 @@ var pJS = function(tag_id, params){
 
       }else{
 
-        var img = new Image();
+        let img = new Image();
         img.addEventListener('load', function(){
           pJS.tmp.img_obj = img;
           pJS.fn.vendors.checkBeforeDraw();
@@ -1414,7 +1414,7 @@ var pJS = function(tag_id, params){
 /* ---------- global functions - vendors ------------ */
 
 Object.deepExtend = function(destination, source) {
-  for (var property in source) {
+  for (let property in source) {
     if (source[property] && source[property].constructor &&
      source[property].constructor === Object) {
       destination[property] = destination[property] || {};
@@ -1449,11 +1449,11 @@ window.cancelRequestAnimFrame = ( function() {
 function hexToRgb(hex){
   // By Tim Down - http://stackoverflow.com/a/5624139/3493650
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function(m, r, g, b) {
      return r + r + g + g + b + b;
   });
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
       r: parseInt(result[1], 16),
       g: parseInt(result[2], 16),
@@ -1490,7 +1490,7 @@ window.particlesJS = function(tag_id, params){
   }
 
   /* pJS elements */
-  var pJS_tag = document.getElementById(tag_id),
+  let pJS_tag = document.getElementById(tag_id),
       pJS_canvas_class = 'particles-js-canvas-el',
       exist_canvas = pJS_tag.getElementsByClassName(pJS_canvas_class);
 
@@ -1502,7 +1502,7 @@ window.particlesJS = function(tag_id, params){
   }
 
   /* create canvas element */
-  var canvas_el = document.createElement('canvas');
+  let canvas_el = document.createElement('canvas');
   canvas_el.className = pJS_canvas_class;
 
   /* set size canvas */
@@ -1510,7 +1510,7 @@ window.particlesJS = function(tag_id, params){
   canvas_el.style.height = "100%";
 
   /* append canvas */
-  var canvas = document.getElementById(tag_id).appendChild(canvas_el);
+  let canvas = document.getElementById(tag_id).appendChild(canvas_el);
 
   /* launch particle.js */
   if(canvas != null){
@@ -1522,12 +1522,12 @@ window.particlesJS = function(tag_id, params){
 window.particlesJS.load = function(tag_id, path_config_json, callback){
 
   /* load json config */
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.open('GET', path_config_json);
   xhr.onreadystatechange = function (data) {
     if(xhr.readyState == 4){
       if(xhr.status == 200){
-        var params = JSON.parse(data.currentTarget.response);
+        let params = JSON.parse(data.currentTarget.response);
         window.particlesJS(tag_id, params);
         if(callback) callback();
       }else{
