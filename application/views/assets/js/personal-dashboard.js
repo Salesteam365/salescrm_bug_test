@@ -52,9 +52,6 @@ if (element !== null) {
       }
     },
     colors: ["rgb(132, 90, 223)"],
-    stroke: {
-      width: [1],
-    },
     fill: {
       type: 'gradient',
       gradient: {
@@ -136,9 +133,6 @@ if (element !== null) {
       }
     },
     colors: ["#64af6d"],
-    stroke: {
-      width: [1],
-    },
     fill: {
       type: 'gradient',
       gradient: {
