@@ -63,11 +63,6 @@ if (element !== null) {
                 show: false
             }
         },
-        yaxis: {
-            axisBorder: {
-                show: false
-            },
-        },
         colors: ['#23b7e5'],
 
     }
@@ -119,11 +114,6 @@ if (element !== null) {
             show: false
         },
         xaxis: {
-            axisBorder: {
-                show: false
-            },
-        },
-        yaxis: {
             axisBorder: {
                 show: false
             },
@@ -385,9 +375,6 @@ if (element !== null) {
         stroke: {
             curve: 'straight',
             width: 3
-        },
-        dataLabels: {
-            enabled: false,
         },
         legend: {
             show: true,
