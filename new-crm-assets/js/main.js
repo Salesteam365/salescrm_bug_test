@@ -413,7 +413,6 @@
 			slidesToScroll: 1,
 			dots: false,
 			arrows: false,
-			dots:true,
 			responsive: [
 				{
 					breakpoint: 1200,
