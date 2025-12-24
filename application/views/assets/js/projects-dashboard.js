@@ -202,11 +202,6 @@ if (element !== null) {
                 show: false
             }
         },
-        yaxis: {
-            axisBorder: {
-                show: false
-            },
-        },
         colors: ['#09ad95'],
 
     }
@@ -279,11 +274,6 @@ if (element !== null) {
             axisBorder: {
                 show: false
             }
-        },
-        yaxis: {
-            axisBorder: {
-                show: false
-            },
         },
         colors: ['#fb6b27'],
 
@@ -358,11 +348,6 @@ if (element !== null) {
                 show: false
             }
         },
-        yaxis: {
-            axisBorder: {
-                show: false
-            },
-        },
         colors: ['#1170e4'],
 
     }
@@ -436,11 +421,6 @@ if (element !== null) {
                 show: false
             }
         },
-        yaxis: {
-            axisBorder: {
-                show: false
-            },
-        },
         colors: ['#e82646'],
 
     }
@@ -513,11 +493,6 @@ if (element !== null) {
             axisBorder: {
                 show: false
             }
-        },
-        yaxis: {
-            axisBorder: {
-                show: false
-            },
         },
         colors: ['#f7b731'],
 
