@@ -836,7 +836,6 @@ slideLeft.addEventListener("click", () => {
 
 
   switcherArrowFn();
-  return;
   //
 });
 slideRight.addEventListener("click", () => {
@@ -896,7 +895,6 @@ slideRight.addEventListener("click", () => {
 
 
   switcherArrowFn();
-  return;
 });
 function checkHoriMenu() {
   let menuNav = document.querySelector(".main-menu");
