@@ -119,7 +119,7 @@
           if (D.u(n)) return new Date();
           if (n instanceof Date) return new Date(n);
           if ("string" == typeof n && !/Z$/i.test(n)) {
-            var r = n.match(h);
+            var r = RegExp(h).exec(n);
             if (r)
               return e
                 ? new Date(
