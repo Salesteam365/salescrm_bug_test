@@ -1237,7 +1237,7 @@
       _proto.minimize = function minimize() {
         this._parent.find(this._settings.maximizeTrigger + ' .' + this._settings.minimizeIcon).addClass(this._settings.maximizeIcon).removeClass(this._settings.minimizeIcon);
 
-        this._parent.css('cssText', 'height:' + this._parent[0].style.height + ' !important;' + 'width:' + this._parent[0].style.width + ' !important; transition: all .15s;').delay(10).queue(function () {
+        this._parent.css('cssText', "undefinedwidth:" + this._parent[0].style.width + ' !important; transition: all .15s;').delay(10).queue(function () {
           $(this).removeClass(ClassName.MAXIMIZED);
           $('html').removeClass(ClassName.MAXIMIZED);
           $(this).css({
