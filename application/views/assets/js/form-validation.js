@@ -84,7 +84,7 @@
 
     //remove white spaces from every input Field
     const firstNameValue        = firstNameInput.value.trim();
-    const lastNameValue         = lastNameInput.value.trim();;
+    const lastNameValue         = lastNameInput.value.trim();
     const phoneValue            = phoneInput.value.trim();
     const emailValue            = emailInput.value.trim();
     const passwordValue         = passwordInput.value.trim();

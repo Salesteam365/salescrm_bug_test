@@ -143,5 +143,5 @@ function JobsSummary() {
     chart.updateOptions({
         colors: ["rgb(" + myVarVal + ")", "rgba(" + myVarVal + ", 0.7)", "rgba(" + myVarVal + ", 0.4)", "rgb(243, 246, 248)"],
     })
-};
+}
 /* Jobs Summary chart */
