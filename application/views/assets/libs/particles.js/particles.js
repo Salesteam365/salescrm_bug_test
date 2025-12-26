@@ -932,7 +932,7 @@ var pJS = function(tag_id, params){
       var normVec = {x: dx_mouse/dist_mouse, y: dy_mouse/dist_mouse},
           repulseRadius = pJS.interactivity.modes.repulse.distance,
           velocity = 100,
-          repulseFactor = clamp((1/repulseRadius)*(-1*Math.pow(dist_mouse/repulseRadius,2)+1)*repulseRadius*velocity, 0, 50);
+          repulseFactor = clamp((1/repulseRadius)*(-1*(dist_mouse/repulseRadius)**2+1)*repulseRadius*velocity, 0, 50);
       
       var pos = {
         x: p.x + normVec.x * repulseFactor,
@@ -961,7 +961,7 @@ var pJS = function(tag_id, params){
 
       if(pJS.tmp.repulse_clicking){
 
-        var repulseRadius = Math.pow(pJS.interactivity.modes.repulse.distance/6, 3);
+        var repulseRadius = (pJS.interactivity.modes.repulse.distance/6)**3;
 
         var dx = pJS.interactivity.mouse.click_pos_x - p.x,
             dy = pJS.interactivity.mouse.click_pos_y - p.y,
