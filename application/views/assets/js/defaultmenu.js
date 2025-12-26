@@ -617,7 +617,7 @@ function doubletFn() {
 
   // Create the tooltip element
   const tooltip = document.createElement("div");
-  // tooltip.textContent = "This is a tooltip";
+  
 
   // Set the CSS properties of the tooltip element
   tooltip.style.setProperty("position", "fixed");

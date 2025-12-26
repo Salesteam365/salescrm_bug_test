@@ -111,7 +111,7 @@ $(function () {
   /* Chart.js Charts */
   // Sales chart
   var salesChartCanvas = document.getElementById('revenue-chart-canvas').getContext('2d');
-  //$('#revenue-chart').get(0).getContext('2d');
+  
 
   var salesChartData = {
     labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -201,7 +201,7 @@ $(function () {
 
   // Sales graph chart
   var salesGraphChartCanvas = $('#line-chart').get(0).getContext('2d');
-  //$('#revenue-chart').get(0).getContext('2d');
+  
 
   var salesGraphChartData = {
     labels  : ['2011 Q1', '2011 Q2', '2011 Q3', '2011 Q4', '2012 Q1', '2012 Q2', '2012 Q3', '2012 Q4', '2013 Q1', '2013 Q2'],

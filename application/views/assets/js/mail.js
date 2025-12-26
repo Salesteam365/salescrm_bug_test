@@ -88,7 +88,7 @@
       if (window.screen.width < 1399 && i == false) {
         document.querySelector(".total-mails").classList.add("!hidden");
       } else {
-        // if(document.querySelector(".mail-navigation").style.display != "block"){
+        
         document.querySelector(".total-mails").classList.remove("!hidden");
         // }
       }
