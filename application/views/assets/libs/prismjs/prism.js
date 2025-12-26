@@ -1196,13 +1196,11 @@ var Prism = (function (_self) {
 		var readyState = document.readyState;
 		if (readyState === 'loading' || readyState === 'interactive' && script && script.defer) {
 			document.addEventListener('DOMContentLoaded', highlightAutomaticallyCallback);
-		} else {
-			if (window.requestAnimationFrame) {
+		} else if (window.requestAnimationFrame) {
 				window.requestAnimationFrame(highlightAutomaticallyCallback);
 			} else {
 				window.setTimeout(highlightAutomaticallyCallback, 16);
 			}
-		}
 	}
 
 	return _;
@@ -1800,13 +1798,11 @@ Prism.languages.js = Prism.languages.javascript;
 			if (xhr.readyState == 4) {
 				if (xhr.status < 400 && xhr.responseText) {
 					success(xhr.responseText);
-				} else {
-					if (xhr.status >= 400) {
+				} else if (xhr.status >= 400) {
 						error(FAILURE_MESSAGE(xhr.status, xhr.statusText));
 					} else {
 						error(FAILURE_EMPTY_MESSAGE);
 					}
-				}
 			}
 		};
 		xhr.send(null);
