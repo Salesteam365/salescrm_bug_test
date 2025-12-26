@@ -413,8 +413,7 @@ function toggleSidemenu() {
             html.removeAttribute("data-toggled", "icon-overlay-close");
             sidebar.removeEventListener("mouseenter", mouseEntered);
             sidebar.removeEventListener("mouseleave", mouseLeave);
-          } else {
-            if (window.innerWidth >= 992) {
+          } else if (window.innerWidth >= 992) {
               html.setAttribute("data-toggled", "icon-overlay-close");
               sidebar.addEventListener("mouseenter", mouseEntered);
               sidebar.addEventListener("mouseleave", mouseLeave);
@@ -422,7 +421,6 @@ function toggleSidemenu() {
               sidebar.removeEventListener("mouseenter", mouseEntered);
               sidebar.removeEventListener("mouseleave", mouseLeave);
             }
-          }
           break;
         // icon-text
         case "icontext":
@@ -534,8 +532,7 @@ function toggleSidemenu() {
         default:
       }
     }
-  } else {
-    if (html.getAttribute("data-toggled") === "close") {
+  } else if (html.getAttribute("data-toggled") === "close") {
       html.setAttribute("data-toggled", "open");
       let i = document.createElement("div");
       i.id = "responsive-overlay";
@@ -560,7 +557,6 @@ function toggleSidemenu() {
     } else {
       html.setAttribute("data-toggled", "close");
     }
-  }
 }
 function mouseEntered() {
   let html = document.querySelector("html");
@@ -799,8 +795,7 @@ slideLeft.addEventListener("click", () => {
         slideLeft.classList.add("hidden");
         slideRight.classList.remove("hidden");
       }
-    } else {
-      if (
+    } else if (
         marginRightValue < 0 &&
         !(Math.abs(marginRightValue) < mainContainer1Width)
       ) {
@@ -819,7 +814,6 @@ slideLeft.addEventListener("click", () => {
         slideLeft.classList.add("hidden");
         slideRight.classList.remove("hidden");
       }
-    }
   } else {
     document.querySelector(".main-menu").style.marginLeft = "0px";
     document.querySelector(".main-menu").style.marginRight = "0px";
@@ -867,8 +861,7 @@ slideRight.addEventListener("click", () => {
           "px";
         slideLeft.classList.remove("hidden");
       }
-    } else {
-      if (Math.abs(check) > Math.abs(marginRightValue)) {
+    } else if (Math.abs(check) > Math.abs(marginRightValue)) {
         menuNav.style.marginLeft = 0;
         if (
           !(Math.abs(check) > Math.abs(marginRightValue) + mainContainer1Width)
@@ -882,7 +875,6 @@ slideRight.addEventListener("click", () => {
           "px";
         slideLeft.classList.remove("hidden");
       }
-    }
   }
   let element = document.querySelector(".main-menu > .slide.open")
       let element1 = document.querySelector(".main-menu > .slide.open >ul")
