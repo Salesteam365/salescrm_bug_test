@@ -223,9 +223,7 @@
           },
           $ = function (t, n) {
             return D.w(
-              h.toDate()[t].apply(
-                h.toDate(),
-                f ? [0, 0, 0, 0] : [23, 59, 59, 999]
+              h.toDate()[t](...f ? [0, 0, 0, 0] : [23, 59, 59, 999]
               ).slice(n),
               h
             );
