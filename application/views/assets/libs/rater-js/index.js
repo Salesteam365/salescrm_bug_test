@@ -219,7 +219,7 @@ module.exports = function (options) {
     elem.classList.add("disabled");
 
     if (showToolTip && !!disableText) {
-      var toolTip = disableText.replace("{rating}", !!rating ? rating : 0);
+      var toolTip = disableText.replace("{rating}", rating ? rating : 0);
       toolTip = toolTip.replace("{maxRating}", stars);
       elem.setAttribute("title", toolTip);
     } else {
