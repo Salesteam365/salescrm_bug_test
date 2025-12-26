@@ -267,5 +267,5 @@ function Candidates() {
     chart.updateOptions({
         colors: ["rgb(" + myVarVal + ")", "#23b7e5"],
     })
-};
+}
 /* Candidates Chart */
