@@ -162,7 +162,7 @@
         return D;
       }),
       (d.isValid = function () {
-        return !("Invalid Date" === this.$d.toString());
+        return "Invalid Date" !== this.$d.toString();
       }),
       (d.isSame = function (t, n) {
         var e = g(t);
