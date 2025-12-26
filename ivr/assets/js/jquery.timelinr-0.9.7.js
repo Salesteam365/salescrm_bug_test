@@ -84,8 +84,7 @@ jQuery.fn.timelinr = function(options){
             $(settings.nextButton).fadeOut('fast');
             $(settings.prevButton).fadeIn('fast');
           }
-        } else {
-          if( $(settings.issuesDiv+' li:first-child').hasClass(settings.issuesSelectedClass) ) {
+        } else if( $(settings.issuesDiv+' li:first-child').hasClass(settings.issuesSelectedClass) ) {
             $(settings.nextButton).fadeIn('fast');
             $(settings.prevButton).fadeOut('fast');
           }
@@ -96,7 +95,6 @@ jQuery.fn.timelinr = function(options){
           else {
             $(settings.nextButton+','+settings.prevButton).fadeIn('slow');
           }
-        }
         // now moving the dates
         $(settings.datesDiv+' a').removeClass(settings.datesSelectedClass);
         $(this).addClass(settings.datesSelectedClass);
@@ -119,12 +117,10 @@ jQuery.fn.timelinr = function(options){
           if(currentPositionIssues <= -(widthIssue*howManyIssues-(widthIssue))) {
             $(settings.issuesDiv).stop();
             $(settings.datesDiv+' li:last-child a').click();
-          } else {
-            if (!$(settings.issuesDiv).is(':animated')) {
+          } else if (!$(settings.issuesDiv).is(':animated')) {
               // bugixed from 0.9.52: now the dates gets centered when there's too much dates.
               $(settings.datesDiv+' li').eq(currentIndex+1).find('a').trigger('click');
             }
-          }
         } else if(settings.orientation == 'vertical') {
           var currentPositionIssues = parseInt($(settings.issuesDiv).css('marginTop').substring(0,$(settings.issuesDiv).css('marginTop').indexOf('px')));
           var currentIssueIndex = currentPositionIssues/heightIssue;
@@ -133,12 +129,10 @@ jQuery.fn.timelinr = function(options){
           if(currentPositionIssues <= -(heightIssue*howManyIssues-(heightIssue))) {
             $(settings.issuesDiv).stop();
             $(settings.datesDiv+' li:last-child a').click();
-          } else {
-            if (!$(settings.issuesDiv).is(':animated')) {
+          } else if (!$(settings.issuesDiv).is(':animated')) {
               // bugixed from 0.9.54: now the dates gets centered when there's too much dates.
               $(settings.datesDiv+' li').eq(currentIndex+1).find('a').trigger('click');
             }
-          }
         }
         // prev/next buttons now disappears on first/last issue | bugfix from 0.9.51: lower than 1 issue hide the arrows
         if(howManyDates == 1) {
@@ -152,8 +146,7 @@ jQuery.fn.timelinr = function(options){
             $(settings.nextButton).fadeOut('fast');
             $(settings.prevButton).fadeIn('fast');
           }
-        } else {
-          if( $(settings.issuesDiv+' li:first-child').hasClass(settings.issuesSelectedClass) ) {
+        } else if( $(settings.issuesDiv+' li:first-child').hasClass(settings.issuesSelectedClass) ) {
             $(settings.prevButton).fadeOut('fast');
           }
           else if( $(settings.issuesDiv+' li:last-child').hasClass(settings.issuesSelectedClass) ) {
@@ -162,7 +155,6 @@ jQuery.fn.timelinr = function(options){
           else {
             $(settings.nextButton+','+settings.prevButton).fadeIn('slow');
           }
-        }
       });
 
       $(settings.prevButton).click(function(event){
@@ -177,12 +169,10 @@ jQuery.fn.timelinr = function(options){
           if(currentPositionIssues >= 0) {
             $(settings.issuesDiv).stop();
             $(settings.datesDiv+' li:first-child a').click();
-          } else {
-            if (!$(settings.issuesDiv).is(':animated')) {
+          } else if (!$(settings.issuesDiv).is(':animated')) {
               // bugixed from 0.9.54: now the dates gets centered when there's too much dates.
               $(settings.datesDiv+' li').eq(currentIndex-1).find('a').trigger('click');
             }
-          }
         } else if(settings.orientation == 'vertical') {
           var currentPositionIssues = parseInt($(settings.issuesDiv).css('marginTop').substring(0,$(settings.issuesDiv).css('marginTop').indexOf('px')));
           var currentIssueIndex = currentPositionIssues/heightIssue;
@@ -191,12 +181,10 @@ jQuery.fn.timelinr = function(options){
           if(currentPositionIssues >= 0) {
             $(settings.issuesDiv).stop();
             $(settings.datesDiv+' li:first-child a').click();
-          } else {
-            if (!$(settings.issuesDiv).is(':animated')) {
+          } else if (!$(settings.issuesDiv).is(':animated')) {
               // bugixed from 0.9.54: now the dates gets centered when there's too much dates.
               $(settings.datesDiv+' li').eq(currentIndex-1).find('a').trigger('click');
             }
-          }
         }
         // prev/next buttons now disappears on first/last issue | bugfix from 0.9.51: lower than 1 issue hide the arrows
         if(howManyDates == 1) {
@@ -210,8 +198,7 @@ jQuery.fn.timelinr = function(options){
             $(settings.nextButton).fadeOut('fast');
             $(settings.prevButton).fadeIn('fast');
           }
-        } else {
-          if( $(settings.issuesDiv+' li:first-child').hasClass(settings.issuesSelectedClass) ) {
+        } else if( $(settings.issuesDiv+' li:first-child').hasClass(settings.issuesSelectedClass) ) {
             $(settings.prevButton).fadeOut('fast');
           }
           else if( $(settings.issuesDiv+' li:last-child').hasClass(settings.issuesSelectedClass) ) {
@@ -220,7 +207,6 @@ jQuery.fn.timelinr = function(options){
           else {
             $(settings.nextButton+','+settings.prevButton).fadeIn('slow');
           }
-        }
       });
       // keyboard navigation, added since 0.9.1
       if(settings.arrowKeys=='true') {
