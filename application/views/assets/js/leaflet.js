@@ -79,7 +79,7 @@
         maxZoom: 18,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(geomap);
-    // L.geoJson(statesData).addTo(geomap);
+    
     function getColor(d) {
         return d > 1000 ? '#800026' :
             d > 500 ? '#BD0026' :
@@ -101,7 +101,7 @@
             // fillColor: '#fff'
         };
     }
-    // L.geoJson(statesData, { style: style }).addTo(geomap);
+    
     function highlightFeature(e) {
         var layer = e.target;
         layer.setStyle({

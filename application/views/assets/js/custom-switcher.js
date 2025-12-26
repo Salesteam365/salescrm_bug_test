@@ -365,7 +365,7 @@ function switcherClick() {
     html.setAttribute('data-page-style', 'classic');
     localStorage.setItem("ynexclassic", true);
     localStorage.removeItem("ynexregular");
-    // localStorage.removeItem("ynexmodern");
+    
   });
   /* Classic page style End */
 

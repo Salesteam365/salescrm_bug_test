@@ -58,7 +58,7 @@ if (element !== null) {
         colors: ["rgb(132, 90, 223)"],
     }
     var crm1 = new ApexCharts(document.querySelector("#crm-total-customers"), crm1);
-    // crm1.render();
+    
 }
 
 function crmtotalCustomers() {
@@ -128,7 +128,7 @@ if (element !== null) {
 
     }
     var crm2 = new ApexCharts(document.querySelector("#crm-total-revenue"), crm2);
-    // crm2.render();
+    
 }
 /* Total revenue chart */
 
@@ -185,7 +185,7 @@ if (element !== null) {
 
     }
     var crm3 = new ApexCharts(document.querySelector("#crm-conversion-ratio"), crm3);
-    // crm3.render();
+    
 }
 /* Conversion ratio Chart */
 
@@ -242,7 +242,7 @@ if (element !== null) {
 
     }
     var crm4 = new ApexCharts(document.querySelector("#crm-total-deals"), crm4);
-    // crm4.render();
+    
 }
 /* Total Deals Chart */
 
@@ -605,7 +605,7 @@ if (element !== null) {
         }
     };
     var chart1 = new ApexCharts(document.querySelector("#crm-profits-earned"), options1);
-    // chart1.render();
+    
 }
 
 function crmProfitsearned() {
