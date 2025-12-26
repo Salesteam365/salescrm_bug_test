@@ -336,14 +336,14 @@ window.addEventListener("scroll", reveal);
 function reveal() {
   var reveals = document.querySelectorAll(".reveal");
 
-  for (var i = 0; i < reveals.length; i++) {
+  for (const element of reveals) {
     var windowHeight = window.innerHeight;
-    var cardTop = reveals[i].getBoundingClientRect().top;
+    var cardTop = element.getBoundingClientRect().top;
     var cardRevealPoint = 150;
     if (cardTop < windowHeight - cardRevealPoint) {
-      reveals[i].classList.add("active");
+      element.classList.add("active");
     } else {
-      reveals[i].classList.remove("active");
+      element.classList.remove("active");
     }
   }
 }

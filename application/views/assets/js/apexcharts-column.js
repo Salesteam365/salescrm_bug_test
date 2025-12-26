@@ -885,8 +885,8 @@
         var colors = []
         if (sourceChart.w.globals.selectedDataPoints[0]) {
             var selectedPoints = sourceChart.w.globals.selectedDataPoints;
-            for (var i = 0; i < selectedPoints[seriesIndex].length; i++) {
-                var selectedIndex = selectedPoints[seriesIndex][i];
+            for (const element of selectedPoints[seriesIndex]) {
+                var selectedIndex = element;
                 var yearSeries = sourceChart.w.config.series[seriesIndex];
                 series.push({
                     name: yearSeries.data[selectedIndex].x,
