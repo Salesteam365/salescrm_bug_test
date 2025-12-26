@@ -779,10 +779,10 @@ slideLeft.addEventListener("click", () => {
   );
   let mainContainer1Width = mainContainer1.offsetWidth;
   if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
-    if (!(document.querySelector("html").getAttribute("dir") === "rtl")) {
+    if (document.querySelector("html").getAttribute("dir") !== "rtl") {
       if (
         marginLeftValue < 0 &&
-        !(Math.abs(marginLeftValue) < mainContainer1Width)
+        Math.abs(marginLeftValue) >= mainContainer1Width
       ) {
         menuNav.style.marginRight = 0;
         menuNav.style.marginLeft =
@@ -802,7 +802,7 @@ slideLeft.addEventListener("click", () => {
     } else {
       if (
         marginRightValue < 0 &&
-        !(Math.abs(marginRightValue) < mainContainer1Width)
+        Math.abs(marginRightValue) >= mainContainer1Width
       ) {
         menuNav.style.marginLeft = 0;
         menuNav.style.marginRight =
@@ -852,11 +852,11 @@ slideRight.addEventListener("click", () => {
   let mainContainer1Width = mainContainer1.offsetWidth;
 
   if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
-    if (!(document.querySelector("html").getAttribute("dir") === "rtl")) {
+    if (document.querySelector("html").getAttribute("dir") !== "rtl") {
       if (Math.abs(check) > Math.abs(marginLeftValue)) {
         menuNav.style.marginRight = 0;
         if (
-          !(Math.abs(check) > Math.abs(marginLeftValue) + mainContainer1Width)
+          Math.abs(check) <= Math.abs(marginLeftValue) + mainContainer1Width
         ) {
           mainContainer1Width = Math.abs(check) - Math.abs(marginLeftValue);
           slideRight.classList.add("hidden");
@@ -871,7 +871,7 @@ slideRight.addEventListener("click", () => {
       if (Math.abs(check) > Math.abs(marginRightValue)) {
         menuNav.style.marginLeft = 0;
         if (
-          !(Math.abs(check) > Math.abs(marginRightValue) + mainContainer1Width)
+          Math.abs(check) <= Math.abs(marginRightValue) + mainContainer1Width
         ) {
           mainContainer1Width = Math.abs(check) - Math.abs(marginRightValue);
           slideRight.classList.add("hidden");
@@ -920,7 +920,7 @@ function checkHoriMenu() {
     menuNav.style.marginLeft = "0px";
     menuNav.style.marginRight = "0px";
   }
-  if (!(document.querySelector("html").getAttribute("dir") === "rtl")) {
+  if (document.querySelector("html").getAttribute("dir") !== "rtl") {
     // LTR check the width and adjust the menu in screen
     if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
       if (Math.abs(check) < Math.abs(marginLeftValue)) {
