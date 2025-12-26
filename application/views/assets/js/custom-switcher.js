@@ -1193,14 +1193,12 @@ if (document.querySelector("#hs-overlay-switcher")) {
 
       /* Create fresh instance */
       nanoPickr = new Pickr(
-        Object.assign(
-          {
-            el,
+        {
+          el,
             theme,
             default: "#845adf",
-          },
-          config
-        )
+          ...config
+        }
       );
 
       /* Set events */
@@ -1287,14 +1285,12 @@ if (document.querySelector("#hs-overlay-switcher")) {
 
       /* Create fresh instance */
       nanoPickr1 = new Pickr(
-        Object.assign(
-          {
-            el,
+        {
+          el,
             theme,
             default: "#845adf",
-          },
-          config
-        )
+          ...config
+        }
       );
 
       /* Set events */
