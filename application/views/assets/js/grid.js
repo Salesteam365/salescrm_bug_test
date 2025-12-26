@@ -68,7 +68,7 @@
             ["10-09-2022 10:35", "sarahcdd", "sarahcdd129@gmail.com", "#12015", "$1299", "3", "$3997"],
             ["27-10-2022 09:55", "afshin", "afshin@example.com", "#12016", "$1449", "1", "$1449"]
         ],
-    }).render(document.getElementById("grid-pagination"));;
+    }).render(document.getElementById("grid-pagination"));
     // with pagination
 
     // with search
@@ -104,7 +104,7 @@
             ["10-09-2022 10:35", "sarahcdd", "sarahcdd129@gmail.com", "#12015", "$1299", "3", "$3997"],
             ["27-10-2022 09:55", "afshin", "afshin@example.com", "#12016", "$1449", "1", "$1449"]
         ],
-    }).render(document.getElementById("grid-search"));;
+    }).render(document.getElementById("grid-search"));
     // with search
 
     // with sorting
@@ -141,7 +141,7 @@
             ["10-09-2022 10:35", "sarahcdd", "sarahcdd129@gmail.com", "#12015", "$1299", "3", "$3997"],
             ["27-10-2022 09:55", "afshin", "afshin@example.com", "#12016", "$1449", "1", "$1449"]
         ],
-    }).render(document.getElementById("grid-sorting"));;
+    }).render(document.getElementById("grid-sorting"));
     // with sorting
 
     // loading state
@@ -312,7 +312,7 @@
             ["10-09-2022 10:35", "sarahcdd", "sarahcdd129@gmail.com", "#12015", "$1299", "3", "$3997"],
             ["27-10-2022 09:55", "afshin", "afshin@example.com", "#12016", "$1449", "1", "$1449"]
         ],
-    }).render(document.getElementById("grid-hidden-column"));;
+    }).render(document.getElementById("grid-hidden-column"));
     // hidden columns
 
 })();
