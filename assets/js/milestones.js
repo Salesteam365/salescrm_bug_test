@@ -5,7 +5,7 @@
 * display a horizontal timeline with milestones.
 *
 */
-;(function ( $ ) {
+(function ( $ ) {
 	"use strict",
 
 	$.fn.milestones = function( options ) {

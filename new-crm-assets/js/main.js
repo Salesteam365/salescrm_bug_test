@@ -753,7 +753,7 @@
 		/* Reset for CSS changes – Still need a better way to do this! */
 			$(".col-custom ").addClass("active");
 		}
-	};
+	}
 	/* Call the function */
 		mediaSize();
 	/* Attach the function to the resize event listener */
@@ -1335,7 +1335,7 @@ if ($('.tp-header-top-animation').length > 0) {
 			}
 	
 		});
-	};
+	}
 
 	$('#click').on('click', function (){
 		$(this).toggleClass('open');
