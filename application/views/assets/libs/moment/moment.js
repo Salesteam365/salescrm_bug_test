@@ -1474,7 +1474,7 @@
             config._a[HOUR] = 0;
         }
 
-        config._d = (config._useUTC ? makeUTCDate : makeDate).apply(null, input);
+        config._d = (config._useUTC ? makeUTCDate : makeDate(...input);
         // Apply timezone offset from input. The actual utcOffset can be changed
         // with parseZone.
         if (config._tzm != null) {
@@ -2177,7 +2177,7 @@
     };
 
     moment.parseZone = function () {
-        return moment.apply(null, arguments).parseZone();
+        return moment(...arguments).parseZone();
     };
 
     moment.parseTwoDigitYear = function (input) {
@@ -2450,7 +2450,7 @@
         min: deprecate(
                  'moment().min is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548',
                  function (other) {
-                     other = moment.apply(null, arguments);
+                     other = moment(...arguments);
                      return other < this ? this : other;
                  }
          ),
@@ -2458,7 +2458,7 @@
         max: deprecate(
                 'moment().max is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548',
                 function (other) {
-                    other = moment.apply(null, arguments);
+                    other = moment(...arguments);
                     return other > this ? this : other;
                 }
         ),
