@@ -71,11 +71,9 @@
             }
 
             // Create fresh instance
-            pickr = new Pickr(Object.assign({
-                el,
+            pickr = new Pickr({el,
                 theme,
-                default: '#6c5ffc'
-            }, config));
+                default: '#6c5ffc', ...config});
 
             // Set events
             pickr.on('init', instance => {
@@ -161,11 +159,9 @@
             }
 
             /* Create fresh instance */
-            monolithPickr = new Pickr(Object.assign({
-                el,
+            monolithPickr = new Pickr({el,
                 theme,
-                default: '#fc5296'
-            }, config));
+                default: '#fc5296', ...config});
 
             /* Set events */
             monolithPickr.on('init', instance => {
@@ -251,11 +247,9 @@
             }
 
             /* Create fresh instance */
-            nanoPickr = new Pickr(Object.assign({
-                el,
+            nanoPickr = new Pickr({el,
                 theme,
-                default: '#05c3fb'
-            }, config));
+                default: '#05c3fb', ...config});
 
             /* Set events */
             nanoPickr.on('init', instance => {
