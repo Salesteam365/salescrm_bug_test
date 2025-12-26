@@ -215,7 +215,7 @@ function Sessions() {
     chart.updateOptions({
         colors: ["rgba(" + myVarVal + ", 1)", "rgba(35, 183, 229, 1)", "rgba(38, 191, 148, 1)", "rgba(245, 184, 73, 1)",],
     })
-};
+}
 /* Sessions By Device Chart */
 
 /* Audience report Chart */
