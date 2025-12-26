@@ -50,11 +50,9 @@ if (document.querySelector("#hs-overlay-switcher")) {
           }
 
           /* Create fresh instance */
-          nanoPickr = new Pickr(Object.assign({
-              el,
+          nanoPickr = new Pickr({el,
               theme,
-              default: '#845adf'
-          }, config));
+              default: '#845adf', ...config});
 
           /* Set events */
           nanoPickr.on("changestop", (source, instance) => {
