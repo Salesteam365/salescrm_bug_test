@@ -643,8 +643,8 @@ var pJS = function(tag_id, params){
     pJS.fn.particlesUpdate();
 
     /* draw each particle */
-    for(var i = 0; i < pJS.particles.array.length; i++){
-      var p = pJS.particles.array[i];
+    for(const element of pJS.particles.array){
+      var p = element;
       p.draw();
     }
 
@@ -1185,8 +1185,8 @@ var pJS = function(tag_id, params){
 
 
   pJS.fn.vendors.checkOverlap = function(p1, position){
-    for(var i = 0; i < pJS.particles.array.length; i++){
-      var p2 = pJS.particles.array[i];
+    for(const element of pJS.particles.array){
+      var p2 = element;
 
       var dx = p1.x - p2.x,
           dy = p1.y - p2.y,
