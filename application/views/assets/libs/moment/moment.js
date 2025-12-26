@@ -1297,7 +1297,7 @@
         case 'a' : // fall through to A
         case 'A' :
             config._meridiem = input;
-            // config._isPm = config._locale.isPM(input);
+            
             break;
         // HOUR
         case 'h' : // fall through to hh
@@ -2761,8 +2761,7 @@
     }
 
     function yearsToDays (years) {
-        // years * 365 + absRound(years / 4) -
-        //     absRound(years / 100) + absRound(years / 400);
+        
         return years * 146097 / 400;
     }
 

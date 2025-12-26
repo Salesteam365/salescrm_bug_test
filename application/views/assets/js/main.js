@@ -105,7 +105,7 @@
                     // Create the tooltip element
                     const tooltip = document.createElement("div");
                     tooltip.className = "custome-tooltip";
-                    // tooltip.textContent = "This is a tooltip";
+                    
 
                     // Set the CSS properties of the tooltip element
                     tooltip.style.setProperty("position", "fixed");
