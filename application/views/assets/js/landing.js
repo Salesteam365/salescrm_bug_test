@@ -350,7 +350,7 @@ function reveal() {
 reveal();
 const pageLink = document.querySelectorAll(".side-menu__item");
 pageLink.forEach((elem) => {
-  if (elem != "javascript:void(0);" && elem !== "#") {
+  if (elem != "javascript:void(0);" && elem != "#") {
     elem.addEventListener("click", (e) => {
       e.preventDefault();
       document.querySelector(elem.getAttribute("href"))?.scrollIntoView({
