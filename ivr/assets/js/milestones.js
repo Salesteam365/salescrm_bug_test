@@ -13,7 +13,7 @@
 		/*--------------------------
 		Default settings
 		--------------------------*/
-		var settings = $.extend({
+		let settings = $.extend({
 			labels					  : ["Step1","Step2","Step3","Step4"], 		// Array of labels for each milestone
 			stage				      : 2,		                                //
 			checks         		: 2,
@@ -25,19 +25,19 @@
 			/*--------------------------
 			Establish global variables
 			--------------------------*/
-			var id = $(this).attr('id');
-			var labels = ($(this).data('labels') != undefined ? $(this).data('labels') : settings.labels);
-			var stage = ($(this).data('stage') != undefined ? $(this).data('stage')-1 : settings.stage-1);
-			var checks = ($(this).data('checks') != undefined ? $(this).data('checks')-1 : settings.checks-1);
-			var checkclass = ($(this).data('checkclass') != undefined ? $(this).data('checkclass') : settings.checkclass);
+			let id = $(this).attr('id');
+			let labels = ($(this).data('labels') != undefined ? $(this).data('labels') : settings.labels);
+			let stage = ($(this).data('stage') != undefined ? $(this).data('stage')-1 : settings.stage-1);
+			let checks = ($(this).data('checks') != undefined ? $(this).data('checks')-1 : settings.checks-1);
+			let checkclass = ($(this).data('checkclass') != undefined ? $(this).data('checkclass') : settings.checkclass);
 
 			/*--------------------------
 			Set variables based on globals
 			--------------------------*/
-			var ticks = labels.length;
-			var div = ticks-1;
-			var per = 100 / div;
-			var len = stage * per;
+			let ticks = labels.length;
+			let div = ticks-1;
+			let per = 100 / div;
+			let len = stage * per;
 
 			/*-----------------------------
 			Insert the Milestone components
@@ -49,7 +49,7 @@
 			and checkmarks
 			------------------------------*/
 			for (x=0;x<=div;x++){
-				var lft = (per*x)-.4;
+				let lft = (per*x)-.4;
 				if (x <= checks){
 					var icon = '<i class="fa fa-check '+checkclass+'"></i>';
 					var cls = ' past';
@@ -64,8 +64,8 @@
 					$("#"+id+" .stage").append('<span class="tick last'+cls+'">'+icon+'</span>');
 					$("#"+id+" .labels").append('<label class="tick-label last"><span>'+labels[x]+'</span></label>');
 				}else{
-					var n = labels[x].length/5;
-					var llft = (per*x)-n;
+					let n = labels[x].length/5;
+					let llft = (per*x)-n;
 					$("#"+id+" .stage").append('<span class="tick'+cls+'" style="left:'+lft+'%">'+icon+'</span>');
 					$("#"+id+" .labels").append('<label class="tick-label" style="left:'+llft+'%"><span>'+labels[x]+'</span></label>');
 				}

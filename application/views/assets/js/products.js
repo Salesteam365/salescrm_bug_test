@@ -7,11 +7,11 @@
  * @param separator String joining tooltips
  */
     function mergeTooltips(slider, threshold, separator) {
-        var textIsRtl = getComputedStyle(slider).direction === 'rtl';
-        var isRtl = slider.noUiSlider.options.direction === 'rtl';
-        var isVertical = slider.noUiSlider.options.orientation === 'vertical';
-        var tooltips = slider.noUiSlider.getTooltips();
-        var origins = slider.noUiSlider.getOrigins();
+        let textIsRtl = getComputedStyle(slider).direction === 'rtl';
+        let isRtl = slider.noUiSlider.options.direction === 'rtl';
+        let isVertical = slider.noUiSlider.options.orientation === 'vertical';
+        let tooltips = slider.noUiSlider.getTooltips();
+        let origins = slider.noUiSlider.getOrigins();
 
         // Move tooltips into the origin element. The default stylesheet handles this.
         tooltips.forEach(function (tooltip, index) {
@@ -20,17 +20,17 @@
             }
         });
         slider.noUiSlider.on('update', function (values, handle, unencoded, tap, positions) {
-            var pools = [[]];
-            var poolPositions = [[]];
-            var poolValues = [[]];
-            var atPool = 0;
+            let pools = [[]];
+            let poolPositions = [[]];
+            let poolValues = [[]];
+            let atPool = 0;
             // Assign the first tooltip to the first pool, if the tooltip is configured
             if (tooltips[0]) {
                 pools[0][0] = 0;
                 poolPositions[0][0] = positions[0];
                 poolValues[0][0] = values[0];
             }
-            for (var i = 1; i < positions.length; i++) {
+            for (let i = 1; i < positions.length; i++) {
                 if (!tooltips[i] || (positions[i] - positions[i - 1]) > threshold) {
                     atPool++;
                     pools[atPool] = [];
@@ -44,10 +44,10 @@
                 }
             }
             pools.forEach(function (pool, poolIndex) {
-                var handlesInPool = pool.length;
+                let handlesInPool = pool.length;
 
-                for (var j = 0; j < handlesInPool; j++) {
-                    var handleNumber = pool[j];
+                for (let j = 0; j < handlesInPool; j++) {
+                    let handleNumber = pool[j];
 
                     if (j === handlesInPool - 1) {
                         var offset = 0;
@@ -56,9 +56,9 @@
                             offset += 1000 - value;
                         });
 
-                        var direction = isVertical ? 'bottom' : 'right';
-                        var last = isRtl ? 0 : handlesInPool - 1;
-                        var lastOffset = 1000 - poolPositions[poolIndex][last];
+                        let direction = isVertical ? 'bottom' : 'right';
+                        let last = isRtl ? 0 : handlesInPool - 1;
+                        let lastOffset = 1000 - poolPositions[poolIndex][last];
                         offset = (textIsRtl && !isVertical ? 100 : 0) + (offset / handlesInPool) - lastOffset;
 
                         // Center this tooltip over the affected handles

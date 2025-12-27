@@ -1,7 +1,7 @@
 (function() {
 	// Swipe Content Plugin - by CodyHouse.co
 	// https://codyhouse.co/ds/components/info/swipe-content
-	var SwipeContent = function(element) {
+	let SwipeContent = function(element) {
 		this.element = element;
 		this.delta = [false, false];
 		this.dragging = false;
@@ -66,12 +66,12 @@
 	function endDrag(content, event) {
 		cancelDragging(content);
 		// credits: https://css-tricks.com/simple-swipe-with-vanilla-javascript/
-		var dx = parseInt(unify(event).clientX), 
+		let dx = parseInt(unify(event).clientX), 
 	    dy = parseInt(unify(event).clientY);
 	  
 	  // check if there was a left/right swipe
 		if(content.delta && (content.delta[0] || content.delta[0] === 0)) {
-	    var s = Math.sign(dx - content.delta[0]);
+	    let s = Math.sign(dx - content.delta[0]);
 			
 			if(Math.abs(dx - content.delta[0]) > 30) {
 				(s < 0) ? emitSwipeEvents(content, 'swipeLeft', [dx, dy]) : emitSwipeEvents(content, 'swipeRight', [dx, dy]);	
@@ -81,7 +81,7 @@
 	  }
 		// check if there was a top/bottom swipe
 	  if(content.delta && (content.delta[1] || content.delta[1] === 0)) {
-	  	var y = Math.sign(dy - content.delta[1]);
+	  	let y = Math.sign(dy - content.delta[1]);
 
 	  	if(Math.abs(dy - content.delta[1]) > 30) {
 	    	(y < 0) ? emitSwipeEvents(content, 'swipeUp', [dx, dy]) : emitSwipeEvents(content, 'swipeDown', [dx, dy]);
@@ -113,16 +113,16 @@
 
 	function emitSwipeEvents(content, eventName, detail) {
 		// emit event with coordinates
-		var event = new CustomEvent(eventName, {detail: {x: detail[0], y: detail[1]}});
+		let event = new CustomEvent(eventName, {detail: {x: detail[0], y: detail[1]}});
 		content.element.dispatchEvent(event);
 	};
 
 	window.SwipeContent = SwipeContent;
 	
 	//initialize the SwipeContent objects
-	var swipe = document.getElementsByClassName('js-swipe-content');
+	let swipe = document.getElementsByClassName('js-swipe-content');
 	if( swipe.length > 0 ) {
-		for( var i = 0; i < swipe.length; i++) {
+		for( let i = 0; i < swipe.length; i++) {
 			(function(i){new SwipeContent(swipe[i]);})(i);
 		}
 	}

@@ -1,6 +1,6 @@
 (function() {
   // Horizontal Timeline - by CodyHouse.co
-  var HorizontalTimeline = function(element) {
+  let HorizontalTimeline = function(element) {
 		this.element = element;
 		this.datesContainer = this.element.getElementsByClassName('cd-h-timeline__dates')[0];
 		this.line = this.datesContainer.getElementsByClassName('cd-h-timeline__line')[0]; // grey line in the top timeline section
@@ -28,10 +28,10 @@
 
   function initTimeline(timeline) {
   	// set dates left position
-  	var left = 0;
-		for (var i = 0; i < timeline.dateValues.length; i++) { 
-			var j = (i == 0) ? 0 : i - 1;
-	    var distance = daydiff(timeline.dateValues[j], timeline.dateValues[i]),
+  	let left = 0;
+		for (let i = 0; i < timeline.dateValues.length; i++) { 
+			let j = (i == 0) ? 0 : i - 1;
+	    let distance = daydiff(timeline.dateValues[j], timeline.dateValues[i]),
 	    	distanceNorm = (Math.round(distance/timeline.minLapse) + 2)*timeline.eventsMinDistance;
 	
 	    if(distanceNorm < timeline.eventsMinDistance) {
@@ -53,7 +53,7 @@
   };
 
   function initEvents(timeline) {
-  	var self = timeline;
+  	let self = timeline;
 		// click on arrow navigation
 		self.navigation[0].addEventListener('click', function(event){
 			event.preventDefault();
@@ -74,7 +74,7 @@
 		});
 
 		//select a new event
-		for(var i = 0; i < self.date.length; i++) {
+		for(let i = 0; i < self.date.length; i++) {
 			(function(i){
 				self.date[i].addEventListener('click', function(event){
 					event.preventDefault();
@@ -89,7 +89,7 @@
   };
 
   function updateFilling(timeline) { // update fillingLine scale value
-		var dateStyle = window.getComputedStyle(timeline.selectedDate, null),
+		let dateStyle = window.getComputedStyle(timeline.selectedDate, null),
 			left = dateStyle.getPropertyValue("left"),
 			width = dateStyle.getPropertyValue("width");
 		
@@ -98,7 +98,7 @@
 	};
 
   function translateTimeline(timeline, direction) { // translate timeline (and date elements)
-  	var containerWidth = timeline.datesContainer.offsetWidth;
+  	let containerWidth = timeline.datesContainer.offsetWidth;
   	if(direction) {
   		timeline.translate = (direction == 'next') ? timeline.translate - containerWidth + timeline.eventsMinDistance : timeline.translate + containerWidth - timeline.eventsMinDistance;
   	}
@@ -123,7 +123,7 @@
 	};
 
 	function updateOlderEvents(timeline) { // update older events style
-		for(var i = 0; i < timeline.date.length; i++) {
+		for(let i = 0; i < timeline.date.length; i++) {
 			(i < timeline.newDateIndex) ? Util.addClass(timeline.date[i], 'cd-h-timeline__date--older-event') : Util.removeClass(timeline.date[i], 'cd-h-timeline__date--older-event');
 		}
 	};
@@ -155,14 +155,14 @@
 	};
 
 	function keyNavigateTimeline(timeline, direction) { // navigate the timeline using the keyboard
-		var newIndex = (direction == 'next') ? timeline.newDateIndex + 1 : timeline.newDateIndex - 1;
+		let newIndex = (direction == 'next') ? timeline.newDateIndex + 1 : timeline.newDateIndex - 1;
 		if(newIndex < 0 || newIndex >= timeline.date.length) return;
 		selectNewDate(timeline, timeline.date[newIndex]);
 		resetTimelinePosition(timeline, direction);
 	};
 	
 	function resetTimelinePosition(timeline, direction) { //translate timeline according to new selected event position
-		var eventStyle = window.getComputedStyle(timeline.selectedDate, null),
+		let eventStyle = window.getComputedStyle(timeline.selectedDate, null),
 			eventLeft = Number(eventStyle.getPropertyValue('left').replace('px', '')),
 			timelineWidth = timeline.datesContainer.offsetWidth;
 
@@ -173,9 +173,9 @@
   };
 
   function parseDate(timeline) { // get timestamp value for each date
-		var dateArrays = [];
-		for(var i = 0; i < timeline.date.length; i++) {
-			var singleDate = timeline.date[i].getAttribute('data-date'),
+		let dateArrays = [];
+		for(let i = 0; i < timeline.date.length; i++) {
+			let singleDate = timeline.date[i].getAttribute('data-date'),
 				dateComp = singleDate.split('T');
 			
 			if( dateComp.length > 1 ) { //both DD/MM/YEAR and time are provided
@@ -188,16 +188,16 @@
 				var dayComp = dateComp[0].split('/'),
 					timeComp = ["0", "0"];
 			}
-			var	newDate = new Date(dayComp[2], dayComp[1]-1, dayComp[0], timeComp[0], timeComp[1]);
+			let	newDate = new Date(dayComp[2], dayComp[1]-1, dayComp[0], timeComp[0], timeComp[1]);
 			dateArrays.push(newDate);
 		}
 	  return dateArrays;
   };
 
   function calcMinLapse(timeline) { // determine the minimum distance among events
-		var dateDistances = [];
-		for(var i = 1; i < timeline.dateValues.length; i++) { 
-	    var distance = daydiff(timeline.dateValues[i-1], timeline.dateValues[i]);
+		let dateDistances = [];
+		for(let i = 1; i < timeline.dateValues.length; i++) { 
+	    let distance = daydiff(timeline.dateValues[i-1], timeline.dateValues[i]);
 	    if(distance > 0) dateDistances.push(distance);
 		}
 
@@ -210,10 +210,10 @@
 
   window.HorizontalTimeline = HorizontalTimeline;
 
-  var horizontalTimeline = document.getElementsByClassName('js-cd-h-timeline'),
+  let horizontalTimeline = document.getElementsByClassName('js-cd-h-timeline'),
   	horizontalTimelineTimelineArray = [];
   if(horizontalTimeline.length > 0) {
-		for(var i = 0; i < horizontalTimeline.length; i++) {
+		for(let i = 0; i < horizontalTimeline.length; i++) {
 			horizontalTimelineTimelineArray.push(new HorizontalTimeline(horizontalTimeline[i])); 
 		}
 		// navigate the timeline when inside the viewport using the keyboard
@@ -227,7 +227,7 @@
   };
 
   function updateHorizontalTimeline(direction) {
-		for(var i = 0; i < horizontalTimelineTimelineArray.length; i++) {
+		for(let i = 0; i < horizontalTimelineTimelineArray.length; i++) {
 			if(elementInViewport(horizontalTimeline[i])) keyNavigateTimeline(horizontalTimelineTimelineArray[i], direction);
 		}
   };
@@ -237,10 +237,10 @@
 		http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
 	*/
 	function elementInViewport(el) {
-		var top = el.offsetTop;
-		var left = el.offsetLeft;
-		var width = el.offsetWidth;
-		var height = el.offsetHeight;
+		let top = el.offsetTop;
+		let left = el.offsetLeft;
+		let width = el.offsetWidth;
+		let height = el.offsetHeight;
 
 		while(el.offsetParent) {
 		    el = el.offsetParent;

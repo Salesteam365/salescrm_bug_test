@@ -10,17 +10,17 @@ Util.hasClass = function(el, className) {
 };
 
 Util.addClass = function(el, className) {
-	var classList = className.split(' ');
+	let classList = className.split(' ');
  	if (el.classList) el.classList.add(classList[0]);
  	else if (!Util.hasClass(el, classList[0])) el.className += " " + classList[0];
  	if (classList.length > 1) Util.addClass(el, classList.slice(1).join(' '));
 };
 
 Util.removeClass = function(el, className) {
-	var classList = className.split(' ');
+	let classList = className.split(' ');
 	if (el.classList) el.classList.remove(classList[0]);	
 	else if(Util.hasClass(el, classList[0])) {
-		var reg = new RegExp('(\\s|^)' + classList[0] + '(\\s|$)');
+		let reg = new RegExp('(\\s|^)' + classList[0] + '(\\s|$)');
 		el.className=el.className.replace(reg, ' ');
 	}
 	if (classList.length > 1) Util.removeClass(el, classList.slice(1).join(' '));
@@ -32,7 +32,7 @@ Util.toggleClass = function(el, className, bool) {
 };
 
 Util.setAttributes = function(el, attrs) {
-  for(var key in attrs) {
+  for(let key in attrs) {
     el.setAttribute(key, attrs[key]);
   }
 };
@@ -41,9 +41,9 @@ Util.setAttributes = function(el, attrs) {
   DOM manipulation
 */
 Util.getChildrenByClassName = function(el, className) {
-  var children = el.children,
+  let children = el.children,
     childrenByClass = [];
-  for (var i = 0; i < el.children.length; i++) {
+  for (let i = 0; i < el.children.length; i++) {
     if (Util.hasClass(el.children[i], className)) childrenByClass.push(el.children[i]);
   }
   return childrenByClass;
@@ -53,13 +53,13 @@ Util.getChildrenByClassName = function(el, className) {
 	Animate height of an element
 */
 Util.setHeight = function(start, to, element, duration, cb) {
-	var change = to - start,
+	let change = to - start,
 	    currentTime = null;
 
-  var animateHeight = function(timestamp){  
+  let animateHeight = function(timestamp){  
     if (!currentTime) currentTime = timestamp;         
-    var progress = timestamp - currentTime;
-    var val = parseInt((progress/duration)*change + start);
+    let progress = timestamp - currentTime;
+    let val = parseInt((progress/duration)*change + start);
     element.setAttribute("style", "height:"+val+"px;");
     if(progress < duration) {
         window.requestAnimationFrame(animateHeight);
@@ -78,14 +78,14 @@ Util.setHeight = function(start, to, element, duration, cb) {
 */
 
 Util.scrollTo = function(final, duration, cb) {
-  var start = window.scrollY || document.documentElement.scrollTop,
+  let start = window.scrollY || document.documentElement.scrollTop,
       currentTime = null;
       
-  var animateScroll = function(timestamp){
+  let animateScroll = function(timestamp){
   	if (!currentTime) currentTime = timestamp;        
-    var progress = timestamp - currentTime;
+    let progress = timestamp - currentTime;
     if(progress > duration) progress = duration;
-    var val = Math.easeInOutQuad(progress, start, final-start, duration);
+    let val = Math.easeInOutQuad(progress, start, final-start, duration);
     window.scrollTo(0, val);
     if(progress < duration) {
         window.requestAnimationFrame(animateScroll);
@@ -123,7 +123,7 @@ Util.cssSupports = function(property, value) {
   if('CSS' in window) {
     return CSS.supports(property, value);
   } else {
-    var jsProperty = property.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase();});
+    let jsProperty = property.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase();});
     return jsProperty in document.body.style;
   }
 };
@@ -138,7 +138,7 @@ if (!Element.prototype.matches) {
 
 if (!Element.prototype.closest) {
 	Element.prototype.closest = function(s) {
-		var el = this;
+		let el = this;
 		if (!document.documentElement.contains(el)) return null;
 		do {
 			if (el.matches(s)) return el;
@@ -153,7 +153,7 @@ if ( typeof window.CustomEvent !== "function" ) {
 
   function CustomEvent ( event, params ) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
-    var evt = document.createEvent( 'CustomEvent' );
+    let evt = document.createEvent( 'CustomEvent' );
     evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
     return evt;
    }
