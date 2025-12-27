@@ -1,7 +1,7 @@
 
 "use strict";
 
-var series =
+let series =
 {
     "monthDataSeries1": {
         "prices": [
