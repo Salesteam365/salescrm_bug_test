@@ -1,4 +1,4 @@
-var seriesData = [{
+let seriesData = [{
   x: new Date(2016, 1, 1),
   y: [51.98, 56.29, 51.59, 53.85]
 },
@@ -92,7 +92,7 @@ var seriesData = [{
 }
 ]
 
-var seriesDataLinear = [{
+let seriesDataLinear = [{
   x: new Date(2016, 1, 1),
   y: 3.85
 },
@@ -186,7 +186,7 @@ var seriesDataLinear = [{
 }
 ]
 
-var seriesData7 = [{
+let seriesData7 = [{
   x: new Date(2016, 1, 1),
   y: [1151.98, 1156.29, 1151.59, 1153.85]
 },
@@ -280,7 +280,7 @@ var seriesData7 = [{
 }
 ]
 
-var seriesData2 = [{
+let seriesData2 = [{
   x: new Date(1538778600000),
   y: [6629.81, 6650.5, 6623.04, 6633.33]
 },
@@ -522,7 +522,7 @@ var seriesData2 = [{
 },
 ]
 
-var seriesData3 = [{
+let seriesData3 = [{
   x: new Date(1538867400000),
   y: [6591.08, 6592.22, 6588.9, 6592]
 },
@@ -766,7 +766,7 @@ var seriesData3 = [{
 
 
 
-var seriesData4 = [{
+let seriesData4 = [{
   x: new Date(1538858700000),
   y: [6603.08, 6604.28, 6596.01, 6600.01]
 },
@@ -889,7 +889,7 @@ var seriesData4 = [{
 ]
 
 
-var seriesData5 = [{
+let seriesData5 = [{
   x: 1538876100000,
   y: [6595.85, 6601.76, 6595.83, 6601.72]
 },
@@ -1015,7 +1015,7 @@ var seriesData5 = [{
 
 // var seriesData5 = [[1538856000000, [6593.34, 6600, 6582.63, 6600]], [1538856900000, [6595.16, 6604.76, 6590.73, 6593.86]]]
 
-var seriesData6 = [{
+let seriesData6 = [{
   x: new Date(1538856000000),
   y: [6593.34, 6600, 6582.63, 6600]
 },
