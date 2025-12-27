@@ -58,7 +58,7 @@ function nftBalane() {
 var element = document.getElementById("nft-statistics");
 if (element !== null) {
 	element.innerHTML = "";
-	var options = {
+	let options = {
 		series: [{
 			name: "Price",
 			data: [20, 38, 38, 72, 55, 63, 43, 76, 55, 80, 40, 80]
@@ -153,7 +153,7 @@ function nftStatistics() {
 
 // for featured collections
 if (typeof Swiper !== 'undefined') {
-    var swiper = new Swiper(".pagination-dynamic", {
+    let swiper = new Swiper(".pagination-dynamic", {
         pagination: {
             el: ".swiper-pagination",
             dynamicBullets: true,
