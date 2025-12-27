@@ -103,7 +103,7 @@ function salesOverview() {
 
 /* Visitors By Country Map */
 if (typeof jsVectorMap !== 'undefined') {
-    var markers = [{
+    let markers = [{
         name: 'Usa',
         coords: [40.3, -101.38]
     },
@@ -143,7 +143,7 @@ if (typeof jsVectorMap !== 'undefined') {
     var element = document.getElementById("visitors-countries");
     if (element !== null) {
         element.innerHTML = "";
-        var map = new jsVectorMap({
+        let map = new jsVectorMap({
             map: 'world_merc',
             selector: '#visitors-countries',
             markersSelectable: true,
