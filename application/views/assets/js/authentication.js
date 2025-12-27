@@ -2,7 +2,7 @@
     'use strict'
 
     // keyboard control
-    var swiper = new Swiper(".keyboard-control", {
+    let swiper = new Swiper(".keyboard-control", {
         slidesPerView: 1,
         spaceBetween: 30,
         keyboard: {
