@@ -355,7 +355,7 @@
     var chart = new ApexCharts(document.querySelector("#chart-candlestick"), options);
     chart.render();
 
-    var optionsBar = {
+    let optionsBar = {
         series: [{
             name: 'volume',
             data: seriesDataLinear
@@ -435,7 +435,7 @@
             },
         }
     };
-    var chartBar = new ApexCharts(document.querySelector("#chart-bar"), optionsBar);
+    let chartBar = new ApexCharts(document.querySelector("#chart-bar"), optionsBar);
     chartBar.render();
 
     /* candlestick with category x-axis chart */
@@ -1054,10 +1054,10 @@
             custom: [function ({ seriesIndex, dataPointIndex, w }) {
                 return w.globals.series[seriesIndex][dataPointIndex]
             }, function ({ seriesIndex, dataPointIndex, w }) {
-                var o = w.globals.seriesCandleO[seriesIndex][dataPointIndex]
-                var h = w.globals.seriesCandleH[seriesIndex][dataPointIndex]
-                var l = w.globals.seriesCandleL[seriesIndex][dataPointIndex]
-                var c = w.globals.seriesCandleC[seriesIndex][dataPointIndex]
+                let o = w.globals.seriesCandleO[seriesIndex][dataPointIndex]
+                let h = w.globals.seriesCandleH[seriesIndex][dataPointIndex]
+                let l = w.globals.seriesCandleL[seriesIndex][dataPointIndex]
+                let c = w.globals.seriesCandleC[seriesIndex][dataPointIndex]
                 return (
                     ''
                 )
