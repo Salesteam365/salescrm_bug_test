@@ -3,10 +3,10 @@
   //_____Calendar Events Intialization
 
   // sample calendar events data
-  var curYear = moment().format('YYYY');
-  var curMonth = moment().format('MM');
+  let curYear = moment().format('YYYY');
+  let curMonth = moment().format('MM');
   // Calendar Event Source
-  var sptCalendarEvents = {
+  let sptCalendarEvents = {
     id: 1,
     events: [{
       id: '1',
@@ -59,7 +59,7 @@
     }]
   };
   // Birthday Events Source
-  var sptBirthdayEvents = {
+  let sptBirthdayEvents = {
     id: 2,
     backgroundColor: '#49b6f5',
     borderColor: '#49b6f5',
@@ -90,7 +90,7 @@
       description: 'All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary'
     },]
   };
-  var sptHolidayEvents = {
+  let sptHolidayEvents = {
     id: 3,
     backgroundColor: '#e6533c',
     borderColor: '#e6533c',
@@ -112,7 +112,7 @@
       title: 'Diwali'
     }]
   };
-  var sptOtherEvents = {
+  let sptOtherEvents = {
     id: 4,
     backgroundColor: '#23b7e5',
     borderColor: '#23b7e5',
@@ -132,7 +132,7 @@
 
 
   //________ FullCalendar
-  var containerEl = document.getElementById('external-events');
+  let containerEl = document.getElementById('external-events');
   new FullCalendar.Draggable(containerEl, {
     itemSelector: '.fc-event',
     eventData: function (eventEl) {
@@ -143,7 +143,7 @@
       }
     }
   });
-  var calendarEl = document.getElementById('calendar2');
+  let calendarEl = document.getElementById('calendar2');
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
     headerToolbar: {
@@ -160,7 +160,7 @@
     droppable: true, // this allows things to be dropped onto the calendar
 
     select: function (arg) {
-      var title = prompt('Event Title:');
+      let title = prompt('Event Title:');
       if (title) {
         calendar.addEvent({
           title: title,
@@ -185,7 +185,7 @@
   calendar.render();
 
   // for activity scroll
-  var myElement1 = document.getElementById('full-calendar-activity');
+  let myElement1 = document.getElementById('full-calendar-activity');
   new SimpleBar(myElement1, { autoHide: true });
 
 
