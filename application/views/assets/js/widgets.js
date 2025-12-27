@@ -62,7 +62,7 @@
                 }
             },
         };
-        var chart2 = new ApexCharts(document.querySelector("#btcCoin"), options);
+        let chart2 = new ApexCharts(document.querySelector("#btcCoin"), options);
         chart2.render();
     }
 
@@ -374,13 +374,13 @@
                 },
             }
         };
-        var chart1 = new ApexCharts(document.querySelector("#sessionsByDevice"), options);
+        let chart1 = new ApexCharts(document.querySelector("#sessionsByDevice"), options);
         chart1.render();
     }
 
     // Users by country map
     if (typeof jsVectorMap !== 'undefined') {
-        var markers = [{
+        let markers = [{
             name: 'Russia',
             coords: [61, 105],
             style: {
@@ -419,7 +419,7 @@
         var element = document.getElementById("users-map");
         if (element !== null) {
             element.innerHTML = "";
-            var map = new jsVectorMap({
+            let map = new jsVectorMap({
                 map: 'world_merc',
                 selector: '#users-map',
                 markersSelectable: true,
@@ -464,7 +464,7 @@
 
 // Target report chart
 function targetReport() {
-    var options = {
+    let options = {
         series: [{
             data: [17, 22, 37, 47, 39, 28, 14],
             name: 'Revenue',
@@ -552,12 +552,12 @@ function targetReport() {
         }
     };
     document.querySelector("#report").innerHTML = ""
-    var chart = new ApexCharts(document.querySelector("#report"), options);
+    let chart = new ApexCharts(document.querySelector("#report"), options);
     chart.render();
 }
 
 function pageviews() {
-    var options = {
+    let options = {
         series: [{
             name: 'Job Applied',
             type: 'line',
@@ -677,6 +677,6 @@ function pageviews() {
         }
     };
     document.querySelector("#views").innerHTML = ""
-    var chart = new ApexCharts(document.querySelector("#views"), options);
+    let chart = new ApexCharts(document.querySelector("#views"), options);
     chart.render();
 }
