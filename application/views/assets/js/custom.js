@@ -23,14 +23,14 @@
   /*End Sidemenu Scroll */
 
   /* header dropdowns scroll */
-  var myHeaderShortcut = document.getElementById("header-shortcut-scroll");
+  let myHeaderShortcut = document.getElementById("header-shortcut-scroll");
   new SimpleBar(myHeaderShortcut, { autoHide: true });
   /*End header dropdowns scroll */
   /* Choices JS */
   document.addEventListener("DOMContentLoaded", function () {
-    var genericExamples = document.querySelectorAll("[data-trigger]");
+    let genericExamples = document.querySelectorAll("[data-trigger]");
     for (let i = 0; i < genericExamples.length; ++i) {
-      var element = genericExamples[i];
+      let element = genericExamples[i];
       new Choices(element, {
         allowHTML: true,
         placeholderValue: "This is a placeholder set in the config",
@@ -213,7 +213,7 @@ customSwitch.forEach((e) =>
 })();
 
 /* full screen */
-var elem = document.documentElement;
+let elem = document.documentElement;
 function openFullscreen() {
   let open = document.querySelector(".full-screen-open");
   let close = document.querySelector(".full-screen-close");
@@ -248,7 +248,7 @@ function openFullscreen() {
 }
 
 /* count-up */
-var i = 1;
+let i = 1;
 setInterval(() => {
   document.querySelectorAll(".count-up").forEach((ele) => {
     if (ele.getAttribute("data-count") >= i) {
