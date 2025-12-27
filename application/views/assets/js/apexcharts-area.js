@@ -399,14 +399,14 @@
             },
             events: {
                 mounted: function (chart) {
-                    var commitsEl = document.querySelector('.cmeta span.commits');
-                    var commits = chart.getSeriesTotalXRange(chart.w.globals.minX, chart.w.globals.maxX)
+                    let commitsEl = document.querySelector('.cmeta span.commits');
+                    let commits = chart.getSeriesTotalXRange(chart.w.globals.minX, chart.w.globals.maxX)
 
                     commitsEl.innerHTML = commits
                 },
                 updated: function (chart) {
-                    var commitsEl = document.querySelector('.cmeta span.commits');
-                    var commits = chart.getSeriesTotalXRange(chart.w.globals.minX, chart.w.globals.maxX)
+                    let commitsEl = document.querySelector('.cmeta span.commits');
+                    let commits = chart.getSeriesTotalXRange(chart.w.globals.minX, chart.w.globals.maxX)
 
                     commitsEl.innerHTML = commits
                 }
@@ -447,7 +447,7 @@
     var chart = new ApexCharts(document.querySelector("#chart-months"), options);
     chart.render();
 
-    var optionsYears = {
+    let optionsYears = {
         series: [{
             name: 'commits',
             data: githubdata.series
@@ -513,16 +513,16 @@
             }
         },
     };
-    var chartYears = new ApexCharts(document.querySelector("#chart-years"), optionsYears);
+    let chartYears = new ApexCharts(document.querySelector("#chart-years"), optionsYears);
     chartYears.render();
 
     /* stacked area chart */
-    var generateDayWiseTimeSeries = function (baseval, count, yrange) {
-        var i = 0;
-        var series = [];
+    let generateDayWiseTimeSeries = function (baseval, count, yrange) {
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var x = baseval;
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = baseval;
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
             series.push([x, y]);
             baseval += 86400000;
             i++;
@@ -592,10 +592,10 @@
     chart.render();
 
     /* irregular timeseries */
-    var ts1 = 1388534400000;
-    var ts2 = 1388620800000;
-    var ts3 = 1389052800000;
-    var dataSet = [[], [], []];
+    let ts1 = 1388534400000;
+    let ts2 = 1388620800000;
+    let ts3 = 1389052800000;
+    let dataSet = [[], [], []];
     for (var i = 0; i < 12; i++) {
         ts1 = ts1 + 86400000;
         var innerArr = [ts1, dataSeries[2][i].value];
@@ -1263,8 +1263,8 @@
     var chart = new ApexCharts(document.querySelector("#area-datetime"), options);
     chart.render();
 
-    var resetCssClasses = function (activeEl) {
-        var els = document.querySelectorAll('button')
+    let resetCssClasses = function (activeEl) {
+        let els = document.querySelectorAll('button')
         Array.prototype.forEach.call(els, function (el) {
             el.classList.remove('active')
         })
