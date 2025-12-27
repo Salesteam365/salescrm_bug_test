@@ -354,7 +354,7 @@ function countrySessions() {
 var element = document.getElementById("session-users");
 if (element !== null) {
     element.innerHTML = "";
-    var options2 = {
+    let options2 = {
         series: [{
             name: 'New Users',
             data: [32, 15, 63, 51, 36, 62, 99, 42, 78, 76, 32, 120],
@@ -482,7 +482,7 @@ var element = document.getElementById("analytics-followers");
         },
         labels: ["Followers"]
     };
-    var chart5 = new ApexCharts(document.querySelector("#analytics-followers"), options);
+    let chart5 = new ApexCharts(document.querySelector("#analytics-followers"), options);
     chart5.render();
 }
 /* Impressions Chart */
@@ -529,7 +529,7 @@ if (element !== null) {
         },
         labels: ["Views"]
     };
-    var chart6 = new ApexCharts(document.querySelector("#analytics-views"), options);
+    let chart6 = new ApexCharts(document.querySelector("#analytics-views"), options);
     chart6.render();
 }
 /* Clicks Chart */
