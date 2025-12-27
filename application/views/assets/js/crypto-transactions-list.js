@@ -2,7 +2,7 @@
   "use strict";
 
   // for tasks stats
-  var options = {
+  let options = {
     series: [
       {
         name: "New",
@@ -76,7 +76,7 @@
       opacity: 1,
     },
   };
-  var chart = new ApexCharts(document.querySelector("#transactions"), options);
+  let chart = new ApexCharts(document.querySelector("#transactions"), options);
   chart.render();
 })();
 
