@@ -18,9 +18,9 @@
 
   /* Image upload */
   let loadFile = function (event) {
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = function () {
-      var output = document.getElementById("profile-img");
+      let output = document.getElementById("profile-img");
       if (event.target.files[0].type.match("image.*")) {
         output.src = reader.result;
       } else {
