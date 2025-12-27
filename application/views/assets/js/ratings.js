@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var myDataService = {
+    let myDataService = {
         rate: function (rating) {
             return {
                 then: function (callback) {
@@ -14,7 +14,7 @@
     };
 
     /* Basic Rater */
-    var starRating1 = raterJs({
+    let starRating1 = raterJs({
         starSize: 24,
         element: document.querySelector("#rater-basic"),
         rateCallback: function rateCallback(rating, done) {
@@ -145,7 +145,7 @@
     /* Basic Rater */
 
     /* 5 star rater with steps */
-    var starRating2 = raterJs({
+    let starRating2 = raterJs({
         element: document.querySelector("#rater-steps"),
         rateCallback: function rateCallback(rating, done) {
             this.setRating(rating);
@@ -174,7 +174,7 @@
     /* Custom messages */
 
     /* Unlimited number of stars readOnly */
-    var starRating4 = raterJs({
+    let starRating4 = raterJs({
         max: 10,
         starSize: 24,
         readOnly: true,
@@ -199,7 +199,7 @@
     /* 5 Star rater with custom isBusyText and simulated backend */
 
     /* On hover event */
-    var starRating5 = raterJs({
+    let starRating5 = raterJs({
         starSize: 24,
         element: document.querySelector("#stars-hover"),
         rateCallback: function rateCallback(rating, done) {
@@ -216,7 +216,7 @@
     /* On hover event */
 
     /* Clear/reset rater */
-    var starRating6 = raterJs({
+    let starRating6 = raterJs({
         starSize: 24,
         element: document.querySelector("#rater-reset"),
         rateCallback: function rateCallback(rating, done) {

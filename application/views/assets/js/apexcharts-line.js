@@ -163,12 +163,12 @@
     chart.render();
 
     /* zoomable time series */
-    var ts2 = 1484418600000;
-    var dates = [];
-    var spikes = [5, -5, 3, -3, 8, -8]
-    for (var i = 0; i < 120; i++) {
+    let ts2 = 1484418600000;
+    let dates = [];
+    let spikes = [5, -5, 3, -3, 8, -8]
+    for (let i = 0; i < 120; i++) {
         ts2 = ts2 + 86400000;
-        var innerArr = [ts2, dataSeries[1][i].value];
+        let innerArr = [ts2, dataSeries[1][i].value];
         dates.push(innerArr)
     }
     var options = {
@@ -459,7 +459,7 @@
             }
         }
     };
-    var chart2 = new ApexCharts(document.querySelector("#stepline-chart"), options);
+    let chart2 = new ApexCharts(document.querySelector("#stepline-chart"), options);
     chart2.render();
 
     /* gradient chart */
@@ -654,11 +654,11 @@
         },
     }
     function generateDayWiseTimeSeries(baseval, count, yrange) {
-        var i = 0;
-        var series = [];
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var x = baseval;
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = baseval;
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
             series.push([x, y]);
             baseval += 86400000;
@@ -714,7 +714,7 @@
     var chart = new ApexCharts(document.querySelector("#chart-line"), options);
     chart.render();
 
-    var optionsLine2 = {
+    let optionsLine2 = {
         series: [{
             data: generateDayWiseTimeSeries(new Date('11 Feb 2017').getTime(), 20, {
                 min: 10,
@@ -759,10 +759,10 @@
             }
         }
     };
-    var chartLine2 = new ApexCharts(document.querySelector("#chart-line2"), optionsLine2);
+    let chartLine2 = new ApexCharts(document.querySelector("#chart-line2"), optionsLine2);
     chartLine2.render();
 
-    var optionsArea = {
+    let optionsArea = {
         series: [{
             data: generateDayWiseTimeSeries(new Date('11 Feb 2017').getTime(), 20, {
                 min: 10,
@@ -807,7 +807,7 @@
             }
         }
     };
-    var chartArea = new ApexCharts(document.querySelector("#chart-area"), optionsArea);
+    let chartArea = new ApexCharts(document.querySelector("#chart-area"), optionsArea);
     chartArea.render();
 
     /* dashed chart */
@@ -919,15 +919,15 @@
     chart.render();
 
     /* real time chart */
-    var lastDate = 0;
+    let lastDate = 0;
     var data = []
-    var TICKINTERVAL = 86400000
+    let TICKINTERVAL = 86400000
     let XAXISRANGE = 777600000
     function getDayWiseTimeSeries(baseval, count, yrange) {
-        var i = 0;
+        let i = 0;
         while (i < count) {
-            var x = baseval;
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = baseval;
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
             data.push({
                 x, y
             });
@@ -941,9 +941,9 @@
         max: 90
     })
     function getNewSeries(baseval, yrange) {
-        var newDate = baseval + TICKINTERVAL;
+        let newDate = baseval + TICKINTERVAL;
         lastDate = newDate
-        for (var i = 0; i < data.length - 10; i++) {
+        for (let i = 0; i < data.length - 10; i++) {
             // IMPORTANT
             // we reset the x and y of the data which is out of drawing area
             // to prevent memory leaks
@@ -1044,11 +1044,11 @@
 
     /* brush chart */
     function generateDayWiseTimeSeries(baseval, count, yrange) {
-        var i = 0;
-        var series = [];
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var x = baseval;
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = baseval;
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
             series.push([x, y]);
             baseval += 86400000;
@@ -1113,7 +1113,7 @@
     var chart = new ApexCharts(document.querySelector("#brush-chart1"), options);
     chart.render();
 
-    var optionsLine = {
+    let optionsLine = {
         series: [{
             data: data
         }],
@@ -1178,7 +1178,7 @@
             },
         }
     };
-    var chartLine = new ApexCharts(document.querySelector("#brush-chart"), optionsLine);
+    let chartLine = new ApexCharts(document.querySelector("#brush-chart"), optionsLine);
     chartLine.render();
 
 })();

@@ -2,7 +2,7 @@
     "use strict"
 
     // for invoice stats
-    var options = {
+    let options = {
         series: [{
             name: 'New',
             data: [76, 85, 101, 98, 87, 105]
@@ -71,7 +71,7 @@
             opacity: 1
         },
     };
-    var chart = new ApexCharts(document.querySelector("#task-list-stats"), options);
+    let chart = new ApexCharts(document.querySelector("#task-list-stats"), options);
     chart.render();
 
     let checkAll = document.querySelector('.check-all');
@@ -125,9 +125,9 @@
 
      /* Start::Choices JS */
      document.addEventListener("DOMContentLoaded", function () {
-        var genericExamples = document.querySelectorAll("[data-trigger]");
+        let genericExamples = document.querySelectorAll("[data-trigger]");
         for (let i = 0; i < genericExamples.length; ++i) {
-        var element = genericExamples[i];
+        let element = genericExamples[i];
         new Choices(element, {
             allowHTML: true,
 

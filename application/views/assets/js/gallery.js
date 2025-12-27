@@ -2,22 +2,22 @@
   "use strict";
 
   /*Basic Gallery */
-  var lightbox = GLightbox({
+  let lightbox = GLightbox({
     selector: '.glightbox'
 });
   lightbox.on('slide_changed', ({ prev, current }) => {
     const { slideIndex, slideNode, slideConfig, player } = current;
   });
-  var lightbox1 = GLightbox({
+  let lightbox1 = GLightbox({
     selector: ".gallery"
   });
 
   /*Image with Description*/
-  var lightboxDescription = GLightbox({
+  let lightboxDescription = GLightbox({
     selector: '.gallery2'
   });
 
-  var lightboxVideo = GLightbox({
+  let lightboxVideo = GLightbox({
     selector: '.gallery3'
   });
   lightboxVideo.on('slide_changed', ({ prev, current }) => {

@@ -3,11 +3,11 @@
 
     /* basic heatmap chart */
     function generateData(count, yrange) {
-        var i = 0;
-        var series = [];
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var x = 'w' + (i + 1).toString();
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = 'w' + (i + 1).toString();
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
             series.push({
                 x: x,
@@ -130,11 +130,11 @@
 
     /* multi series heatmap chart */
     function generateData(count, yrange) {
-        var i = 0;
-        var series = [];
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var x = (i + 1).toString();
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = (i + 1).toString();
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
             series.push({
                 x: x,
@@ -144,7 +144,7 @@
         }
         return series;
     }
-    var data = [
+    let data = [
         {
             name: 'W1',
             data: generateData(8, {
@@ -252,7 +252,7 @@
         }
     ]
     data.reverse()
-    var colors = ["#845adf", "#F27036", "#663F59", "#6A6E94", "#4E88B4", "#00A7C6", "#18D8D8", '#A9D794', '#46AF78', '#A93F55', '#8C5E58', '#2176FF', '#33A1FD', '#7A918D', '#BAFF29']
+    let colors = ["#845adf", "#F27036", "#663F59", "#6A6E94", "#4E88B4", "#00A7C6", "#18D8D8", '#A9D794', '#46AF78', '#A93F55', '#8C5E58', '#2176FF', '#33A1FD', '#7A918D', '#BAFF29']
     colors.reverse()
     var options = {
         series: data,
@@ -311,11 +311,11 @@
 
     /* color range heatmap */
     function generateData(count, yrange) {
-        var i = 0;
-        var series = [];
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var x = (i + 1).toString();
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let x = (i + 1).toString();
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
             series.push({
                 x: x,
