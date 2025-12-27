@@ -138,7 +138,6 @@
     eventData: function (eventEl) {
       return {
         title: eventEl.innerText.trim(),
-        title: eventEl.innerText,
         className: eventEl.className + ' overflow-hidden '
       }
     }
@@ -176,8 +175,6 @@
         arg.event.remove()
       }
     },
-
-    editable: true,
     dayMaxEvents: true, // allow "more" link when too many events
     eventSources: [sptCalendarEvents, sptBirthdayEvents, sptHolidayEvents, sptOtherEvents,],
 
@@ -190,4 +187,3 @@
 
 
 })();
-
