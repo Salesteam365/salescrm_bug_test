@@ -2,7 +2,7 @@
     'use strict';
 
     // swiper with navigation
-    var swiper = new Swiper(".swiper-related-jobs", {
+    let swiper = new Swiper(".swiper-related-jobs", {
         navigation: {
             nextEl: ".swiper-button-next",
             prevEl: ".swiper-button-prev",
