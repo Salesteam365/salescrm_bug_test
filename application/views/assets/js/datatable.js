@@ -2,9 +2,9 @@
     "use strict";
     /* Start::Choices JS */
     document.addEventListener('DOMContentLoaded', function () {
-        var genericExamples = document.querySelectorAll('[data-trigger]');
+        let genericExamples = document.querySelectorAll('[data-trigger]');
         for (let i = 0; i < genericExamples.length; ++i) {
-            var element = genericExamples[i];
+            let element = genericExamples[i];
             new Choices(element, {
                 allowHTML: false,
             });
@@ -13,7 +13,7 @@
 
 
     //define data
-    var tabledata = [
+    let tabledata = [
         { id: 1, name: "Tiger Jackson", position: "System Designer", office: "Sed at", age: 41, salary: "$520,800" },
         { id: 2, name: "Vadett Summers", position: "UI Developer", office: "Japan", age: 28, salary: "$270,750" },
         { id: 3, name: "Lisbon Mox", position: "Junior Lecturer", office: "San Deigo", age: 45, salary: "$286,000" },
@@ -64,8 +64,8 @@
 
     //Sortable Tabulator
 
-    var fieldEl = document.getElementById("sort-field");
-    var dirEl = document.getElementById("sort-direction");
+    let fieldEl = document.getElementById("sort-field");
+    let dirEl = document.getElementById("sort-direction");
     var table1 = new Tabulator("#sort-table", {
         width: 40,
         minWidth: 30,
