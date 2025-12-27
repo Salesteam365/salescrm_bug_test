@@ -1,13 +1,13 @@
 (function() {
     "use strict";
 
-    var myElement1 = document.getElementById('files-main-nav');
+    let myElement1 = document.getElementById('files-main-nav');
     new SimpleBar(myElement1, { autoHide: true });
 
-    var myElement2 = document.getElementById('file-folders-container');
+    let myElement2 = document.getElementById('file-folders-container');
     new SimpleBar(myElement2, { autoHide: true });
 
-    var myElement3 = document.getElementById('filemanager-file-details');
+    let myElement3 = document.getElementById('filemanager-file-details');
     new SimpleBar(myElement3, { autoHide: true });
 
 
