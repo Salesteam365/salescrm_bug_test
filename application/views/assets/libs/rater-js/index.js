@@ -1,12 +1,12 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.raterJs = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{let g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.raterJs = f()}})(function(){let define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){let c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);let a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}let p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){let n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
 /*! rater-js. [c] 2018 Fredrik Olsson. MIT License */
-var css = require('./style.css');
+let css = require('./style.css');
 
 module.exports = function (options) {
   //private fields
-  var showToolTip = true;
+  let showToolTip = true;
 
   if (typeof options.element === "undefined" || options.element === null) {
     throw new Error("element required");
@@ -22,17 +22,17 @@ module.exports = function (options) {
     }
   }
 
-  var elem = options.element;
-  var reverse = options.reverse;
-  var stars = options.max || 5;
-  var starSize = options.starSize || 16;
-  var step = options.step || 1;
-  var onHover = options.onHover;
-  var onLeave = options.onLeave;
-  var rating = null;
-  var myRating;
+  let elem = options.element;
+  let reverse = options.reverse;
+  let stars = options.max || 5;
+  let starSize = options.starSize || 16;
+  let step = options.step || 1;
+  let onHover = options.onHover;
+  let onLeave = options.onLeave;
+  let rating = null;
+  let myRating;
   elem.classList.add("star-rating");
-  var div = document.createElement("div");
+  let div = document.createElement("div");
   div.classList.add("star-value");
 
   if (reverse) {
@@ -44,13 +44,13 @@ module.exports = function (options) {
   elem.style.width = starSize * stars + "px";
   elem.style.height = starSize + "px";
   elem.style.backgroundSize = starSize + "px";
-  var callback = options.rateCallback;
-  var disabled = !!options.readOnly;
-  var disableText;
-  var isRating = false;
-  var isBusyText = options.isBusyText;
-  var currentRating;
-  var ratingText;
+  let callback = options.rateCallback;
+  let disabled = !!options.readOnly;
+  let disableText;
+  let isRating = false;
+  let isBusyText = options.isBusyText;
+  let currentRating;
+  let ratingText;
 
   if (typeof options.disableText !== "undefined") {
     disableText = options.disableText;
@@ -67,7 +67,7 @@ module.exports = function (options) {
   if (options.rating) {
     setRating(options.rating);
   } else {
-    var dataRating = elem.dataset.rating;
+    let dataRating = elem.dataset.rating;
 
     if (dataRating) {
       setRating(+dataRating);
@@ -97,10 +97,10 @@ module.exports = function (options) {
       return;
     }
 
-    var xCoor = null;
-    var percent;
-    var width = elem.offsetWidth;
-    var parentOffset = elem.getBoundingClientRect();
+    let xCoor = null;
+    let percent;
+    let width = elem.offsetWidth;
+    let parentOffset = elem.getBoundingClientRect();
 
     if (reverse) {
       if (isTouch) {
@@ -109,8 +109,8 @@ module.exports = function (options) {
         xCoor = e.pageX - window.scrollX - parentOffset.left;
       }
 
-      var relXRtl = width - xCoor;
-      var valueForDivision = width / 100;
+      let relXRtl = width - xCoor;
+      let valueForDivision = width / 100;
       percent = relXRtl / valueForDivision;
     } else {
       if (isTouch) {
@@ -126,9 +126,9 @@ module.exports = function (options) {
       if (step === 1) {
         currentRating = Math.ceil(percent / 100 * stars);
       } else {
-        var rat = percent / 100 * stars;
+        let rat = percent / 100 * stars;
 
-        for (var i = 0;; i += step) {
+        for (let i = 0;; i += step) {
           if (i >= rat) {
             currentRating = i;
             break;
@@ -144,7 +144,7 @@ module.exports = function (options) {
       elem.querySelector(".star-value").style.width = currentRating / stars * 100 + "%";
 
       if (showToolTip) {
-        var toolTip = ratingText.replace("{rating}", currentRating);
+        let toolTip = ratingText.replace("{rating}", currentRating);
         toolTip = toolTip.replace("{maxRating}", stars);
         elem.setAttribute("title", toolTip);
       }
@@ -219,7 +219,7 @@ module.exports = function (options) {
     elem.classList.add("disabled");
 
     if (showToolTip && !!disableText) {
-      var toolTip = disableText.replace("{rating}", !!rating ? rating : 0);
+      let toolTip = disableText.replace("{rating}", !!rating ? rating : 0);
       toolTip = toolTip.replace("{maxRating}", stars);
       elem.setAttribute("title", toolTip);
     } else {
@@ -297,7 +297,7 @@ module.exports = function (options) {
 
   elem.addEventListener("mousemove", onMouseMove);
   elem.addEventListener("mouseleave", onStarOut);
-  var module = {
+  let module = {
     setRating: setRating,
     getRating: getRating,
     disable: disable,
@@ -360,16 +360,16 @@ module.exports = function (options) {
 };
 
 },{"./style.css":2}],2:[function(require,module,exports){
-var css = ".star-rating {\n  width: 0;\n  position: relative;\n  display: inline-block;\n  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDguOSIgaGVpZ2h0PSIxMDMuNiIgdmlld0JveD0iMCAwIDEwOC45IDEwMy42Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UzZTZlNjt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPnN0YXJfMDwvdGl0bGU+PGcgaWQ9IkxheWVyXzIiIGRhdGEtbmFtZT0iTGF5ZXIgMiI+PGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj48cG9seWdvbiBjbGFzcz0iY2xzLTEiIHBvaW50cz0iMTA4LjkgMzkuNiA3MS4zIDM0LjEgNTQuNCAwIDM3LjYgMzQuMSAwIDM5LjYgMjcuMiA2Ni4xIDIwLjggMTAzLjYgNTQuNCA4NS45IDg4LjEgMTAzLjYgODEuNyA2Ni4xIDEwOC45IDM5LjYiLz48L2c+PC9nPjwvc3ZnPg0K);\n  background-position: 0 0;\n  background-repeat: repeat-x;\n  cursor: pointer;\n}\n.star-rating .star-value {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  background: url('data:image/svg+xml;base64,PHN2Zw0KCXhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwOC45IiBoZWlnaHQ9IjEwMy42IiB2aWV3Qm94PSIwIDAgMTA4LjkgMTAzLjYiPg0KCTxkZWZzPg0KCQk8c3R5bGU+LmNscy0xe2ZpbGw6I2YxYzk0Nzt9PC9zdHlsZT4NCgk8L2RlZnM+DQoJPHRpdGxlPnN0YXIxPC90aXRsZT4NCgk8ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIj4NCgkJPGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj4NCgkJCTxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI1NC40IDAgNzEuMyAzNC4xIDEwOC45IDM5LjYgODEuNyA2Ni4xIDg4LjEgMTAzLjYgNTQuNCA4NS45IDIwLjggMTAzLjYgMjcuMiA2Ni4xIDAgMzkuNiAzNy42IDM0LjEgNTQuNCAwIi8+DQoJCTwvZz4NCgk8L2c+DQo8L3N2Zz4NCg==');\n  background-repeat: repeat-x;\n}\n.star-rating.disabled {\n  cursor: default;\n}\n.star-rating.is-busy {\n  cursor: wait;\n}\n.star-rating .star-value.rtl {\n  -moz-transform: scaleX(-1);\n  -o-transform: scaleX(-1);\n  -webkit-transform: scaleX(-1);\n  transform: scaleX(-1);\n  filter: FlipH;\n  -ms-filter: \"FlipH\";\n  right: 0;\n  left: auto;\n}\n"; (require("browserify-css").createStyle(css, { "href": "lib\\style.css" }, { "insertAt": "bottom" })); module.exports = css;
+let css = ".star-rating {\n  width: 0;\n  position: relative;\n  display: inline-block;\n  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDguOSIgaGVpZ2h0PSIxMDMuNiIgdmlld0JveD0iMCAwIDEwOC45IDEwMy42Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UzZTZlNjt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPnN0YXJfMDwvdGl0bGU+PGcgaWQ9IkxheWVyXzIiIGRhdGEtbmFtZT0iTGF5ZXIgMiI+PGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj48cG9seWdvbiBjbGFzcz0iY2xzLTEiIHBvaW50cz0iMTA4LjkgMzkuNiA3MS4zIDM0LjEgNTQuNCAwIDM3LjYgMzQuMSAwIDM5LjYgMjcuMiA2Ni4xIDIwLjggMTAzLjYgNTQuNCA4NS45IDg4LjEgMTAzLjYgODEuNyA2Ni4xIDEwOC45IDM5LjYiLz48L2c+PC9nPjwvc3ZnPg0K);\n  background-position: 0 0;\n  background-repeat: repeat-x;\n  cursor: pointer;\n}\n.star-rating .star-value {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  background: url('data:image/svg+xml;base64,PHN2Zw0KCXhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwOC45IiBoZWlnaHQ9IjEwMy42IiB2aWV3Qm94PSIwIDAgMTA4LjkgMTAzLjYiPg0KCTxkZWZzPg0KCQk8c3R5bGU+LmNscy0xe2ZpbGw6I2YxYzk0Nzt9PC9zdHlsZT4NCgk8L2RlZnM+DQoJPHRpdGxlPnN0YXIxPC90aXRsZT4NCgk8ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIj4NCgkJPGcgaWQ9IkxheWVyXzEtMiIgZGF0YS1uYW1lPSJMYXllciAxIj4NCgkJCTxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI1NC40IDAgNzEuMyAzNC4xIDEwOC45IDM5LjYgODEuNyA2Ni4xIDg4LjEgMTAzLjYgNTQuNCA4NS45IDIwLjggMTAzLjYgMjcuMiA2Ni4xIDAgMzkuNiAzNy42IDM0LjEgNTQuNCAwIi8+DQoJCTwvZz4NCgk8L2c+DQo8L3N2Zz4NCg==');\n  background-repeat: repeat-x;\n}\n.star-rating.disabled {\n  cursor: default;\n}\n.star-rating.is-busy {\n  cursor: wait;\n}\n.star-rating .star-value.rtl {\n  -moz-transform: scaleX(-1);\n  -o-transform: scaleX(-1);\n  -webkit-transform: scaleX(-1);\n  transform: scaleX(-1);\n  filter: FlipH;\n  -ms-filter: \"FlipH\";\n  right: 0;\n  left: auto;\n}\n"; (require("browserify-css").createStyle(css, { "href": "lib\\style.css" }, { "insertAt": "bottom" })); module.exports = css;
 },{"browserify-css":3}],3:[function(require,module,exports){
 'use strict';
 // For more information about browser field, check out the browser field at https://github.com/substack/browserify-handbook#browser-field.
 
-var styleElementsInsertedAtTop = [];
+let styleElementsInsertedAtTop = [];
 
-var insertStyleElement = function(styleElement, options) {
-    var head = document.head || document.getElementsByTagName('head')[0];
-    var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+let insertStyleElement = function(styleElement, options) {
+    let head = document.head || document.getElementsByTagName('head')[0];
+    let lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
 
     options = options || {};
     options.insertAt = options.insertAt || 'bottom';
@@ -393,17 +393,17 @@ var insertStyleElement = function(styleElement, options) {
 module.exports = {
     // Create a <link> tag with optional data attributes
     createLink: function(href, attributes) {
-        var head = document.head || document.getElementsByTagName('head')[0];
-        var link = document.createElement('link');
+        let head = document.head || document.getElementsByTagName('head')[0];
+        let link = document.createElement('link');
 
         link.href = href;
         link.rel = 'stylesheet';
 
-        for (var key in attributes) {
+        for (let key in attributes) {
             if ( ! attributes.hasOwnProperty(key)) {
                 continue;
             }
-            var value = attributes[key];
+            let value = attributes[key];
             link.setAttribute('data-' + key, value);
         }
 
@@ -413,14 +413,14 @@ module.exports = {
     createStyle: function(cssText, attributes, extraOptions) {
         extraOptions = extraOptions || {};
 
-        var style = document.createElement('style');
+        let style = document.createElement('style');
         style.type = 'text/css';
 
-        for (var key in attributes) {
+        for (let key in attributes) {
             if ( ! attributes.hasOwnProperty(key)) {
                 continue;
             }
-            var value = attributes[key];
+            let value = attributes[key];
             style.setAttribute('data-' + key, value);
         }
 
