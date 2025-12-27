@@ -61,7 +61,7 @@ class PopperObject {
     }
   }
 
-  hide() {}
+  hide() { /* TODO document why this method 'hide' is empty */ }
 }
 
 class Poppers {

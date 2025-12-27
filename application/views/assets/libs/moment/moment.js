@@ -417,6 +417,8 @@
     ************************************/
 
     function Locale() {
+      // TODO document why this function 'Locale' is empty
+    
     }
 
     // Moment prototype object

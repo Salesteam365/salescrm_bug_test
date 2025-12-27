@@ -1,5 +1,5 @@
 // Utility function
-function Util () {};
+function Util () { /* TODO document why this function 'Util' is empty */ };
 
 /* 
 	class manipulation functions
