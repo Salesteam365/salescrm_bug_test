@@ -9,7 +9,7 @@
         Constants
     ************************************/
 
-    var moment,
+    let moment,
         VERSION = '2.9.0',
         // the global-scope this is NOT the global object in Node.js
         globalScope = (typeof global !== 'undefined' && (typeof window === 'undefined' || window === global.window)) ? global : this,
@@ -191,7 +191,7 @@
                 return leftZeroFill(this.year(), 5);
             },
             YYYYYY : function () {
-                var y = this.year(), sign = y >= 0 ? '+' : '-';
+                let y = this.year(), sign = y >= 0 ? '+' : '-';
                 return sign + leftZeroFill(Math.abs(y), 6);
             },
             gg   : function () {
@@ -249,7 +249,7 @@
                 return leftZeroFill(this.milliseconds(), 3);
             },
             Z    : function () {
-                var a = this.utcOffset(),
+                let a = this.utcOffset(),
                     b = '+';
                 if (a < 0) {
                     a = -a;
@@ -258,7 +258,7 @@
                 return b + leftZeroFill(toInt(a / 60), 2) + ':' + leftZeroFill(toInt(a) % 60, 2);
             },
             ZZ   : function () {
-                var a = this.utcOffset(),
+                let a = this.utcOffset(),
                     b = '+';
                 if (a < 0) {
                     a = -a;
@@ -328,7 +328,7 @@
     }
 
     function deprecate(msg, fn) {
-        var firstTime = true;
+        let firstTime = true;
         return extend(function () {
             if (firstTime) {
                 printMsg(msg);
@@ -358,7 +358,7 @@
 
     function monthDiff(a, b) {
         // difference in months
-        var wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month()),
+        let wholeMonthDiff = ((b.year() - a.year()) * 12) + (b.month() - a.month()),
             // b is in (anchor - 1 month, anchor + 1 month)
             anchor = a.clone().add(wholeMonthDiff, 'months'),
             anchor2, adjust;
@@ -388,7 +388,7 @@
 
 
     function meridiemFixWrap(locale, hour, meridiem) {
-        var isPm;
+        let isPm;
 
         if (meridiem == null) {
             // nothing to do
@@ -437,7 +437,7 @@
 
     // Duration Constructor
     function Duration(duration) {
-        var normalizedInput = normalizeObjectUnits(duration),
+        let normalizedInput = normalizeObjectUnits(duration),
             years = normalizedInput.year || 0,
             quarters = normalizedInput.quarter || 0,
             months = normalizedInput.month || 0,
@@ -477,7 +477,7 @@
 
 
     function extend(a, b) {
-        for (var i in b) {
+        for (let i in b) {
             if (hasOwnProp(b, i)) {
                 a[i] = b[i];
             }
@@ -495,7 +495,7 @@
     }
 
     function copyConfig(to, from) {
-        var i, prop, val;
+        let i, prop, val;
 
         if (typeof from._isAMomentObject !== 'undefined') {
             to._isAMomentObject = from._isAMomentObject;
@@ -552,7 +552,7 @@
     // left zero fill a number
     // see http://jsperf.com/left-zero-filling for performance comparison
     function leftZeroFill(number, targetLength, forceSign) {
-        var output = '' + Math.abs(number),
+        let output = '' + Math.abs(number),
             sign = number >= 0;
 
         while (output.length < targetLength) {
@@ -562,7 +562,7 @@
     }
 
     function positiveMomentsDifference(base, other) {
-        var res = {milliseconds: 0, months: 0};
+        let res = {milliseconds: 0, months: 0};
 
         res.months = other.month() - base.month() +
             (other.year() - base.year()) * 12;
@@ -576,7 +576,7 @@
     }
 
     function momentsDifference(base, other) {
-        var res;
+        let res;
         other = makeAs(other, base);
         if (base.isBefore(other)) {
             res = positiveMomentsDifference(base, other);
@@ -592,7 +592,7 @@
     // TODO: remove 'name' arg after deprecation is removed
     function createAdder(direction, name) {
         return function (val, period) {
-            var dur, tmp;
+            let dur, tmp;
             //invert the arguments, but complain about it
             if (period !== null && !isNaN(+period)) {
                 deprecateSimple(name, 'moment().' + name  + '(period, number) is deprecated. Please use moment().' + name + '(number, period).');
@@ -607,7 +607,7 @@
     }
 
     function addOrSubtractDurationFromMoment(mom, duration, isAdding, updateOffset) {
-        var milliseconds = duration._milliseconds,
+        let milliseconds = duration._milliseconds,
             days = duration._days,
             months = duration._months;
         updateOffset = updateOffset == null ? true : updateOffset;
@@ -638,7 +638,7 @@
 
     // compare two arrays, return the number of differences
     function compareArrays(array1, array2, dontConvert) {
-        var len = Math.min(array1.length, array2.length),
+        let len = Math.min(array1.length, array2.length),
             lengthDiff = Math.abs(array1.length - array2.length),
             diffs = 0,
             i;
@@ -653,14 +653,14 @@
 
     function normalizeUnits(units) {
         if (units) {
-            var lowered = units.toLowerCase().replace(/(.)s$/, '$1');
+            let lowered = units.toLowerCase().replace(/(.)s$/, '$1');
             units = unitAliases[units] || camelFunctions[lowered] || lowered;
         }
         return units;
     }
 
     function normalizeObjectUnits(inputObject) {
-        var normalizedInput = {},
+        let normalizedInput = {},
             normalizedProp,
             prop;
 
@@ -677,7 +677,7 @@
     }
 
     function makeList(field) {
-        var count, setter;
+        let count, setter;
 
         if (field.indexOf('week') === 0) {
             count = 7;
@@ -692,7 +692,7 @@
         }
 
         moment[field] = function (format, index) {
-            var i, getter,
+            let i, getter,
                 method = moment._locale[field],
                 results = [];
 
@@ -702,7 +702,7 @@
             }
 
             getter = function (i) {
-                var m = moment().utc().set(setter, i);
+                let m = moment().utc().set(setter, i);
                 return method.call(moment._locale, m, format || '');
             };
 
@@ -719,7 +719,7 @@
     }
 
     function toInt(argumentForCoercion) {
-        var coercedNumber = +argumentForCoercion,
+        let coercedNumber = +argumentForCoercion,
             value = 0;
 
         if (coercedNumber !== 0 && isFinite(coercedNumber)) {
@@ -750,7 +750,7 @@
     }
 
     function checkOverflow(m) {
-        var overflow;
+        let overflow;
         if (m._a && m._pf.overflow === -2) {
             overflow =
                 m._a[MONTH] < 0 || m._a[MONTH] > 11 ? MONTH :
@@ -800,7 +800,7 @@
     // try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
     // substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
     function chooseLocale(names) {
-        var i = 0, j, next, locale, split;
+        let i = 0, j, next, locale, split;
 
         while (i < names.length) {
             split = normalizeLocale(names[i]).split('-');
@@ -824,7 +824,7 @@
     }
 
     function loadLocale(name) {
-        var oldLocale = null;
+        let oldLocale = null;
         if (!locales[name] && hasModule) {
             try {
                 oldLocale = moment.locale();
@@ -839,7 +839,7 @@
     // Return a moment from input, that is local/utc/utcOffset equivalent to
     // model.
     function makeAs(input, model) {
-        var res, diff;
+        let res, diff;
         if (model._isUTC) {
             res = model.clone();
             diff = (moment.isMoment(input) || isDate(input) ?
@@ -861,7 +861,7 @@
     extend(Locale.prototype, {
 
         set : function (config) {
-            var prop, i;
+            let prop, i;
             for (i in config) {
                 prop = config[i];
                 if (typeof prop === 'function') {
@@ -886,7 +886,7 @@
         },
 
         monthsParse : function (monthName, format, strict) {
-            var i, mom, regex;
+            let i, mom, regex;
 
             if (!this._monthsParse) {
                 this._monthsParse = [];
@@ -932,7 +932,7 @@
         },
 
         weekdaysParse : function (weekdayName) {
-            var i, mom, regex;
+            let i, mom, regex;
 
             if (!this._weekdaysParse) {
                 this._weekdaysParse = [];
@@ -961,7 +961,7 @@
             LLLL : 'dddd, MMMM D, YYYY LT'
         },
         longDateFormat : function (key) {
-            var output = this._longDateFormat[key];
+            let output = this._longDateFormat[key];
             if (!output && this._longDateFormat[key.toUpperCase()]) {
                 output = this._longDateFormat[key.toUpperCase()].replace(/MMMM|MM|DD|dddd/g, function (val) {
                     return val.slice(1);
@@ -996,7 +996,7 @@
             sameElse : 'L'
         },
         calendar : function (key, mom, now) {
-            var output = this._calendar[key];
+            let output = this._calendar[key];
             return typeof output === 'function' ? output.apply(mom, [now]) : output;
         },
 
@@ -1017,14 +1017,14 @@
         },
 
         relativeTime : function (number, withoutSuffix, string, isFuture) {
-            var output = this._relativeTime[string];
+            let output = this._relativeTime[string];
             return (typeof output === 'function') ?
                 output(number, withoutSuffix, string, isFuture) :
                 output.replace(/%d/i, number);
         },
 
         pastFuture : function (diff, output) {
-            var format = this._relativeTime[diff > 0 ? 'future' : 'past'];
+            let format = this._relativeTime[diff > 0 ? 'future' : 'past'];
             return typeof format === 'function' ? format(output) : format.replace(/%s/i, output);
         },
 
@@ -1078,7 +1078,7 @@
     }
 
     function makeFormatFunction(format) {
-        var array = format.match(formattingTokens), i, length;
+        let array = format.match(formattingTokens), i, length;
 
         for (i = 0, length = array.length; i < length; i++) {
             if (formatTokenFunctions[array[i]]) {
@@ -1089,7 +1089,7 @@
         }
 
         return function (mom) {
-            var output = '';
+            let output = '';
             for (i = 0; i < length; i++) {
                 output += array[i] instanceof Function ? array[i].call(mom, format) : array[i];
             }
@@ -1113,7 +1113,7 @@
     }
 
     function expandFormat(format, locale) {
-        var i = 5;
+        let i = 5;
 
         function replaceLongDateFormatTokens(input) {
             return locale.longDateFormat(input) || input;
@@ -1137,7 +1137,7 @@
 
     // get the regex to find the next token
     function getParseRegexForToken(token, config) {
-        var a, strict = config._strict;
+        let a, strict = config._strict;
         switch (token) {
         case 'Q':
             return parseTokenOneDigit;
@@ -1227,7 +1227,7 @@
 
     function utcOffsetFromString(string) {
         string = string || '';
-        var possibleTzMatches = (string.match(parseTokenTimezone) || []),
+        let possibleTzMatches = (string.match(parseTokenTimezone) || []),
             tzChunk = possibleTzMatches[possibleTzMatches.length - 1] || [],
             parts = (tzChunk + '').match(parseTimezoneChunker) || ['-', 0, 0],
             minutes = +(parts[1] * 60) + toInt(parts[2]);
@@ -1237,7 +1237,7 @@
 
     // function to convert string input to date
     function addTimeToArrayFromToken(token, input, config) {
-        var a, datePartArray = config._a;
+        let a, datePartArray = config._a;
 
         switch (token) {
         // QUARTER
@@ -1379,7 +1379,7 @@
     }
 
     function dayOfYearFromWeekInfo(config) {
-        var w, weekYear, week, weekday, dow, doy, temp;
+        let w, weekYear, week, weekday, dow, doy, temp;
 
         w = config._w;
         if (w.GG != null || w.W != null || w.E != null) {
@@ -1425,7 +1425,7 @@
     // note: all values past the year are optional and will default to the lowest possible value.
     // [year, month, day , hour, minute, second, millisecond]
     function dateFromConfig(config) {
-        var i, date, input = [], currentDate, yearToUse;
+        let i, date, input = [], currentDate, yearToUse;
 
         if (config._d) {
             return;
@@ -1487,7 +1487,7 @@
     }
 
     function dateFromObject(config) {
-        var normalizedInput;
+        let normalizedInput;
 
         if (config._d) {
             return;
@@ -1508,7 +1508,7 @@
     }
 
     function currentDateArray(config) {
-        var now = new Date();
+        let now = new Date();
         if (config._useUTC) {
             return [
                 now.getUTCFullYear(),
@@ -1531,7 +1531,7 @@
         config._pf.empty = true;
 
         // This array is used to make a Date, either with `new Date` or `Date.UTC`
-        var string = '' + config._i,
+        let string = '' + config._i,
             i, parsedInput, tokens, token, skipped,
             stringLength = string.length,
             totalParsedInputLength = 0;
@@ -1594,7 +1594,7 @@
 
     // date from string and array of format strings
     function makeDateFromStringAndArray(config) {
-        var tempConfig,
+        let tempConfig,
             bestMoment,
 
             scoreToBeat,
@@ -1640,7 +1640,7 @@
 
     // date from iso format
     function parseISO(config) {
-        var i, l,
+        let i, l,
             string = config._i,
             match = isoRegex.exec(string);
 
@@ -1678,7 +1678,7 @@
     }
 
     function map(arr, fn) {
-        var res = [], i;
+        let res = [], i;
         for (i = 0; i < arr.length; ++i) {
             res.push(fn(arr[i], i));
         }
@@ -1686,7 +1686,7 @@
     }
 
     function makeDateFromInput(config) {
-        var input = config._i, matched;
+        let input = config._i, matched;
         if (input === undefined) {
             config._d = new Date();
         } else if (isDate(input)) {
@@ -1713,7 +1713,7 @@
     function makeDate(y, m, d, h, M, s, ms) {
         //can't just apply() to create a date:
         //http://stackoverflow.com/questions/181348/instantiating-a-javascript-object-by-calling-prototype-constructor-apply
-        var date = new Date(y, m, d, h, M, s, ms);
+        let date = new Date(y, m, d, h, M, s, ms);
 
         //the date constructor doesn't accept years < 1970
         if (y < 1970) {
@@ -1723,7 +1723,7 @@
     }
 
     function makeUTCDate(y) {
-        var date = new Date(Date.UTC.apply(null, arguments));
+        let date = new Date(Date.UTC.apply(null, arguments));
         if (y < 1970) {
             date.setUTCFullYear(y);
         }
@@ -1756,7 +1756,7 @@
     }
 
     function relativeTime(posNegDuration, withoutSuffix, locale) {
-        var duration = moment.duration(posNegDuration).abs(),
+        let duration = moment.duration(posNegDuration).abs(),
             seconds = round(duration.as('s')),
             minutes = round(duration.as('m')),
             hours = round(duration.as('h')),
@@ -1795,7 +1795,7 @@
     //                      of this day of the week
     //                      (eg. ISO weeks use thursday (4))
     function weekOfYear(mom, firstDayOfWeek, firstDayOfWeekOfYear) {
-        var end = firstDayOfWeekOfYear - firstDayOfWeek,
+        let end = firstDayOfWeekOfYear - firstDayOfWeek,
             daysToDayOfWeek = firstDayOfWeekOfYear - mom.day(),
             adjustedMoment;
 
@@ -1817,7 +1817,7 @@
 
     //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
     function dayOfYearFromWeeks(year, week, weekday, firstDayOfWeekOfYear, firstDayOfWeek) {
-        var d = makeUTCDate(year, 0, 1).getUTCDay(), daysToAdd, dayOfYear;
+        let d = makeUTCDate(year, 0, 1).getUTCDay(), daysToAdd, dayOfYear;
 
         d = d === 0 ? 7 : d;
         weekday = weekday != null ? weekday : firstDayOfWeek;
@@ -1835,7 +1835,7 @@
     ************************************/
 
     function makeMoment(config) {
-        var input = config._i,
+        let input = config._i,
             format = config._f,
             res;
 
@@ -1872,7 +1872,7 @@
     }
 
     moment = function (input, format, locale, strict) {
-        var c;
+        let c;
 
         if (typeof(locale) === 'boolean') {
             strict = locale;
@@ -1910,7 +1910,7 @@
     // moments should either be an array of moment objects or an array, whose
     // first element is an array of moment objects.
     function pickBy(fn, moments) {
-        var res, i;
+        let res, i;
         if (moments.length === 1 && isArray(moments[0])) {
             moments = moments[0];
         }
@@ -1927,20 +1927,20 @@
     }
 
     moment.min = function () {
-        var args = [].slice.call(arguments, 0);
+        let args = [].slice.call(arguments, 0);
 
         return pickBy('isBefore', args);
     };
 
     moment.max = function () {
-        var args = [].slice.call(arguments, 0);
+        let args = [].slice.call(arguments, 0);
 
         return pickBy('isAfter', args);
     };
 
     // creating with utc
     moment.utc = function (input, format, locale, strict) {
-        var c;
+        let c;
 
         if (typeof(locale) === 'boolean') {
             strict = locale;
@@ -1968,7 +1968,7 @@
 
     // duration
     moment.duration = function (input, key) {
-        var duration = input,
+        let duration = input,
             // matching against regexp is expensive, do it on demand
             match = null,
             sign,
@@ -2005,7 +2005,7 @@
                 // We'd normally use ~~inp for this, but unfortunately it also
                 // converts floats to ints.
                 // inp may be undefined, so careful calling replace on it.
-                var res = inp && parseFloat(inp.replace(',', '.'));
+                let res = inp && parseFloat(inp.replace(',', '.'));
                 // apply sign while we're at it
                 return (isNaN(res) ? 0 : res) * sign;
             };
@@ -2078,7 +2078,7 @@
     // no arguments are passed in, it will simply return the current global
     // locale key.
     moment.locale = function (key, values) {
-        var data;
+        let data;
         if (key) {
             if (typeof(values) !== 'undefined') {
                 data = moment.defineLocale(key, values);
@@ -2123,7 +2123,7 @@
 
     // returns locale data
     moment.localeData = function (key) {
-        var locale;
+        let locale;
 
         if (key && key._locale && key._locale._abbr) {
             key = key._locale._abbr;
@@ -2165,7 +2165,7 @@
     };
 
     moment.invalid = function (flags) {
-        var m = moment.utc(NaN);
+        let m = moment.utc(NaN);
         if (flags != null) {
             extend(m._pf, flags);
         }
@@ -2214,7 +2214,7 @@
         },
 
         toISOString : function () {
-            var m = moment(this).utc();
+            let m = moment(this).utc();
             if (0 < m.year() && m.year() <= 9999) {
                 if ('function' === typeof Date.prototype.toISOString) {
                     // native implementation is ~50x faster, use it when we can
@@ -2228,7 +2228,7 @@
         },
 
         toArray : function () {
-            var m = this;
+            let m = this;
             return [
                 m.year(),
                 m.month(),
@@ -2277,7 +2277,7 @@
         },
 
         format : function (inputString) {
-            var output = formatMoment(this, inputString || moment.defaultFormat);
+            let output = formatMoment(this, inputString || moment.defaultFormat);
             return this.localeData().postformat(output);
         },
 
@@ -2286,7 +2286,7 @@
         subtract : createAdder(-1, 'subtract'),
 
         diff : function (input, units, asFloat) {
-            var that = makeAs(input, this),
+            let that = makeAs(input, this),
                 zoneDiff = (that.utcOffset() - this.utcOffset()) * 6e4,
                 anchor, diff, output, daysAdjust;
 
@@ -2323,7 +2323,7 @@
             // We want to compare the start of today, vs this.
             // Getting start-of-today depends on whether we're locat/utc/offset
             // or not.
-            var now = time || moment(),
+            let now = time || moment(),
                 sod = makeAs(now, this).startOf('day'),
                 diff = this.diff(sod, 'days', true),
                 format = diff < -6 ? 'sameElse' :
@@ -2345,7 +2345,7 @@
         },
 
         day : function (input) {
-            var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
+            let day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
             if (input != null) {
                 input = parseWeekday(input, this.localeData());
                 return this.add(input - day, 'd');
@@ -2408,7 +2408,7 @@
         },
 
         isAfter: function (input, units) {
-            var inputMs;
+            let inputMs;
             units = normalizeUnits(typeof units !== 'undefined' ? units : 'millisecond');
             if (units === 'millisecond') {
                 input = moment.isMoment(input) ? input : moment(input);
@@ -2420,7 +2420,7 @@
         },
 
         isBefore: function (input, units) {
-            var inputMs;
+            let inputMs;
             units = normalizeUnits(typeof units !== 'undefined' ? units : 'millisecond');
             if (units === 'millisecond') {
                 input = moment.isMoment(input) ? input : moment(input);
@@ -2436,7 +2436,7 @@
         },
 
         isSame: function (input, units) {
-            var inputMs;
+            let inputMs;
             units = normalizeUnits(units || 'millisecond');
             if (units === 'millisecond') {
                 input = moment.isMoment(input) ? input : moment(input);
@@ -2492,7 +2492,7 @@
         // _changeInProgress == true case, then we have to adjust, because
         // there is no such time in the given timezone.
         utcOffset : function (input, keepLocalTime) {
-            var offset = this._offset || 0,
+            let offset = this._offset || 0,
                 localAdjust;
             if (input != null) {
                 if (typeof input === 'string') {
@@ -2571,7 +2571,7 @@
         },
 
         dayOfYear : function (input) {
-            var dayOfYear = round((moment(this).startOf('day') - moment(this).startOf('year')) / 864e5) + 1;
+            let dayOfYear = round((moment(this).startOf('day') - moment(this).startOf('year')) / 864e5) + 1;
             return input == null ? dayOfYear : this.add((input - dayOfYear), 'd');
         },
 
@@ -2580,27 +2580,27 @@
         },
 
         weekYear : function (input) {
-            var year = weekOfYear(this, this.localeData()._week.dow, this.localeData()._week.doy).year;
+            let year = weekOfYear(this, this.localeData()._week.dow, this.localeData()._week.doy).year;
             return input == null ? year : this.add((input - year), 'y');
         },
 
         isoWeekYear : function (input) {
-            var year = weekOfYear(this, 1, 4).year;
+            let year = weekOfYear(this, 1, 4).year;
             return input == null ? year : this.add((input - year), 'y');
         },
 
         week : function (input) {
-            var week = this.localeData().week(this);
+            let week = this.localeData().week(this);
             return input == null ? week : this.add((input - week) * 7, 'd');
         },
 
         isoWeek : function (input) {
-            var week = weekOfYear(this, 1, 4).week;
+            let week = weekOfYear(this, 1, 4).week;
             return input == null ? week : this.add((input - week) * 7, 'd');
         },
 
         weekday : function (input) {
-            var weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
+            let weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
             return input == null ? weekday : this.add(input - weekday, 'd');
         },
 
@@ -2616,7 +2616,7 @@
         },
 
         weeksInYear : function () {
-            var weekInfo = this.localeData()._week;
+            let weekInfo = this.localeData()._week;
             return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
         },
 
@@ -2626,7 +2626,7 @@
         },
 
         set : function (units, value) {
-            var unit;
+            let unit;
             if (typeof units === 'object') {
                 for (unit in units) {
                     this.set(unit, units[unit]);
@@ -2645,7 +2645,7 @@
         // instance.  Otherwise, it will return the locale configuration
         // variables for this instance.
         locale : function (key) {
-            var newLocaleData;
+            let newLocaleData;
 
             if (key === undefined) {
                 return this._locale._abbr;
@@ -2682,7 +2682,7 @@
     });
 
     function rawMonthSetter(mom, value) {
-        var dayOfMonth;
+        let dayOfMonth;
 
         // TODO: Move this out of here!
         if (typeof value === 'string') {
@@ -2769,7 +2769,7 @@
     extend(moment.duration.fn = Duration.prototype, {
 
         _bubble : function () {
-            var milliseconds = this._milliseconds,
+            let milliseconds = this._milliseconds,
                 days = this._days,
                 months = this._months,
                 data = this._data,
@@ -2835,7 +2835,7 @@
         },
 
         humanize : function (withSuffix) {
-            var output = relativeTime(this, !withSuffix, this.localeData());
+            let output = relativeTime(this, !withSuffix, this.localeData());
 
             if (withSuffix) {
                 output = this.localeData().pastFuture(+this, output);
@@ -2846,7 +2846,7 @@
 
         add : function (input, val) {
             // supports only 2.0-style add(1, 's') or add(moment)
-            var dur = moment.duration(input, val);
+            let dur = moment.duration(input, val);
 
             this._milliseconds += dur._milliseconds;
             this._days += dur._days;
@@ -2858,7 +2858,7 @@
         },
 
         subtract : function (input, val) {
-            var dur = moment.duration(input, val);
+            let dur = moment.duration(input, val);
 
             this._milliseconds -= dur._milliseconds;
             this._days -= dur._days;
@@ -2875,7 +2875,7 @@
         },
 
         as : function (units) {
-            var days, months;
+            let days, months;
             units = normalizeUnits(units);
 
             if (units === 'month' || units === 'year') {
@@ -2911,7 +2911,7 @@
 
         toISOString : function () {
             // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
-            var years = Math.abs(this.years()),
+            let years = Math.abs(this.years()),
                 months = Math.abs(this.months()),
                 days = Math.abs(this.days()),
                 hours = Math.abs(this.hours()),
@@ -2992,7 +2992,7 @@
     moment.locale('en', {
         ordinalParse: /\d{1,2}(th|st|nd|rd)/,
         ordinal : function (number) {
-            var b = number % 10,
+            let b = number % 10,
                 output = (toInt(number % 100 / 10) === 1) ? 'th' :
                 (b === 1) ? 'st' :
                 (b === 2) ? 'nd' :
