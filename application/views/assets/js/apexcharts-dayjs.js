@@ -10,7 +10,7 @@
 (this, function () {
   "use strict";
 
-  var t = "millisecond",
+  let t = "millisecond",
     n = "second",
     e = "minute",
     r = "hour",
@@ -22,13 +22,13 @@
     h = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/,
     f = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
     c = function (t, n, e) {
-      var r = String(t);
+      let r = String(t);
       return !r || r.length >= n ? t : "" + Array(n + 1 - r.length).join(e) + t;
     },
     d = {
       s: c,
       z: function (t) {
-        var n = -t.utcOffset(),
+        let n = -t.utcOffset(),
           e = Math.abs(n),
           r = Math.floor(e / 60),
           i = e % 60;
@@ -40,7 +40,7 @@
         );
       },
       m: function (t, n) {
-        var e = 12 * (n.year() - t.year()) + (n.month() - t.month()),
+        let e = 12 * (n.year() - t.year()) + (n.month() - t.month()),
           r = t.clone().add(e, u),
           i = n - r < 0,
           s = t.clone().add(e + (i ? -1 : 1), u);
@@ -79,22 +79,22 @@
     m = {};
   m[l] = $;
 
-  var y = function (t) {
+  let y = function (t) {
       return t instanceof v;
     },
     M = function (t, n, e) {
-      var r;
+      let r;
       if (!t) return l;
       if ("string" == typeof t) m[t] && (r = t), n && (m[t] = n, r = t);
       else {
-        var i = t.name;
+        let i = t.name;
         m[i] = t, (r = i);
       }
       return e || (l = r), r;
     },
     g = function (t, n, e) {
       if (y(t)) return t.clone();
-      var r = n ? "string" == typeof n ? { format: n, pl: e } : n : {};
+      let r = n ? "string" == typeof n ? { format: n, pl: e } : n : {};
       return (r.date = t), new v(r);
     },
     D = d;
@@ -109,17 +109,17 @@
       this.$L = this.$L || M(t.locale, null, !0), this.parse(t);
     }
 
-    var d = c.prototype;
+    let d = c.prototype;
     return (
       (d.parse = function (t) {
         this.$d = (function (t) {
-          var n = t.date,
+          let n = t.date,
             e = t.utc;
           if (null === n) return new Date(NaN);
           if (D.u(n)) return new Date();
           if (n instanceof Date) return new Date(n);
           if ("string" == typeof n && !/Z$/i.test(n)) {
-            var r = n.match(h);
+            let r = n.match(h);
             if (r)
               return e
                 ? new Date(
@@ -148,7 +148,7 @@
           this.init();
       }),
       (d.init = function () {
-        var t = this.$d;
+        let t = this.$d;
         (this.$y = t.getFullYear()),
           (this.$M = t.getMonth()),
           (this.$D = t.getDate()),
@@ -165,7 +165,7 @@
         return !("Invalid Date" === this.$d.toString());
       }),
       (d.isSame = function (t, n) {
-        var e = g(t);
+        let e = g(t);
         return this.startOf(n) <= e && e <= this.endOf(n);
       }),
       (d.isAfter = function (t, n) {
@@ -209,11 +209,11 @@
         return this.$d.getTime();
       }),
       (d.startOf = function (t, o) {
-        var h = this,
+        let h = this,
           f = !!D.u(o) || o,
           c = D.p(t),
           d = function (t, n) {
-            var e = D.w(
+            let e = D.w(
               h.$u
                 ? Date.UTC(h.$y, n, t)
                 : new Date(h.$y, n, t),
@@ -260,13 +260,13 @@
         return this.startOf(t, !1);
       }),
       (d.$set = function (s, o) {
-        var h,
+        let h,
           f = D.p(s),
           c = "set" + (this.$u ? "UTC" : ""),
           d = (h = {}, (h[i] = c + "Date"), (h.date = c + "Date"), (h[u] = c + "Month"), (h[a] = c + "FullYear"), (h[r] = c + "Hours"), (h[e] = c + "Minutes"), (h[n] = c + "Seconds"), (h[t] = c + "Milliseconds"), h)[f],
           $ = f === i ? this.$D + (o - this.$W) : o;
         if (f === u || f === a) {
-          var l = this.clone().set("date", 1);
+          let l = this.clone().set("date", 1);
           l.$d[d]($), l.init(), (this.$d = l.set("date", Math.min(this.$D, l.daysInMonth())).toDate());
         } else d && this.$d[d]($);
         return this.init(), this;
@@ -278,12 +278,12 @@
         return this[D.p(t)]();
       }),
       (d.add = function (t, o) {
-        var h,
+        let h,
           f = this;
         (t = Number(t));
-        var c = D.p(o),
+        let c = D.p(o),
           d = function (n) {
-            var e = g(f);
+            let e = g(f);
             return D.w(
               e.date(e.date() + Math.round(n * t)),
               f
@@ -293,7 +293,7 @@
         if (c === a) return this.set(a, this.$y + t);
         if (c === i) return d(1);
         if (c === s) return d(7);
-        var $ = ((h = {}), (h[e] = 6e4), (h[r] = 36e5), (h[n] = 1e3), h)[c] || 1,
+        let $ = ((h = {}), (h[e] = 6e4), (h[r] = 36e5), (h[n] = 1e3), h)[c] || 1,
           l = this.$d.getTime() + t * $;
         return D.w(l, this);
       }),
@@ -301,9 +301,9 @@
         return this.add(-1 * t, n);
       }),
       (d.format = function (t) {
-        var n = this;
+        let n = this;
         if (!this.isValid()) return "Invalid Date";
-        var e = t || "YYYY-MM-DDTHH:mm:ssZ",
+        let e = t || "YYYY-MM-DDTHH:mm:ssZ",
           r = D.z(this),
           i = this.$locale(),
           s = this.$H,
@@ -318,7 +318,7 @@
             return D.s(s % 12 || 12, t, "0");
           },
           $ = i.meridiem || function (t, n, e) {
-            var r = t < 12 ? "AM" : "PM";
+            let r = t < 12 ? "AM" : "PM";
             return e ? r.toLowerCase() : r;
           },
           l = {
@@ -355,7 +355,7 @@
         return 15 * -Math.round(this.$d.getTimezoneOffset() / 15);
       }),
       (d.diff = function (t, h, f) {
-        var c,
+        let c,
           d = D.p(h),
           $ = g(t),
           l = 6e4 * ($.utcOffset() - this.utcOffset()),
@@ -374,7 +374,7 @@
       }),
       (d.locale = function (t, n) {
         if (!t) return this.$L;
-        var e = this.clone();
+        let e = this.clone();
         return (e.$L = M(t, n, !0)), e;
       }),
       (d.clone = function () {

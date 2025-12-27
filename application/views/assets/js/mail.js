@@ -1,20 +1,20 @@
 (function () {
     "use strict";
 
-    var myElement11 = document.getElementById('mail-main-nav');
+    let myElement11 = document.getElementById('mail-main-nav');
     new SimpleBar(myElement11, { autoHide: true });
 
-    var myElement12 = document.getElementById('mail-messages');
+    let myElement12 = document.getElementById('mail-messages');
     new SimpleBar(myElement12, { autoHide: true });
 
-    var myElement13 = document.getElementById('mail-info-body');
+    let myElement13 = document.getElementById('mail-info-body');
     new SimpleBar(myElement13, { autoHide: true });
 
-    var myElement14 = document.getElementById('mail-recepients');
+    let myElement14 = document.getElementById('mail-recepients');
     new SimpleBar(myElement14, { autoHide: true });
 
     /* mail editor */
-    var toolbarOptions = [
+    let toolbarOptions = [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
       [{ font: [] }],
       ["bold", "italic", "underline", "strike"], // toggled buttons
@@ -29,14 +29,14 @@
       ["image", "video"],
       ["clean"], // remove formatting button
     ];
-    var quill = new Quill("#mail-reply-editor", {
+    let quill = new Quill("#mail-reply-editor", {
       modules: {
         toolbar: toolbarOptions,
       },
       theme: "snow",
     });
 
-    var quill1 = new Quill("#mail-compose-editor", {
+    let quill1 = new Quill("#mail-compose-editor", {
       modules: {
         toolbar: toolbarOptions,
       },

@@ -60,10 +60,10 @@
 
     /* datetime scatter chart */
     function generateDayWiseTimeSeries(baseval, count, yrange) {
-        var i = 0;
-        var series = [];
+        let i = 0;
+        let series = [];
         while (i < count) {
-            var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
+            let y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
             series.push([baseval, y]);
             baseval += 86400000;
