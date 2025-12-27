@@ -20,7 +20,7 @@
   );
 
   /* email address only */
-  var textEmailFilter = new Choices('#choices-text-email-filter', {
+  let textEmailFilter = new Choices('#choices-text-email-filter', {
     allowHTML: true,
     editItems: true,
     addItemFilter: function (value) {
@@ -34,7 +34,7 @@
   }).setValue(['abc@hotmail.com']);
 
   /* passing through values */
-  var textPresetVal = new Choices('#choices-text-preset-values', {
+  let textPresetVal = new Choices('#choices-text-preset-values', {
     allowHTML: true,
     items: [
       'one',
@@ -49,7 +49,7 @@
   });
 
   /* options added via config with no search */
-  var singleNoSearch = new Choices('#choices-single-no-search', {
+  let singleNoSearch = new Choices('#choices-single-no-search', {
     allowHTML: true,
     searchEnabled: false,
     removeItemButton: true,
@@ -70,7 +70,7 @@
   );
 
   /* passing unique values */
-  var textUniqueVals = new Choices('#choices-text-unique-values', {
+  let textUniqueVals = new Choices('#choices-text-unique-values', {
     allowHTML: true,
     paste: false,
     duplicateItemsAllowed: false,

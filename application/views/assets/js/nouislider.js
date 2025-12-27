@@ -36,7 +36,7 @@
     });
 
     /* primary colored slider */
-    var sliderPrimaryColored = document.getElementById('primary-colored-slider');
+    let sliderPrimaryColored = document.getElementById('primary-colored-slider');
     noUiSlider.create(sliderPrimaryColored, {
         start: [50],
         step: 1,
@@ -48,7 +48,7 @@
     });
 
     /* secondary colored slider */
-    var sliderSecondaryColored = document.getElementById('secondary-colored-slider');
+    let sliderSecondaryColored = document.getElementById('secondary-colored-slider');
     noUiSlider.create(sliderSecondaryColored, {
         start: [50],
         step: 1,
@@ -60,7 +60,7 @@
     });
 
     /* warning colored slider */
-    var sliderWarningColored = document.getElementById('warning-colored-slider');
+    let sliderWarningColored = document.getElementById('warning-colored-slider');
     noUiSlider.create(sliderWarningColored, {
         start: [50],
         step: 1,
@@ -72,7 +72,7 @@
     });
 
     /* info colored slider */
-    var sliderInfoColored = document.getElementById('info-colored-slider');
+    let sliderInfoColored = document.getElementById('info-colored-slider');
     noUiSlider.create(sliderInfoColored, {
         start: [50],
         step: 1,
@@ -84,7 +84,7 @@
     });
 
     /* success colored slider */
-    var sliderSuccessColored = document.getElementById('success-colored-slider');
+    let sliderSuccessColored = document.getElementById('success-colored-slider');
     noUiSlider.create(sliderSuccessColored, {
         start: [50],
         step: 1,
@@ -96,7 +96,7 @@
     });
 
     /* danger colored slider */
-    var sliderDangerColored = document.getElementById('danger-colored-slider');
+    let sliderDangerColored = document.getElementById('danger-colored-slider');
     noUiSlider.create(sliderDangerColored, {
         start: [50],
         step: 1,
@@ -119,9 +119,9 @@
     });
 
     /* color picker slider */
-    var resultElement = document.getElementById('result');
-    var sliders = document.querySelectorAll('.sliders');
-    var colors = [0, 0, 0];
+    let resultElement = document.getElementById('result');
+    let sliders = document.querySelectorAll('.sliders');
+    let colors = [0, 0, 0];
     sliders.forEach(function (slider, index) {
         noUiSlider.create(slider, {
             start: 127,
@@ -138,23 +138,23 @@
         // Bind the color changing function to the update event.
         slider.noUiSlider.on('update', function () {
             colors[index] = slider.noUiSlider.get();
-            var color = 'rgb(' + colors.join(',') + ')';
+            let color = 'rgb(' + colors.join(',') + ')';
             resultElement.style.background = color;
             resultElement.style.color = color;
         });
     });
 
     /* locking sliders */
-    var lockedState = false;
-    var lockedSlider = false;
-    var lockedValues = [60, 80];
+    let lockedState = false;
+    let lockedSlider = false;
+    let lockedValues = [60, 80];
 
-    var slider1 = document.getElementById('slider1');
-    var slider2 = document.getElementById('slider2');
+    let slider1 = document.getElementById('slider1');
+    let slider2 = document.getElementById('slider2');
 
-    var lockButton = document.getElementById('lockbutton');
-    var slider1Value = document.getElementById('slider1-span');
-    var slider2Value = document.getElementById('slider2-span');
+    let lockButton = document.getElementById('lockbutton');
+    let slider1Value = document.getElementById('slider1-span');
+    let slider2Value = document.getElementById('slider2-span');
     // When the button is clicked, the locked state is inverted.
     lockButton.addEventListener('click', function () {
         lockedState = !lockedState;
@@ -168,10 +168,10 @@
 
         // Select whether to increase or decrease
         // the other slider value.
-        var a = slider1 === slider ? 0 : 1;
+        let a = slider1 === slider ? 0 : 1;
 
         // Invert a
-        var b = a ? 0 : 1;
+        let b = a ? 0 : 1;
 
         // Offset the slider value.
         value -= lockedValues[b] - lockedValues[a];
@@ -220,7 +220,7 @@
     });
 
     //merging tooltips slider
-    var mergingTooltipSlider = document.getElementById('merging-tooltips');
+    let mergingTooltipSlider = document.getElementById('merging-tooltips');
     noUiSlider.create(mergingTooltipSlider, {
         start: [20, 80],
         connect: true,
@@ -237,11 +237,11 @@
  * @param separator String joining tooltips
  */
     function mergeTooltips(slider, threshold, separator) {
-        var textIsRtl = getComputedStyle(slider).direction === 'rtl';
-        var isRtl = slider.noUiSlider.options.direction === 'rtl';
-        var isVertical = slider.noUiSlider.options.orientation === 'vertical';
-        var tooltips = slider.noUiSlider.getTooltips();
-        var origins = slider.noUiSlider.getOrigins();
+        let textIsRtl = getComputedStyle(slider).direction === 'rtl';
+        let isRtl = slider.noUiSlider.options.direction === 'rtl';
+        let isVertical = slider.noUiSlider.options.orientation === 'vertical';
+        let tooltips = slider.noUiSlider.getTooltips();
+        let origins = slider.noUiSlider.getOrigins();
 
         // Move tooltips into the origin element. The default stylesheet handles this.
         tooltips.forEach(function (tooltip, index) {
@@ -250,17 +250,17 @@
             }
         });
         slider.noUiSlider.on('update', function (values, handle, unencoded, tap, positions) {
-            var pools = [[]];
-            var poolPositions = [[]];
-            var poolValues = [[]];
-            var atPool = 0;
+            let pools = [[]];
+            let poolPositions = [[]];
+            let poolValues = [[]];
+            let atPool = 0;
             // Assign the first tooltip to the first pool, if the tooltip is configured
             if (tooltips[0]) {
                 pools[0][0] = 0;
                 poolPositions[0][0] = positions[0];
                 poolValues[0][0] = values[0];
             }
-            for (var i = 1; i < positions.length; i++) {
+            for (let i = 1; i < positions.length; i++) {
                 if (!tooltips[i] || (positions[i] - positions[i - 1]) > threshold) {
                     atPool++;
                     pools[atPool] = [];
@@ -274,10 +274,10 @@
                 }
             }
             pools.forEach(function (pool, poolIndex) {
-                var handlesInPool = pool.length;
+                let handlesInPool = pool.length;
 
-                for (var j = 0; j < handlesInPool; j++) {
-                    var handleNumber = pool[j];
+                for (let j = 0; j < handlesInPool; j++) {
+                    let handleNumber = pool[j];
 
                     if (j === handlesInPool - 1) {
                         var offset = 0;
@@ -286,9 +286,9 @@
                             offset += 1000 - value;
                         });
 
-                        var direction = isVertical ? 'bottom' : 'right';
-                        var last = isRtl ? 0 : handlesInPool - 1;
-                        var lastOffset = 1000 - poolPositions[poolIndex][last];
+                        let direction = isVertical ? 'bottom' : 'right';
+                        let last = isRtl ? 0 : handlesInPool - 1;
+                        let lastOffset = 1000 - poolPositions[poolIndex][last];
                         offset = (textIsRtl && !isVertical ? 100 : 0) + (offset / handlesInPool) - lastOffset;
 
                         // Center this tooltip over the affected handles
@@ -305,7 +305,7 @@
     }
 
     /* non linear slider */
-    var nonLinearSlider = document.getElementById('nonlinear');
+    let nonLinearSlider = document.getElementById('nonlinear');
     noUiSlider.create(nonLinearSlider, {
         connect: true,
         behaviour: 'tap',
@@ -319,7 +319,7 @@
             'max': [10000]
         }
     });
-    var nodes = [
+    let nodes = [
         document.getElementById('lower-value'), // 0
         document.getElementById('upper-value')  // 1
     ];
@@ -330,7 +330,7 @@
     });
 
     /* sliding handles tooltips */
-    var tooltipSlider = document.getElementById('slider-hide');
+    let tooltipSlider = document.getElementById('slider-hide');
     noUiSlider.create(tooltipSlider, {
         start: [30, 80],
         tooltips: true,
@@ -351,14 +351,14 @@
             max: [300]
         }
     });
-    var connect = slider.querySelectorAll('.noUi-connect');
-    var classes = ['c-1-color', 'c-2-color', 'c-3-color', 'c-4-color', 'c-5-color'];
+    let connect = slider.querySelectorAll('.noUi-connect');
+    let classes = ['c-1-color', 'c-2-color', 'c-3-color', 'c-4-color', 'c-5-color'];
     for (var i = 0; i < connect.length; i++) {
         connect[i].classList.add(classes[i]);
     }
 
     /* slider toggle */
-    var toggleSlider = document.getElementById('slider-toggle');
+    let toggleSlider = document.getElementById('slider-toggle');
     noUiSlider.create(toggleSlider, {
         orientation: "vertical",
         start: 0,
@@ -379,7 +379,7 @@
     });
 
     /* moving slider with clicking pips */
-    var pipsSlider = document.getElementById('slider-pips');
+    let pipsSlider = document.getElementById('slider-pips');
     noUiSlider.create(pipsSlider, {
         range: {
             min: 0,
@@ -388,9 +388,9 @@
         start: [50],
         pips: { mode: 'count', values: 5 }
     });
-    var pips = pipsSlider.querySelectorAll('.noUi-value');
+    let pips = pipsSlider.querySelectorAll('.noUi-value');
     function clickOnPip() {
-        var value = Number(this.getAttribute('data-value'));
+        let value = Number(this.getAttribute('data-value'));
         pipsSlider.noUiSlider.set(value);
     }
     for (var i = 0; i < pips.length; i++) {
@@ -400,7 +400,7 @@
     }
 
     /* slider with soft limits */
-    var softSlider = document.getElementById('soft');
+    let softSlider = document.getElementById('soft');
     noUiSlider.create(softSlider, {
         start: 50,
         range: {

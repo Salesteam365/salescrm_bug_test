@@ -742,17 +742,17 @@
             show: false
         }
     }
-    var colors = ['#845adf', '#23b7e5', '#f5b849', '#49b6f5', '#e6533c', '#26bf94', '#5b67c7'];
+    let colors = ['#845adf', '#23b7e5', '#f5b849', '#49b6f5', '#e6533c', '#26bf94', '#5b67c7'];
     function shuffleArray(array) {
-        for (var i = array.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var temp = array[i];
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            let temp = array[i];
             array[i] = array[j];
             array[j] = temp;
         }
         return array;
     }
-    var arrayData = [{
+    let arrayData = [{
         y: 400,
         quarters: [{
             x: 'Q1',
@@ -844,8 +844,8 @@
         }]
     }];
     function makeData() {
-        var dataSet = shuffleArray(arrayData)
-        var dataYearSeries = [{
+        let dataSet = shuffleArray(arrayData)
+        let dataYearSeries = [{
             x: "2011",
             y: dataSet[0].y,
             color: colors[0],
@@ -880,14 +880,14 @@
         return dataYearSeries
     }
     function updateQuarterChart(sourceChart, destChartIDToUpdate) {
-        var series = [];
-        var seriesIndex = 0;
-        var colors = []
+        let series = [];
+        let seriesIndex = 0;
+        let colors = []
         if (sourceChart.w.globals.selectedDataPoints[0]) {
-            var selectedPoints = sourceChart.w.globals.selectedDataPoints;
-            for (var i = 0; i < selectedPoints[seriesIndex].length; i++) {
-                var selectedIndex = selectedPoints[seriesIndex][i];
-                var yearSeries = sourceChart.w.config.series[seriesIndex];
+            let selectedPoints = sourceChart.w.globals.selectedDataPoints;
+            for (let i = 0; i < selectedPoints[seriesIndex].length; i++) {
+                let selectedIndex = selectedPoints[seriesIndex][i];
+                let yearSeries = sourceChart.w.config.series[seriesIndex];
                 series.push({
                     name: yearSeries.data[selectedIndex].x,
                     data: yearSeries.data[selectedIndex].quarters
@@ -918,8 +918,8 @@
             type: 'bar',
             events: {
                 dataPointSelection: function (e, chart, opts) {
-                    var quarterChartEl = document.querySelector("#chart-quarter");
-                    var yearChartEl = document.querySelector("#chart-year");
+                    let quarterChartEl = document.querySelector("#chart-quarter");
+                    let yearChartEl = document.querySelector("#chart-year");
 
                     if (opts.selectedDataPoints[0].length === 1) {
                         if (quarterChartEl.classList.contains("active")) {
@@ -1033,7 +1033,7 @@
     var chart = new ApexCharts(document.querySelector("#chart-year"), options);
     chart.render();
 
-    var optionsQuarter = {
+    let optionsQuarter = {
         series: [{
             data: []
         }],
@@ -1107,13 +1107,13 @@
         }
     };
 
-    var chartQuarter = new ApexCharts(document.querySelector("#chart-quarter"), optionsQuarter);
+    let chartQuarter = new ApexCharts(document.querySelector("#chart-quarter"), optionsQuarter);
     chartQuarter.render();
 
 
     chart.addEventListener('dataPointSelection', function (e, chart, opts) {
-        var quarterChartEl = document.querySelector("#chart-quarter");
-        var yearChartEl = document.querySelector("#chart-year");
+        let quarterChartEl = document.querySelector("#chart-quarter");
+        let yearChartEl = document.querySelector("#chart-year");
 
         if (opts.selectedDataPoints[0].length === 1) {
             if (quarterChartEl.classList.contains("active")) {
