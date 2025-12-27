@@ -1,8 +1,8 @@
 
-var element = document.getElementById("earnings");
+let element = document.getElementById("earnings");
 if (element !== null) {
     element.innerHTML = "";
-    var options1 = {
+    let options1 = {
         series: [{
             name: 'Total Orders',
             data: [44, 42, 57, 86, 112, 55, 70, 43, 23, 54, 77, 34],
