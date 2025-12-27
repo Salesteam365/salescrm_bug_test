@@ -2,7 +2,7 @@
     "use strict"
 
     // for invoice stats
-    var options = {
+    let options = {
         series: [{
             name: 'Total',
             data: [76, 85, 101, 98, 87, 105]
@@ -78,7 +78,7 @@
             }
         }
     };
-    var chart = new ApexCharts(document.querySelector("#invoice-list-stats"), options);
+    let chart = new ApexCharts(document.querySelector("#invoice-list-stats"), options);
     chart.render();
 
     //delete Btn
