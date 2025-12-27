@@ -250,7 +250,7 @@ if (element !== null) {
 var element = document.getElementById("crm-revenue-analytics");
 if (element !== null) {
     element.innerHTML = "";
-    var options = {
+    let options = {
         series: [
             {
                 type: 'line',
@@ -527,7 +527,7 @@ function revenueAnalytics() {
 var element = document.getElementById("crm-profits-earned");
 if (element !== null) {
     element.innerHTML = "";
-    var options1 = {
+    let options1 = {
         series: [{
             name: 'Profit Earned',
             data: [44, 42, 57, 86, 58, 55, 70],
