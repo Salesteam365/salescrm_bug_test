@@ -3,7 +3,7 @@
 var element = document.getElementById("crypto");
 if (element !== null) {
   element.innerHTML = "";
-  var options = {
+  let options = {
     series: [{
       data: [{
         x: new Date(1538778600000),
