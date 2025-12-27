@@ -29,8 +29,8 @@
     if (!state.id) {
       return state.text;
     }
-    var baseUrl = "../assets/images/faces/select2";
-    var $state = $(
+    let baseUrl = "../assets/images/faces/select2";
+    let $state = $(
       '<span><img src="' + baseUrl + "/" + state.element.value.toLowerCase() +'.jpg" class="img-flag" alt="img"> ' +state.text +"</span>"
     );
     return $state;
@@ -45,7 +45,7 @@
     if (!client.id) {
       return client.text;
     }
-    var $client = $(
+    let $client = $(
       '<span><img src="../assets/images/faces/select2/' +
         client.element.value.toLowerCase() +
         '.jpg"  alt="img"> ' +
@@ -121,8 +121,8 @@
       if (!state.id) {
         return state.text;
       }
-      var baseUrl = "../assets/images/faces/select2";
-      var $state = $(
+      let baseUrl = "../assets/images/faces/select2";
+      let $state = $(
         '<span><img src="' +
           baseUrl +
           "/" +
@@ -144,7 +144,7 @@
       if (!client.id) {
         return client.text;
       }
-      var $client = $(
+      let $client = $(
         '<span><img src="../assets/images/faces/select2/' +
           client.element.value.toLowerCase() +
           '.jpg" /> ' +
@@ -227,8 +227,8 @@
       if (!state.id) {
         return state.text;
       }
-      var baseUrl = "../assets/images/faces/select2";
-      var $state = $(
+      let baseUrl = "../assets/images/faces/select2";
+      let $state = $(
         '<span><img src="' +
           baseUrl +
           "/" +
@@ -250,7 +250,7 @@
       if (!client.id) {
         return client.text;
       }
-      var $client = $(
+      let $client = $(
         '<span><img src="../assets/images/faces/select2/' +
           client.element.value.toLowerCase() +
           '.jpg" /> ' +
