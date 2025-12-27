@@ -334,12 +334,12 @@ function localStorageBackup() {
 // for menu target scroll on click
 window.addEventListener("scroll", reveal);
 function reveal() {
-  var reveals = document.querySelectorAll(".reveal");
+  let reveals = document.querySelectorAll(".reveal");
 
-  for (var i = 0; i < reveals.length; i++) {
-    var windowHeight = window.innerHeight;
-    var cardTop = reveals[i].getBoundingClientRect().top;
-    var cardRevealPoint = 150;
+  for (let i = 0; i < reveals.length; i++) {
+    let windowHeight = window.innerHeight;
+    let cardTop = reveals[i].getBoundingClientRect().top;
+    let cardRevealPoint = 150;
     if (cardTop < windowHeight - cardRevealPoint) {
       reveals[i].classList.add("active");
     } else {
@@ -397,7 +397,7 @@ window.document.addEventListener("scroll", onScroll);
 // for menu target scroll on click
 
 // for testimonials
-var swiper = new Swiper(".pagination-dynamic", {
+let swiper = new Swiper(".pagination-dynamic", {
     pagination: {
       el: ".swiper-pagination",
       dynamicBullets: true,
