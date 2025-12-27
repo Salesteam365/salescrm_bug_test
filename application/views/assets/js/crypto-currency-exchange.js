@@ -47,11 +47,6 @@
         show: false,
       },
     },
-    yaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
     colors: ["rgba(132, 90, 223,0.5)"],
     tooltip: {
       enabled: false,
@@ -107,11 +102,6 @@
       show: false,
     },
     xaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
-    yaxis: {
       axisBorder: {
         show: false,
       },
@@ -175,11 +165,6 @@
         show: false,
       },
     },
-    yaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
     colors: ["rgba(38, 191, 148,0.5)"],
     tooltip: {
       enabled: false,
@@ -235,11 +220,6 @@
       show: false,
     },
     xaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
-    yaxis: {
       axisBorder: {
         show: false,
       },
@@ -303,11 +283,6 @@
         show: false,
       },
     },
-    yaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
     colors: ["rgba(231, 145, 188,0.5)"],
     tooltip: {
       enabled: false,
@@ -363,11 +338,6 @@
       show: false,
     },
     xaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
-    yaxis: {
       axisBorder: {
         show: false,
       },
@@ -431,11 +401,6 @@
         show: false,
       },
     },
-    yaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
     colors: ["rgba(230, 83, 60,0.5)"],
     tooltip: {
       enabled: false,
@@ -491,11 +456,6 @@
       show: false,
     },
     xaxis: {
-      axisBorder: {
-        show: false,
-      },
-    },
-    yaxis: {
       axisBorder: {
         show: false,
       },
