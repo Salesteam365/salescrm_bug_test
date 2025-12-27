@@ -2,7 +2,7 @@
     "use strcit";
 
     /* non linear slider */
-    var nonLinearSlider = document.getElementById('nonlinear');
+    let nonLinearSlider = document.getElementById('nonlinear');
     noUiSlider.create(nonLinearSlider, {
         connect: true,
         behaviour: 'tap',
@@ -14,7 +14,7 @@
             'max': [50000]
         }
     });
-    var nodes = [
+    let nodes = [
         document.getElementById('lower-value'), // 0
         document.getElementById('upper-value')  // 1
     ];
