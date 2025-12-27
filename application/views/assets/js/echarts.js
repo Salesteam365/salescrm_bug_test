@@ -645,7 +645,7 @@
                 type: 'shadow'
             },
             formatter: function (params) {
-                var tar = params[1];
+                let tar = params[1];
                 return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value;
             }
         },
@@ -1671,11 +1671,11 @@
    var option;
    function getVirtulData(year) {
        year = year || '2017';
-       var date = +echarts.number.parseDate(year + '-01-01');
-       var end = +echarts.number.parseDate(+year + 1 + '-01-01');
-       var dayTime = 3600 * 24 * 1000;
-       var data = [];
-       for (var time = date; time < end; time += dayTime) {
+       let date = +echarts.number.parseDate(year + '-01-01');
+       let end = +echarts.number.parseDate(+year + 1 + '-01-01');
+       let dayTime = 3600 * 24 * 1000;
+       let data = [];
+       for (let time = date; time < end; time += dayTime) {
            data.push([
                echarts.format.formatTime('yyyy-MM-dd', time),
                Math.floor(Math.random() * 10000)
@@ -2152,7 +2152,7 @@
         makeOption('bar'),
         makeOption('pictorialBar', 'diamond')
     ];
-    var optionIndex = 0;
+    let optionIndex = 0;
     option = options[optionIndex];
     setInterval(function () {
         optionIndex = (optionIndex + 1) % options.length;
