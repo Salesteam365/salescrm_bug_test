@@ -57,11 +57,6 @@
             show: false,
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
         tooltip: {
           enabled: false,
         },
@@ -123,11 +118,6 @@
           show: false,
         },
         xaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
-        yaxis: {
           axisBorder: {
             show: false,
           },
@@ -197,11 +187,6 @@
             show: false,
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
         tooltip: {
           enabled: false,
         },
@@ -263,11 +248,6 @@
           show: false,
         },
         xaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
-        yaxis: {
           axisBorder: {
             show: false,
           },
@@ -337,11 +317,6 @@
             show: false,
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
         tooltip: {
           enabled: false,
         },
@@ -403,11 +378,6 @@
           show: false,
         },
         xaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
-        yaxis: {
           axisBorder: {
             show: false,
           },
@@ -477,11 +447,6 @@
             show: false,
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
         tooltip: {
           enabled: false,
         },
@@ -543,11 +508,6 @@
           show: false,
         },
         xaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
-        yaxis: {
           axisBorder: {
             show: false,
           },
@@ -617,11 +577,6 @@
             show: false,
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
         tooltip: {
           enabled: false,
         },
@@ -687,11 +642,6 @@
             show: false,
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false,
-          },
-        },
         tooltip: {
           enabled: false,
         },
@@ -745,11 +695,6 @@
           show: false
         },
         xaxis: {
-          axisBorder: {
-            show: false
-          },
-        },
-        yaxis: {
           axisBorder: {
             show: false
           },
@@ -808,11 +753,6 @@
             show: false
           },
         },
-        yaxis: {
-          axisBorder: {
-            show: false
-          },
-        },
         colors: ['#26bf94'],
 
       }
@@ -863,11 +803,6 @@
           show: false
         },
         xaxis: {
-          axisBorder: {
-            show: false
-          },
-        },
-        yaxis: {
           axisBorder: {
             show: false
           },
