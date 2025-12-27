@@ -3,7 +3,7 @@
     "use strict"
 
     // for nummber of products selected
-    var value = 1,
+    let value = 1,
         minValue = 0,
         maxValue = 30;
 
