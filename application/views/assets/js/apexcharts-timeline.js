@@ -141,10 +141,10 @@
         dataLabels: {
             enabled: true,
             formatter: function (val, opts) {
-                var label = opts.w.globals.labels[opts.dataPointIndex]
-                var a = moment(val[0])
-                var b = moment(val[1])
-                var diff = b.diff(a, 'days')
+                let label = opts.w.globals.labels[opts.dataPointIndex]
+                let a = moment(val[0])
+                let b = moment(val[1])
+                let diff = b.diff(a, 'days')
                 return label + ': ' + diff + (diff > 1 ? ' days' : ' day')
             },
             style: {
@@ -241,9 +241,9 @@
         dataLabels: {
             enabled: true,
             formatter: function (val) {
-                var a = moment(val[0])
-                var b = moment(val[1])
-                var diff = b.diff(a, 'days')
+                let a = moment(val[0])
+                let b = moment(val[1])
+                let diff = b.diff(a, 'days')
                 return diff + (diff > 1 ? ' days' : ' day')
             }
         },
