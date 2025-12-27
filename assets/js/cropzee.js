@@ -101,7 +101,6 @@ jQuery.fn.extend({
                         onCropMove: options.onCropMove,
                         onCropEnd: options.onCropEnd,
                         onInitialize: options.onInitialize,
-                        onCropMove: options.onCropMove,
                     });
                 }, 50);
             }, 50);
@@ -149,7 +148,6 @@ jQuery.fn.extend({
                 onCropMove: options.onCropMove,
                 onCropEnd: options.onCropEnd,
                 onInitialize: options.onInitialize,
-                onCropMove: options.onCropMove,
             });
         }
         // function to trigger modal and pass image data to display in the modal

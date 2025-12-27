@@ -767,17 +767,6 @@
                 'two',
                 'one'
             ],
-            axisLine: {
-                lineStyle: {
-                    color: "#8c9097"
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: "rgba(142, 156, 173,0.1)"
-                }
-            }
-        },
         series: [
             {
                 name: 'Cost',
