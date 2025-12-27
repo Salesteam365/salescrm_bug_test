@@ -332,7 +332,6 @@
             width: 1,
             colors: ["#fff"]
         },
-        colors: ["#845adf", "#23b7e5"],
         grid: {
             xaxis: {
                 lines: {
@@ -358,9 +357,6 @@
                     return Math.abs(val) + "%"
                 }
             }
-        },
-        grid: {
-            borderColor: '#f2f5f7',
         },
         title: {
             text: 'Mauritius population pyramid 2011',
@@ -393,20 +389,7 @@
                     cssClass: 'apexcharts-xaxis-label',
                 },
             }
-        },
-        yaxis: {
-            labels: {
-                show: true,
-                style: {
-                    colors: "#8c9097",
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    cssClass: 'apexcharts-yaxis-label',
-                },
-            },
-        }
-    };
-    var chart = new ApexCharts(document.querySelector("#bar-negative"), options);
+        }, options);
     chart.render();
 
     /* bar with markers */
@@ -610,13 +593,6 @@
                     fontWeight: 600,
                     cssClass: 'apexcharts-xaxis-label',
                 },
-            }
-        },
-        grid: {
-            xaxis: {
-                lines: {
-                    show: true
-                }
             }
         },
         yaxis: {
