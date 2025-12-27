@@ -1,6 +1,6 @@
 "use strict";
 
-var githubdata = {
+let githubdata = {
     series: [
         {
             x: 1352592000000,
