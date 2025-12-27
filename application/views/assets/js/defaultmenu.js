@@ -968,9 +968,9 @@ function doublemenu() {
   }
 }
 function doubleClickFn() {
-  var $this = this;
+  let $this = this;
   let html = document.querySelector("html");
-  var checkElement = $this.nextElementSibling;
+  let checkElement = $this.nextElementSibling;
   if (checkElement) {
     if (!checkElement.classList.contains("double-menu-active")) {
       if (document.querySelector(".slide-menu")) {
