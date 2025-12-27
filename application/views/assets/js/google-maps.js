@@ -1,14 +1,14 @@
 (function () {
   "use strict";
   /* basic map */
-  var map = new GMaps({
+  let map = new GMaps({
     el: '#google-map',
     lat: -12.043333,
     lng: -77.028333
   });
 
   /* overlay map */
-  var map1 = new GMaps({
+  let map1 = new GMaps({
     el: '#google-map-overlay',
     lat: -12.043333,
     lng: -77.028333
@@ -23,7 +23,7 @@
   });
 
   /* layeres map */
-  var map2 = new GMaps({
+  let map2 = new GMaps({
     el: "#map-layers",
     lat: -12.043333,
     lng: -77.028333,
@@ -31,7 +31,7 @@
   });
 
   /* map with markers */
-  var map3 = new GMaps({
+  let map3 = new GMaps({
     el: '#map-markers',
     lat: -12.043333,
     lng: -77.028333
@@ -76,18 +76,18 @@
   });
 
   /* geo fencing map */
-  var map4 = new GMaps({
+  let map4 = new GMaps({
     el: '#map-geofencing',
     lat: -12.043333,
     lng: -77.028333
   });
-  var path = [
+  let path = [
     [-12.040397656836609, -77.03373871559225],
     [-12.040248585302038, -77.03993927003302],
     [-12.050047116528843, -77.02448169303511],
     [-12.044804866577001, -77.02154422636042]
   ];
-  var polygon = map4.drawPolygon({
+  let polygon = map4.drawPolygon({
     paths: path,
     strokeColor: '#b95d4b',
     strokeOpacity: 1,
@@ -95,7 +95,7 @@
     fillColor: '#b95d4b',
     fillOpacity: 0.5
   });/*  */
-  var circle = map4.drawCircle({
+  let circle = map4.drawCircle({
     lat: -12.040504866577001,
     lng: -77.02024422636042,
     radius: 350,
