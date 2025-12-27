@@ -2,7 +2,7 @@
 var element = document.getElementById("projectAnalysis");
 if (element !== null) {
     element.innerHTML = "";
-    var options = {
+    let options = {
         series: [{
             name: 'Projects',
             type: 'column',
