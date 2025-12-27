@@ -170,9 +170,6 @@
                 color: '#8c9097'
             },
         },
-        legend: {
-            position: 'bottom'
-        },
     };
     var chart = new ApexCharts(document.querySelector("#donut-gradient"), options);
     chart.render();
