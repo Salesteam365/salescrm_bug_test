@@ -15,20 +15,20 @@
    * License MIT
    * --------------------------------------------
    */
-  var ControlSidebar = function ($) {
+  let ControlSidebar = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'ControlSidebar';
-    var DATA_KEY = 'lte.controlsidebar';
-    var EVENT_KEY = "." + DATA_KEY;
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'ControlSidebar';
+    let DATA_KEY = 'lte.controlsidebar';
+    let EVENT_KEY = "." + DATA_KEY;
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       COLLAPSED: "collapsed" + EVENT_KEY,
       EXPANDED: "expanded" + EVENT_KEY
     };
-    var Selector = {
+    let Selector = {
       CONTROL_SIDEBAR: '.control-sidebar',
       CONTROL_SIDEBAR_CONTENT: '.control-sidebar-content',
       DATA_TOGGLE: '[data-widget="control-sidebar"]',
@@ -36,7 +36,7 @@
       HEADER: '.main-header',
       FOOTER: '.main-footer'
     };
-    var ClassName = {
+    let ClassName = {
       CONTROL_SIDEBAR_ANIMATE: 'control-sidebar-animate',
       CONTROL_SIDEBAR_OPEN: 'control-sidebar-open',
       CONTROL_SIDEBAR_SLIDE: 'control-sidebar-slide-open',
@@ -52,7 +52,7 @@
       FOOTER_LG_FIXED: 'layout-lg-footer-fixed',
       FOOTER_XL_FIXED: 'layout-xl-footer-fixed'
     };
-    var Default = {
+    let Default = {
       controlsidebarSlide: true,
       scrollbarTheme: 'os-theme-light',
       scrollbarAutoHide: 'l'
@@ -62,7 +62,7 @@
      * ====================================================
      */
 
-    var ControlSidebar =
+    let ControlSidebar =
     /*#__PURE__*/
     function () {
       function ControlSidebar(element, config) {
@@ -73,7 +73,7 @@
       } // Public
 
 
-      var _proto = ControlSidebar.prototype;
+      let _proto = ControlSidebar.prototype;
 
       _proto.collapse = function collapse() {
         // Show the control sidebar
@@ -88,7 +88,7 @@
           $('body').removeClass(ClassName.CONTROL_SIDEBAR_OPEN);
         }
 
-        var collapsedEvent = $.Event(Event.COLLAPSED);
+        let collapsedEvent = $.Event(Event.COLLAPSED);
         $(this._element).trigger(collapsedEvent);
       };
 
@@ -107,12 +107,12 @@
           $('body').addClass(ClassName.CONTROL_SIDEBAR_OPEN);
         }
 
-        var expandedEvent = $.Event(Event.EXPANDED);
+        let expandedEvent = $.Event(Event.EXPANDED);
         $(this._element).trigger(expandedEvent);
       };
 
       _proto.toggle = function toggle() {
-        var shouldClose = $('body').hasClass(ClassName.CONTROL_SIDEBAR_OPEN) || $('body').hasClass(ClassName.CONTROL_SIDEBAR_SLIDE);
+        let shouldClose = $('body').hasClass(ClassName.CONTROL_SIDEBAR_OPEN) || $('body').hasClass(ClassName.CONTROL_SIDEBAR_SLIDE);
 
         if (shouldClose) {
           // Close the control sidebar
@@ -125,7 +125,7 @@
       ;
 
       _proto._init = function _init() {
-        var _this = this;
+        let _this = this;
 
         this._fixHeight();
 
@@ -144,18 +144,18 @@
       };
 
       _proto._fixScrollHeight = function _fixScrollHeight() {
-        var heights = {
+        let heights = {
           scroll: $(document).height(),
           window: $(window).height(),
           header: $(Selector.HEADER).outerHeight(),
           footer: $(Selector.FOOTER).outerHeight()
         };
-        var positions = {
+        let positions = {
           bottom: Math.abs(heights.window + $(window).scrollTop() - heights.scroll),
           top: $(window).scrollTop()
         };
-        var navbarFixed = false;
-        var footerFixed = false;
+        let navbarFixed = false;
+        let footerFixed = false;
 
         if ($('body').hasClass(ClassName.LAYOUT_FIXED)) {
           if ($('body').hasClass(ClassName.NAVBAR_FIXED) || $('body').hasClass(ClassName.NAVBAR_SM_FIXED) || $('body').hasClass(ClassName.NAVBAR_MD_FIXED) || $('body').hasClass(ClassName.NAVBAR_LG_FIXED) || $('body').hasClass(ClassName.NAVBAR_XL_FIXED)) {
@@ -200,14 +200,14 @@
       };
 
       _proto._fixHeight = function _fixHeight() {
-        var heights = {
+        let heights = {
           window: $(window).height(),
           header: $(Selector.HEADER).outerHeight(),
           footer: $(Selector.FOOTER).outerHeight()
         };
 
         if ($('body').hasClass(ClassName.LAYOUT_FIXED)) {
-          var sidebarHeight = heights.window - heights.header;
+          let sidebarHeight = heights.window - heights.header;
 
           if ($('body').hasClass(ClassName.FOOTER_FIXED) || $('body').hasClass(ClassName.FOOTER_SM_FIXED) || $('body').hasClass(ClassName.FOOTER_MD_FIXED) || $('body').hasClass(ClassName.FOOTER_LG_FIXED) || $('body').hasClass(ClassName.FOOTER_XL_FIXED)) {
             if ($(Selector.FOOTER).css("position") === "fixed") {
@@ -233,9 +233,9 @@
 
       ControlSidebar._jQueryInterface = function _jQueryInterface(operation) {
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
-          var _options = $.extend({}, Default, $(this).data());
+          let _options = $.extend({}, Default, $(this).data());
 
           if (!data) {
             data = new ControlSidebar(this, _options);
@@ -286,15 +286,15 @@
    * License MIT
    * --------------------------------------------
    */
-  var Layout = function ($) {
+  let Layout = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'Layout';
-    var DATA_KEY = 'lte.layout';
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Selector = {
+    let NAME = 'Layout';
+    let DATA_KEY = 'lte.layout';
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Selector = {
       HEADER: '.main-header',
       MAIN_SIDEBAR: '.main-sidebar',
       SIDEBAR: '.main-sidebar .sidebar',
@@ -311,7 +311,7 @@
       LOGIN_BOX: '.login-box',
       REGISTER_BOX: '.register-box'
     };
-    var ClassName = {
+    let ClassName = {
       HOLD: 'hold-transition',
       SIDEBAR: 'main-sidebar',
       CONTENT_FIXED: 'content-fixed',
@@ -324,7 +324,7 @@
       CONTROL_SIDEBAR_SLIDE_OPEN: 'control-sidebar-slide-open',
       CONTROL_SIDEBAR_OPEN: 'control-sidebar-open'
     };
-    var Default = {
+    let Default = {
       scrollbarTheme: 'os-theme-light',
       scrollbarAutoHide: 'l'
     };
@@ -333,7 +333,7 @@
      * ====================================================
      */
 
-    var Layout =
+    let Layout =
     /*#__PURE__*/
     function () {
       function Layout(element, config) {
@@ -344,20 +344,20 @@
       } // Public
 
 
-      var _proto = Layout.prototype;
+      let _proto = Layout.prototype;
 
       _proto.fixLayoutHeight = function fixLayoutHeight(extra) {
         if (extra === void 0) {
           extra = null;
         }
 
-        var control_sidebar = 0;
+        let control_sidebar = 0;
 
         if ($('body').hasClass(ClassName.CONTROL_SIDEBAR_SLIDE_OPEN) || $('body').hasClass(ClassName.CONTROL_SIDEBAR_OPEN) || extra == 'control_sidebar') {
           control_sidebar = $(Selector.CONTROL_SIDEBAR_CONTENT).height();
         }
 
-        var heights = {
+        let heights = {
           window: $(window).height(),
           header: $(Selector.HEADER).length !== 0 ? $(Selector.HEADER).outerHeight() : 0,
           footer: $(Selector.FOOTER).length !== 0 ? $(Selector.FOOTER).outerHeight() : 0,
@@ -365,7 +365,7 @@
           control_sidebar: control_sidebar
         };
 
-        var max = this._max(heights);
+        let max = this._max(heights);
 
         if (max == heights.control_sidebar) {
           $(Selector.CONTENT).css('min-height', max);
@@ -393,7 +393,7 @@
       ;
 
       _proto._init = function _init() {
-        var _this = this;
+        let _this = this;
 
         // Activate layout height watcher
         this.fixLayoutHeight();
@@ -415,7 +415,7 @@
         if (!$('body').hasClass(ClassName.LOGIN_PAGE) && !$('body').hasClass(ClassName.REGISTER_PAGE)) {
           $('body, html').css('height', 'auto');
         } else if ($('body').hasClass(ClassName.LOGIN_PAGE) || $('body').hasClass(ClassName.REGISTER_PAGE)) {
-          var box_height = $(Selector.LOGIN_BOX + ', ' + Selector.REGISTER_BOX).height();
+          let box_height = $(Selector.LOGIN_BOX + ', ' + Selector.REGISTER_BOX).height();
           $('body').css('min-height', box_height);
         }
 
@@ -424,7 +424,7 @@
 
       _proto._max = function _max(numbers) {
         // Calculate the maximum number in a list
-        var max = 0;
+        let max = 0;
         Object.keys(numbers).forEach(function (key) {
           if (numbers[key] > max) {
             max = numbers[key];
@@ -440,9 +440,9 @@
         }
 
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
-          var _options = $.extend({}, Default, $(this).data());
+          let _options = $.extend({}, Default, $(this).data());
 
           if (!data) {
             data = new Layout($(this), _options);
@@ -494,25 +494,25 @@
    * License MIT
    * --------------------------------------------
    */
-  var PushMenu = function ($) {
+  let PushMenu = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'PushMenu';
-    var DATA_KEY = 'lte.pushmenu';
-    var EVENT_KEY = "." + DATA_KEY;
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'PushMenu';
+    let DATA_KEY = 'lte.pushmenu';
+    let EVENT_KEY = "." + DATA_KEY;
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       COLLAPSED: "collapsed" + EVENT_KEY,
       SHOWN: "shown" + EVENT_KEY
     };
-    var Default = {
+    let Default = {
       autoCollapseSize: 992,
       enableRemember: false,
       noTransitionAfterReload: true
     };
-    var Selector = {
+    let Selector = {
       TOGGLE_BUTTON: '[data-widget="pushmenu"]',
       SIDEBAR_MINI: '.sidebar-mini',
       SIDEBAR_COLLAPSED: '.sidebar-collapse',
@@ -520,7 +520,7 @@
       OVERLAY: '#sidebar-overlay',
       WRAPPER: '.wrapper'
     };
-    var ClassName = {
+    let ClassName = {
       SIDEBAR_OPEN: 'sidebar-open',
       COLLAPSED: 'sidebar-collapse',
       OPEN: 'sidebar-open'
@@ -530,7 +530,7 @@
      * ====================================================
      */
 
-    var PushMenu =
+    let PushMenu =
     /*#__PURE__*/
     function () {
       function PushMenu(element, options) {
@@ -545,7 +545,7 @@
       } // Public
 
 
-      var _proto = PushMenu.prototype;
+      let _proto = PushMenu.prototype;
 
       _proto.expand = function expand() {
         if (this._options.autoCollapseSize) {
@@ -560,7 +560,7 @@
           localStorage.setItem("remember" + EVENT_KEY, ClassName.OPEN);
         }
 
-        var shownEvent = $.Event(Event.SHOWN);
+        let shownEvent = $.Event(Event.SHOWN);
         $(this._element).trigger(shownEvent);
       };
 
@@ -577,7 +577,7 @@
           localStorage.setItem("remember" + EVENT_KEY, ClassName.COLLAPSED);
         }
 
-        var collapsedEvent = $.Event(Event.COLLAPSED);
+        let collapsedEvent = $.Event(Event.COLLAPSED);
         $(this._element).trigger(collapsedEvent);
       };
 
@@ -609,7 +609,7 @@
 
       _proto.remember = function remember() {
         if (this._options.enableRemember) {
-          var toggleState = localStorage.getItem("remember" + EVENT_KEY);
+          let toggleState = localStorage.getItem("remember" + EVENT_KEY);
 
           if (toggleState == ClassName.COLLAPSED) {
             if (this._options.noTransitionAfterReload) {
@@ -635,7 +635,7 @@
       ;
 
       _proto._init = function _init() {
-        var _this = this;
+        let _this = this;
 
         this.remember();
         this.autoCollapse();
@@ -645,9 +645,9 @@
       };
 
       _proto._addOverlay = function _addOverlay() {
-        var _this2 = this;
+        let _this2 = this;
 
-        var overlay = $('<div />', {
+        let overlay = $('<div />', {
           id: 'sidebar-overlay'
         });
         overlay.on('click', function () {
@@ -659,9 +659,9 @@
 
       PushMenu._jQueryInterface = function _jQueryInterface(operation) {
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
-          var _options = $.extend({}, Default, $(this).data());
+          let _options = $.extend({}, Default, $(this).data());
 
           if (!data) {
             data = new PushMenu(this, _options);
@@ -684,7 +684,7 @@
 
     $(document).on('click', Selector.TOGGLE_BUTTON, function (event) {
       event.preventDefault();
-      var button = event.currentTarget;
+      let button = event.currentTarget;
 
       if ($(button).data('widget') !== 'pushmenu') {
         button = $(button).closest(Selector.TOGGLE_BUTTON);
@@ -717,36 +717,36 @@
    * License MIT
    * --------------------------------------------
    */
-  var Treeview = function ($) {
+  let Treeview = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'Treeview';
-    var DATA_KEY = 'lte.treeview';
-    var EVENT_KEY = "." + DATA_KEY;
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'Treeview';
+    let DATA_KEY = 'lte.treeview';
+    let EVENT_KEY = "." + DATA_KEY;
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       SELECTED: "selected" + EVENT_KEY,
       EXPANDED: "expanded" + EVENT_KEY,
       COLLAPSED: "collapsed" + EVENT_KEY,
       LOAD_DATA_API: "load" + EVENT_KEY
     };
-    var Selector = {
+    let Selector = {
       LI: '.nav-item',
       LINK: '.nav-link',
       TREEVIEW_MENU: '.nav-treeview',
       OPEN: '.menu-open',
       DATA_WIDGET: '[data-widget="treeview"]'
     };
-    var ClassName = {
+    let ClassName = {
       LI: 'nav-item',
       LINK: 'nav-link',
       TREEVIEW_MENU: 'nav-treeview',
       OPEN: 'menu-open',
       SIDEBAR_COLLAPSED: 'sidebar-collapse'
     };
-    var Default = {
+    let Default = {
       trigger: Selector.DATA_WIDGET + " " + Selector.LINK,
       animationSpeed: 300,
       accordion: true,
@@ -758,7 +758,7 @@
      * ====================================================
      */
 
-    var Treeview =
+    let Treeview =
     /*#__PURE__*/
     function () {
       function Treeview(element, config) {
@@ -767,20 +767,20 @@
       } // Public
 
 
-      var _proto = Treeview.prototype;
+      let _proto = Treeview.prototype;
 
       _proto.init = function init() {
         this._setupListeners();
       };
 
       _proto.expand = function expand(treeviewMenu, parentLi) {
-        var _this = this;
+        let _this = this;
 
-        var expandedEvent = $.Event(Event.EXPANDED);
+        let expandedEvent = $.Event(Event.EXPANDED);
 
         if (this._config.accordion) {
-          var openMenuLi = parentLi.siblings(Selector.OPEN).first();
-          var openTreeview = openMenuLi.find(Selector.TREEVIEW_MENU).first();
+          let openMenuLi = parentLi.siblings(Selector.OPEN).first();
+          let openTreeview = openMenuLi.find(Selector.TREEVIEW_MENU).first();
           this.collapse(openTreeview, openMenuLi);
         }
 
@@ -795,9 +795,9 @@
       };
 
       _proto.collapse = function collapse(treeviewMenu, parentLi) {
-        var _this2 = this;
+        let _this2 = this;
 
-        var collapsedEvent = $.Event(Event.COLLAPSED);
+        let collapsedEvent = $.Event(Event.COLLAPSED);
         treeviewMenu.stop().slideUp(this._config.animationSpeed, function () {
           parentLi.removeClass(ClassName.OPEN);
           $(_this2._element).trigger(collapsedEvent);
@@ -807,9 +807,9 @@
       };
 
       _proto.toggle = function toggle(event) {
-        var $relativeTarget = $(event.currentTarget);
-        var $parent = $relativeTarget.parent();
-        var treeviewMenu = $parent.find('> ' + Selector.TREEVIEW_MENU);
+        let $relativeTarget = $(event.currentTarget);
+        let $parent = $relativeTarget.parent();
+        let treeviewMenu = $parent.find('> ' + Selector.TREEVIEW_MENU);
 
         if (!treeviewMenu.is(Selector.TREEVIEW_MENU)) {
           if (!$parent.is(Selector.LI)) {
@@ -822,8 +822,8 @@
         }
 
         event.preventDefault();
-        var parentLi = $relativeTarget.parents(Selector.LI).first();
-        var isOpen = parentLi.hasClass(ClassName.OPEN);
+        let parentLi = $relativeTarget.parents(Selector.LI).first();
+        let isOpen = parentLi.hasClass(ClassName.OPEN);
 
         if (isOpen) {
           this.collapse($(treeviewMenu), parentLi);
@@ -834,7 +834,7 @@
       ;
 
       _proto._setupListeners = function _setupListeners() {
-        var _this3 = this;
+        let _this3 = this;
 
         $(document).on('click', this._config.trigger, function (event) {
           _this3.toggle(event);
@@ -850,9 +850,9 @@
 
       Treeview._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
-          var _options = $.extend({}, Default, $(this).data());
+          let _options = $.extend({}, Default, $(this).data());
 
           if (!data) {
             data = new Treeview($(this), _options);
@@ -900,22 +900,22 @@
    * License MIT
    * --------------------------------------------
    */
-  var DirectChat = function ($) {
+  let DirectChat = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'DirectChat';
-    var DATA_KEY = 'lte.directchat';
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'DirectChat';
+    let DATA_KEY = 'lte.directchat';
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       TOGGLED: "toggled{EVENT_KEY}"
     };
-    var Selector = {
+    let Selector = {
       DATA_TOGGLE: '[data-widget="chat-pane-toggle"]',
       DIRECT_CHAT: '.direct-chat'
     };
-    var ClassName = {
+    let ClassName = {
       DIRECT_CHAT_OPEN: 'direct-chat-contacts-open'
     };
     /**
@@ -923,25 +923,25 @@
      * ====================================================
      */
 
-    var DirectChat =
+    let DirectChat =
     /*#__PURE__*/
     function () {
       function DirectChat(element, config) {
         this._element = element;
       }
 
-      var _proto = DirectChat.prototype;
+      let _proto = DirectChat.prototype;
 
       _proto.toggle = function toggle() {
         $(this._element).parents(Selector.DIRECT_CHAT).first().toggleClass(ClassName.DIRECT_CHAT_OPEN);
-        var toggledEvent = $.Event(Event.TOGGLED);
+        let toggledEvent = $.Event(Event.TOGGLED);
         $(this._element).trigger(toggledEvent);
       } // Static
       ;
 
       DirectChat._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
           if (!data) {
             data = new DirectChat($(this));
@@ -988,21 +988,21 @@
    * License MIT
    * --------------------------------------------
    */
-  var TodoList = function ($) {
+  let TodoList = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'TodoList';
-    var DATA_KEY = 'lte.todolist';
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Selector = {
+    let NAME = 'TodoList';
+    let DATA_KEY = 'lte.todolist';
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Selector = {
       DATA_TOGGLE: '[data-widget="todo-list"]'
     };
-    var ClassName = {
+    let ClassName = {
       TODO_LIST_DONE: 'done'
     };
-    var Default = {
+    let Default = {
       onCheck: function onCheck(item) {
         return item;
       },
@@ -1015,7 +1015,7 @@
      * ====================================================
      */
 
-    var TodoList =
+    let TodoList =
     /*#__PURE__*/
     function () {
       function TodoList(element, config) {
@@ -1026,7 +1026,7 @@
       } // Public
 
 
-      var _proto = TodoList.prototype;
+      let _proto = TodoList.prototype;
 
       _proto.toggle = function toggle(item) {
         item.parents('li').toggleClass(ClassName.TODO_LIST_DONE);
@@ -1049,7 +1049,7 @@
       ;
 
       _proto._init = function _init() {
-        var that = this;
+        let that = this;
         $(Selector.DATA_TOGGLE).find('input:checkbox:checked').parents('li').toggleClass(ClassName.TODO_LIST_DONE);
         $(Selector.DATA_TOGGLE).on('change', 'input:checkbox', function (event) {
           that.toggle($(event.target));
@@ -1059,9 +1059,9 @@
 
       TodoList._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
-          var _options = $.extend({}, Default, $(this).data());
+          let _options = $.extend({}, Default, $(this).data());
 
           if (!data) {
             data = new TodoList($(this), _options);
@@ -1107,29 +1107,29 @@
    * License MIT
    * --------------------------------------------
    */
-  var CardWidget = function ($) {
+  let CardWidget = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'CardWidget';
-    var DATA_KEY = 'lte.cardwidget';
-    var EVENT_KEY = "." + DATA_KEY;
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'CardWidget';
+    let DATA_KEY = 'lte.cardwidget';
+    let EVENT_KEY = "." + DATA_KEY;
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       EXPANDED: "expanded" + EVENT_KEY,
       COLLAPSED: "collapsed" + EVENT_KEY,
       MAXIMIZED: "maximized" + EVENT_KEY,
       MINIMIZED: "minimized" + EVENT_KEY,
       REMOVED: "removed" + EVENT_KEY
     };
-    var ClassName = {
+    let ClassName = {
       CARD: 'card',
       COLLAPSED: 'collapsed-card',
       WAS_COLLAPSED: 'was-collapsed',
       MAXIMIZED: 'maximized-card'
     };
-    var Selector = {
+    let Selector = {
       DATA_REMOVE: '[data-card-widget="remove"]',
       DATA_COLLAPSE: '[data-card-widget="collapse"]',
       DATA_MAXIMIZE: '[data-card-widget="maximize"]',
@@ -1139,7 +1139,7 @@
       CARD_FOOTER: '.card-footer',
       COLLAPSED: "." + ClassName.COLLAPSED
     };
-    var Default = {
+    let Default = {
       animationSpeed: 'normal',
       collapseTrigger: Selector.DATA_COLLAPSE,
       removeTrigger: Selector.DATA_REMOVE,
@@ -1150,7 +1150,7 @@
       minimizeIcon: 'fa-compress'
     };
 
-    var CardWidget =
+    let CardWidget =
     /*#__PURE__*/
     function () {
       function CardWidget(element, settings) {
@@ -1164,10 +1164,10 @@
         this._settings = $.extend({}, Default, settings);
       }
 
-      var _proto = CardWidget.prototype;
+      let _proto = CardWidget.prototype;
 
       _proto.collapse = function collapse() {
-        var _this = this;
+        let _this = this;
 
         this._parent.children(Selector.CARD_BODY + ", " + Selector.CARD_FOOTER).slideUp(this._settings.animationSpeed, function () {
           _this._parent.addClass(ClassName.COLLAPSED);
@@ -1175,13 +1175,13 @@
 
         this._parent.find('> ' + Selector.CARD_HEADER + ' ' + this._settings.collapseTrigger + ' .' + this._settings.collapseIcon).addClass(this._settings.expandIcon).removeClass(this._settings.collapseIcon);
 
-        var collapsed = $.Event(Event.COLLAPSED);
+        let collapsed = $.Event(Event.COLLAPSED);
 
         this._element.trigger(collapsed, this._parent);
       };
 
       _proto.expand = function expand() {
-        var _this2 = this;
+        let _this2 = this;
 
         this._parent.children(Selector.CARD_BODY + ", " + Selector.CARD_FOOTER).slideDown(this._settings.animationSpeed, function () {
           _this2._parent.removeClass(ClassName.COLLAPSED);
@@ -1189,7 +1189,7 @@
 
         this._parent.find('> ' + Selector.CARD_HEADER + ' ' + this._settings.collapseTrigger + ' .' + this._settings.expandIcon).addClass(this._settings.collapseIcon).removeClass(this._settings.expandIcon);
 
-        var expanded = $.Event(Event.EXPANDED);
+        let expanded = $.Event(Event.EXPANDED);
 
         this._element.trigger(expanded, this._parent);
       };
@@ -1197,7 +1197,7 @@
       _proto.remove = function remove() {
         this._parent.slideUp();
 
-        var removed = $.Event(Event.REMOVED);
+        let removed = $.Event(Event.REMOVED);
 
         this._element.trigger(removed, this._parent);
       };
@@ -1229,7 +1229,7 @@
           $(this).dequeue();
         });
 
-        var maximized = $.Event(Event.MAXIMIZED);
+        let maximized = $.Event(Event.MAXIMIZED);
 
         this._element.trigger(maximized, this._parent);
       };
@@ -1252,7 +1252,7 @@
           $(this).dequeue();
         });
 
-        var MINIMIZED = $.Event(Event.MINIMIZED);
+        let MINIMIZED = $.Event(Event.MINIMIZED);
 
         this._element.trigger(MINIMIZED, this._parent);
       };
@@ -1268,7 +1268,7 @@
       ;
 
       _proto._init = function _init(card) {
-        var _this3 = this;
+        let _this3 = this;
 
         this._parent = card;
         $(this).find(this._settings.collapseTrigger).click(function () {
@@ -1284,9 +1284,9 @@
       ;
 
       CardWidget._jQueryInterface = function _jQueryInterface(config) {
-        var data = $(this).data(DATA_KEY);
+        let data = $(this).data(DATA_KEY);
 
-        var _options = $.extend({}, Default, $(this).data());
+        let _options = $.extend({}, Default, $(this).data());
 
         if (!data) {
           data = new CardWidget($(this), _options);
@@ -1351,28 +1351,28 @@
    * License MIT
    * --------------------------------------------
    */
-  var CardRefresh = function ($) {
+  let CardRefresh = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'CardRefresh';
-    var DATA_KEY = 'lte.cardrefresh';
-    var EVENT_KEY = "." + DATA_KEY;
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'CardRefresh';
+    let DATA_KEY = 'lte.cardrefresh';
+    let EVENT_KEY = "." + DATA_KEY;
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       LOADED: "loaded" + EVENT_KEY,
       OVERLAY_ADDED: "overlay.added" + EVENT_KEY,
       OVERLAY_REMOVED: "overlay.removed" + EVENT_KEY
     };
-    var ClassName = {
+    let ClassName = {
       CARD: 'card'
     };
-    var Selector = {
+    let Selector = {
       CARD: "." + ClassName.CARD,
       DATA_REFRESH: '[data-card-widget="card-refresh"]'
     };
-    var Default = {
+    let Default = {
       source: '',
       sourceSelector: '',
       params: {},
@@ -1388,7 +1388,7 @@
       }
     };
 
-    var CardRefresh =
+    let CardRefresh =
     /*#__PURE__*/
     function () {
       function CardRefresh(element, settings) {
@@ -1412,7 +1412,7 @@
         }
       }
 
-      var _proto = CardRefresh.prototype;
+      let _proto = CardRefresh.prototype;
 
       _proto.load = function load() {
         this._addOverlay();
@@ -1432,27 +1432,27 @@
 
           this._removeOverlay();
         }.bind(this), this._settings.responseType !== '' && this._settings.responseType);
-        var loadedEvent = $.Event(Event.LOADED);
+        let loadedEvent = $.Event(Event.LOADED);
         $(this._element).trigger(loadedEvent);
       };
 
       _proto._addOverlay = function _addOverlay() {
         this._parent.append(this._overlay);
 
-        var overlayAddedEvent = $.Event(Event.OVERLAY_ADDED);
+        let overlayAddedEvent = $.Event(Event.OVERLAY_ADDED);
         $(this._element).trigger(overlayAddedEvent);
       };
 
       _proto._removeOverlay = function _removeOverlay() {
         this._parent.find(this._overlay).remove();
 
-        var overlayRemovedEvent = $.Event(Event.OVERLAY_REMOVED);
+        let overlayRemovedEvent = $.Event(Event.OVERLAY_REMOVED);
         $(this._element).trigger(overlayRemovedEvent);
       };
 
       // Private
       _proto._init = function _init(card) {
-        var _this = this;
+        let _this = this;
 
         $(this).find(this._settings.trigger).on('click', function () {
           _this.load();
@@ -1461,9 +1461,9 @@
       ;
 
       CardRefresh._jQueryInterface = function _jQueryInterface(config) {
-        var data = $(this).data(DATA_KEY);
+        let data = $(this).data(DATA_KEY);
 
-        var _options = $.extend({}, Default, $(this).data());
+        let _options = $.extend({}, Default, $(this).data());
 
         if (!data) {
           data = new CardRefresh($(this), _options);
@@ -1514,25 +1514,25 @@
    * License MIT
    * --------------------------------------------
    */
-  var Dropdown = function ($) {
+  let Dropdown = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'Dropdown';
-    var DATA_KEY = 'lte.dropdown';
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Selector = {
+    let NAME = 'Dropdown';
+    let DATA_KEY = 'lte.dropdown';
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Selector = {
       DROPDOWN_MENU: 'ul.dropdown-menu',
       DROPDOWN_TOGGLE: '[data-toggle="dropdown"]'
     };
-    var Default = {};
+    let Default = {};
     /**
      * Class Definition
      * ====================================================
      */
 
-    var Dropdown =
+    let Dropdown =
     /*#__PURE__*/
     function () {
       function Dropdown(element, config) {
@@ -1541,7 +1541,7 @@
       } // Public
 
 
-      var _proto = Dropdown.prototype;
+      let _proto = Dropdown.prototype;
 
       _proto.toggleSubmenu = function toggleSubmenu() {
         this._element.siblings().show().toggleClass("show");
@@ -1558,9 +1558,9 @@
 
       Dropdown._jQueryInterface = function _jQueryInterface(config) {
         return this.each(function () {
-          var data = $(this).data(DATA_KEY);
+          let data = $(this).data(DATA_KEY);
 
-          var _config = $.extend({}, Default, $(this).data());
+          let _config = $.extend({}, Default, $(this).data());
 
           if (!data) {
             data = new Dropdown($(this), _config);
@@ -1615,41 +1615,41 @@
    * License MIT
    * --------------------------------------------
    */
-  var Toasts = function ($) {
+  let Toasts = function ($) {
     /**
      * Constants
      * ====================================================
      */
-    var NAME = 'Toasts';
-    var DATA_KEY = 'lte.toasts';
-    var EVENT_KEY = "." + DATA_KEY;
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var Event = {
+    let NAME = 'Toasts';
+    let DATA_KEY = 'lte.toasts';
+    let EVENT_KEY = "." + DATA_KEY;
+    let JQUERY_NO_CONFLICT = $.fn[NAME];
+    let Event = {
       INIT: "init" + EVENT_KEY,
       CREATED: "created" + EVENT_KEY,
       REMOVED: "removed" + EVENT_KEY
     };
-    var Selector = {
+    let Selector = {
       BODY: 'toast-body',
       CONTAINER_TOP_RIGHT: '#toastsContainerTopRight',
       CONTAINER_TOP_LEFT: '#toastsContainerTopLeft',
       CONTAINER_BOTTOM_RIGHT: '#toastsContainerBottomRight',
       CONTAINER_BOTTOM_LEFT: '#toastsContainerBottomLeft'
     };
-    var ClassName = {
+    let ClassName = {
       TOP_RIGHT: 'toasts-top-right',
       TOP_LEFT: 'toasts-top-left',
       BOTTOM_RIGHT: 'toasts-bottom-right',
       BOTTOM_LEFT: 'toasts-bottom-left',
       FADE: 'fade'
     };
-    var Position = {
+    let Position = {
       TOP_RIGHT: 'topRight',
       TOP_LEFT: 'topLeft',
       BOTTOM_RIGHT: 'bottomRight',
       BOTTOM_LEFT: 'bottomLeft'
     };
-    var Default = {
+    let Default = {
       position: Position.TOP_RIGHT,
       fixed: true,
       autohide: false,
@@ -1671,7 +1671,7 @@
      * ====================================================
      */
 
-    var Toasts =
+    let Toasts =
     /*#__PURE__*/
     function () {
       function Toasts(element, config) {
@@ -1679,15 +1679,15 @@
 
         this._prepareContainer();
 
-        var initEvent = $.Event(Event.INIT);
+        let initEvent = $.Event(Event.INIT);
         $('body').trigger(initEvent);
       } // Public
 
 
-      var _proto = Toasts.prototype;
+      let _proto = Toasts.prototype;
 
       _proto.create = function create() {
-        var toast = $('<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"/>');
+        let toast = $('<div class="toast" role="alert" aria-live="assertive" aria-atomic="true"/>');
         toast.data('autohide', this._config.autohide);
         toast.data('animation', this._config.fade);
 
@@ -1699,10 +1699,10 @@
           toast.data('delay', this._config.delay);
         }
 
-        var toast_header = $('<div class="toast-header">');
+        let toast_header = $('<div class="toast-header">');
 
         if (this._config.image != null) {
-          var toast_image = $('<img />').addClass('rounded mr-2').attr('src', this._config.image).attr('alt', this._config.imageAlt);
+          let toast_image = $('<img />').addClass('rounded mr-2').attr('src', this._config.image).attr('alt', this._config.imageAlt);
 
           if (this._config.imageHeight != null) {
             toast_image.height(this._config.imageHeight).width('auto');
@@ -1724,7 +1724,7 @@
         }
 
         if (this._config.close == true) {
-          var toast_close = $('<button data-dismiss="toast" />').attr('type', 'button').addClass('ml-2 mb-1 close').attr('aria-label', 'Close').append('<span aria-hidden="true">&times;</span>');
+          let toast_close = $('<button data-dismiss="toast" />').attr('type', 'button').addClass('ml-2 mb-1 close').attr('aria-label', 'Close').append('<span aria-hidden="true">&times;</span>');
 
           if (this._config.title == null) {
             toast_close.toggleClass('ml-2 ml-auto');
@@ -1740,14 +1740,14 @@
         }
 
         $(this._getContainerId()).prepend(toast);
-        var createdEvent = $.Event(Event.CREATED);
+        let createdEvent = $.Event(Event.CREATED);
         $('body').trigger(createdEvent);
         toast.toast('show');
 
         if (this._config.autoremove) {
           toast.on('hidden.bs.toast', function () {
             $(this).delay(200).remove();
-            var removedEvent = $.Event(Event.REMOVED);
+            let removedEvent = $.Event(Event.REMOVED);
             $('body').trigger(removedEvent);
           });
         }
@@ -1768,7 +1768,7 @@
 
       _proto._prepareContainer = function _prepareContainer() {
         if ($(this._getContainerId()).length === 0) {
-          var container = $('<div />').attr('id', this._getContainerId().replace('#', ''));
+          let container = $('<div />').attr('id', this._getContainerId().replace('#', ''));
 
           if (this._config.position == Position.TOP_RIGHT) {
             container.addClass(ClassName.TOP_RIGHT);
@@ -1793,9 +1793,9 @@
 
       Toasts._jQueryInterface = function _jQueryInterface(option, config) {
         return this.each(function () {
-          var _options = $.extend({}, Default, config);
+          let _options = $.extend({}, Default, config);
 
-          var toast = new Toasts($(this), _options);
+          let toast = new Toasts($(this), _options);
 
           if (option === 'create') {
             toast[option]();
