@@ -23,7 +23,7 @@
     );
 
     /* quill snow editor */
-    var toolbarOptions = [
+    let toolbarOptions = [
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
         [{ 'font': [] }],
         ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -43,7 +43,7 @@
         ['image', 'video'],
         ['clean']                                         // remove formatting button
     ];
-    var quill = new Quill('#project-descriptioin-editor', {
+    let quill = new Quill('#project-descriptioin-editor', {
         modules: {
             toolbar: toolbarOptions
         },
@@ -68,7 +68,7 @@
     FilePond.create(MultipleElement,);
 
     /* passing unique values */
-    var textUniqueVals = new Choices('#choices-text-unique-values', {
+    let textUniqueVals = new Choices('#choices-text-unique-values', {
         allowHTML: true,
         paste: false,
         duplicateItemsAllowed: false,
@@ -76,9 +76,9 @@
     });
      /* Start::Choices JS */
   document.addEventListener("DOMContentLoaded", function () {
-    var genericExamples = document.querySelectorAll("[data-trigger]");
+    let genericExamples = document.querySelectorAll("[data-trigger]");
     for (let i = 0; i < genericExamples.length; ++i) {
-      var element = genericExamples[i];
+      let element = genericExamples[i];
       new Choices(element, {
         allowHTML: true,
 
