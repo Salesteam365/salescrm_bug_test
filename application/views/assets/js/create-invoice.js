@@ -8,7 +8,7 @@
     // Due date
     flatpickr("#invoice-date-due", {});
     // for nummber of Quantity selected
-    var value = 1,
+    let value = 1,
         minValue = 0,
         maxValue = 30;
 

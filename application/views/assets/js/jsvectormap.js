@@ -153,7 +153,7 @@
         { name: 'Canada', coords: [56, -106], offsets: [-7, 12] },
     ]
 
-    var lines = [
+    let lines = [
         { from: 'Russia', to: 'Egypt', style: { stroke: '#abb0b7', strokeWidth: 1.5 } },
         { from: 'Canada', to: 'Russia', style: { stroke: '#abb0b7', strokeWidth: 1.5 } },
     ]
